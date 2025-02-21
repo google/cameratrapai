@@ -125,6 +125,7 @@ class Progress:
         enabled: list[str],
         total: Optional[int] = None,
         batches: Optional[int] = None,
+        batches_det: Optional[int] = None,
         rlock: Optional[threading.RLock] = None,
     ) -> None:
         """Initializes the progress tracker.
@@ -157,7 +158,7 @@ class Progress:
         if "detector_predict" in enabled:
             self._pbars["detector_predict"] = tqdm(
                 desc="Detector predict      ",
-                total=batches or total,
+                total=batches_det or total,
                 mininterval=0,
                 colour="#ece133",
             )
@@ -854,6 +855,13 @@ class SpeciesNet:
         last_batch_size = num_instances_to_process % batch_size
         if not last_batch_size:
             last_batch_size = batch_size
+        batch_size_det = 4
+        num_batches_det = num_instances_to_process // batch_size_det + min(
+            num_instances_to_process % batch_size_det, 1
+        )
+        last_batch_size_det = num_instances_to_process % batch_size_det
+        if not last_batch_size_det:
+            last_batch_size = batch_size_det
 
         # Start a periodic saver if an output file was specified.
         if predictions_json:
@@ -887,6 +895,7 @@ class SpeciesNet:
             ),
             total=num_instances_to_process,
             batches=num_batches,
+            batches_det=num_batches_det,
             rlock=new_rlock_fn(),
         )
 
@@ -946,12 +955,16 @@ class SpeciesNet:
             )
 
         # Run detector inference asynchronously.
-        for batch_idx in range(num_batches):
+        for batch_idx in range(num_batches_det):
             detector_pool.apply_async(
                 _run_detector,
                 args=(
                     self.detector,
-                    (batch_size if batch_idx < num_batches - 1 else last_batch_size),
+                    (
+                        batch_size_det
+                        if batch_idx < num_batches_det - 1
+                        else last_batch_size_det
+                    ),
                     detector_queue,
                     detector_results,
                     bboxes_queue,
