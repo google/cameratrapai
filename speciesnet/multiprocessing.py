@@ -244,9 +244,9 @@ def _run_detector(
 ) -> None:
     """Runs detector inference.
 
-    Takes a preprocessed image from the input queue and runs the detector model on it.
-    The raw output of the detector is stored in `results_dict` and the list of bounding
-    boxes is additionally stored in `bboxes_queue`.
+    Takes a batch of preprocessed images from the input queue and runs the detector
+    model on it. The raw output of the detector is stored in `results_dict` and the list
+    of bounding boxes is additionally stored in `bboxes_queue`.
 
     Args:
         detector:
@@ -262,18 +262,27 @@ def _run_detector(
     """
 
     input_tuples = [input_queue.get() for _ in range(batch_size)]
-    filepaths = [t[0] for t in input_tuples]
-    imgs = [t[1] for t in input_tuples]
-    # FIXME
-    if batch_size == 1:
-        predictions = [detector.predict(filepaths[0], imgs[0])]
-    else:
+
+    groups = {}
+    for filepath, img in input_tuples:
+        if img is None:
+            key = None
+        else:
+            key = img.arr.shape[:2]
+        if key in groups:
+            groups[key].append((filepath, img))
+        else:
+            groups[key] = [(filepath, img)]
+
+    for tuples in groups.values():
+        filepaths = [t[0] for t in tuples]
+        imgs = [t[1] for t in tuples]
         predictions = detector.batch_predict(filepaths, imgs)
-    for filepath, prediction in zip(filepaths, predictions):
-        results_dict[filepath] = prediction
-        if bboxes_queue:
-            detections = prediction.get("detections", [])
-            bboxes_queue.put((filepath, [BBox(*det["bbox"]) for det in detections]))
+        for filepath, prediction in zip(filepaths, predictions):
+            results_dict[filepath] = prediction
+            if bboxes_queue:
+                detections = prediction.get("detections", [])
+                bboxes_queue.put((filepath, [BBox(*det["bbox"]) for det in detections]))
 
 
 def _prepare_classifier_input(
@@ -315,8 +324,8 @@ def _run_classifier(
 ) -> None:
     """Runs classifier inference.
 
-    Takes a preprocessed image from the input queue and runs the classifier model on it.
-    The output of the classifier is stored in `results_dict`.
+    Takes a batch of preprocessed images from the input queue and runs the classifier
+    model on it. The output of the classifier is stored in `results_dict`.
 
     Args:
         classifier:
