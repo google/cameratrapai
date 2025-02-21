@@ -157,7 +157,7 @@ class Progress:
         if "detector_predict" in enabled:
             self._pbars["detector_predict"] = tqdm(
                 desc="Detector predict      ",
-                total=total,
+                total=batches or total,
                 mininterval=0,
                 colour="#ece133",
             )
@@ -237,6 +237,7 @@ def _prepare_detector_input(
 
 def _run_detector(
     detector: SpeciesNetDetector,
+    batch_size: int,
     input_queue: queue.Queue[DetectorInput],  # input
     results_dict: dict,  # output
     bboxes_queue: Optional[queue.Queue[BBoxOutput]] = None,  # output
@@ -250,6 +251,8 @@ def _run_detector(
     Args:
         detector:
             SpeciesNetDetector to run.
+        batch_size:
+            Batch size for inference.
         input_queue:
             Input queue of preprocessed images.
         results_dict:
@@ -258,12 +261,19 @@ def _run_detector(
             Output queue for bounding boxes identified during inference. Optional.
     """
 
-    filepath, img = input_queue.get()
-    prediction = detector.predict(filepath, img)
-    results_dict[filepath] = prediction
-    if bboxes_queue:
-        detections = prediction.get("detections", [])
-        bboxes_queue.put((filepath, [BBox(*det["bbox"]) for det in detections]))
+    input_tuples = [input_queue.get() for _ in range(batch_size)]
+    filepaths = [t[0] for t in input_tuples]
+    imgs = [t[1] for t in input_tuples]
+    # FIXME
+    if batch_size == 1:
+        predictions = [detector.predict(filepaths[0], imgs[0])]
+    else:
+        predictions = detector.batch_predict(filepaths, imgs)
+    for filepath, prediction in zip(filepaths, predictions):
+        results_dict[filepath] = prediction
+        if bboxes_queue:
+            detections = prediction.get("detections", [])
+            bboxes_queue.put((filepath, [BBox(*det["bbox"]) for det in detections]))
 
 
 def _prepare_classifier_input(
@@ -299,9 +309,9 @@ def _prepare_classifier_input(
 
 def _run_classifier(
     classifier: SpeciesNetClassifier,
+    batch_size: int,
     input_queue: queue.Queue[ClassifierInput],  # input
     results_dict: dict,  # output
-    batch_size: int,
 ) -> None:
     """Runs classifier inference.
 
@@ -311,12 +321,12 @@ def _run_classifier(
     Args:
         classifier:
             SpeciesNetClassifier to run.
+        batch_size:
+            Batch size for inference.
         input_queue:
             Input queue of preprocessed images.
         results_dict:
             Output dict for inference results.
-        batch_size:
-            Batch size for inference.
 
     """
 
@@ -920,10 +930,16 @@ class SpeciesNet:
             )
 
         # Run detector inference asynchronously.
-        for _ in range(num_instances_to_process):
+        for batch_idx in range(num_batches):
             detector_pool.apply_async(
                 _run_detector,
-                args=(self.detector, detector_queue, detector_results, bboxes_queue),
+                args=(
+                    self.detector,
+                    (batch_size if batch_idx < num_batches - 1 else last_batch_size),
+                    detector_queue,
+                    detector_results,
+                    bboxes_queue,
+                ),
                 callback=lambda _: progress.update("detector_predict"),
                 error_callback=_error_callback,
             )
@@ -934,9 +950,9 @@ class SpeciesNet:
                 _run_classifier,
                 args=(
                     self.classifier,
+                    (batch_size if batch_idx < num_batches - 1 else last_batch_size),
                     classifier_queue,
                     classifier_results,
-                    (batch_size if batch_idx < num_batches - 1 else last_batch_size),
                 ),
                 callback=lambda _: progress.update("classifier_predict"),
                 error_callback=_error_callback,
@@ -1099,9 +1115,9 @@ class SpeciesNet:
                 _run_classifier,
                 args=(
                     self.classifier,
+                    (batch_size if batch_idx < num_batches - 1 else last_batch_size),
                     classifier_queue,
                     classifier_results,
-                    (batch_size if batch_idx < num_batches - 1 else last_batch_size),
                 ),
                 callback=lambda _: progress.update("classifier_predict"),
                 error_callback=_error_callback,
@@ -1174,6 +1190,7 @@ class SpeciesNet:
     def _detect_using_worker_pools(  # pylint: disable=too-many-positional-arguments
         self,
         instances_dict: dict,
+        batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
         new_pool_fn: Optional[Callable] = None,
@@ -1197,6 +1214,12 @@ class SpeciesNet:
         )
         partial_predictions = new_dict_fn(partial_predictions)
         num_instances_to_process = len(instances_to_process)
+        num_batches = num_instances_to_process // batch_size + min(
+            num_instances_to_process % batch_size, 1
+        )
+        last_batch_size = num_instances_to_process % batch_size
+        if not last_batch_size:
+            last_batch_size = batch_size
 
         # Start a periodic saver if an output file was specified.
         if predictions_json:
@@ -1218,6 +1241,7 @@ class SpeciesNet:
                 ["detector_preprocess", "detector_predict"] if progress_bars else []
             ),
             total=num_instances_to_process,
+            batches=num_batches,
             rlock=new_rlock_fn(),
         )
 
@@ -1227,7 +1251,7 @@ class SpeciesNet:
         )  # Limited by the number of logical CPUs on the machine.
         detector_pool = new_pool_fn(1)  # One single worker to run detector inference.
         detector_queue = new_queue_fn(
-            128
+            max(2 * batch_size, 128)
         )  # Limited number of images to store in memory.
 
         # Preprocess images for detector.
@@ -1240,10 +1264,15 @@ class SpeciesNet:
             )
 
         # Run detector.
-        for _ in range(num_instances_to_process):
+        for batch_idx in range(num_batches):
             detector_pool.apply_async(
                 _run_detector,
-                args=(self.detector, detector_queue, detector_results),
+                args=(
+                    self.detector,
+                    (batch_size if batch_idx < num_batches - 1 else last_batch_size),
+                    detector_queue,
+                    detector_results,
+                ),
                 callback=lambda _: progress.update("detector_predict"),
                 error_callback=_error_callback,
             )
@@ -1274,11 +1303,13 @@ class SpeciesNet:
     def _detect_using_thread_pools(
         self,
         instances_dict: dict,
+        batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
     ) -> Optional[dict]:
         return self._detect_using_worker_pools(
             instances_dict,
+            batch_size=batch_size,
             progress_bars=progress_bars,
             predictions_json=predictions_json,
             new_pool_fn=ThreadPool,
@@ -1290,12 +1321,14 @@ class SpeciesNet:
     def _detect_using_process_pools(
         self,
         instances_dict: dict,
+        batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
     ) -> Optional[dict]:
         assert self.manager is not None
         return self._detect_using_worker_pools(
             instances_dict,
+            batch_size=batch_size,
             progress_bars=progress_bars,
             predictions_json=predictions_json,
             new_pool_fn=mp.Pool,
@@ -1491,6 +1524,7 @@ class SpeciesNet:
         folders: Optional[list[StrPath]] = None,
         folders_txt: Optional[StrPath] = None,
         run_mode: Literal["multi_thread", "multi_process"] = "multi_thread",
+        batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
     ) -> Optional[dict]:
@@ -1505,12 +1539,14 @@ class SpeciesNet:
         if run_mode == "multi_thread":
             return self._detect_using_thread_pools(
                 instances_dict,
+                batch_size=batch_size,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
             )
         elif run_mode == "multi_process":
             return self._detect_using_process_pools(
                 instances_dict,
+                batch_size=batch_size,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
             )

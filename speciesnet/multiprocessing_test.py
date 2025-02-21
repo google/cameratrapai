@@ -168,3 +168,20 @@ class TestMultiProcess:
         assert predictions_dict2
         assert_approx_objs(predictions_dict1, predictions_dict2, abs=1e-4)
         logging.info("Detections (%s): %s", request.node.name, predictions_dict1)
+
+    def test_batch_detect(self, request, instances_dict, model) -> None:
+        predictions_dict1 = model.detect(
+            instances_dict=instances_dict, batch_size=1, progress_bars=True
+        )
+        predictions_dict2 = model.detect(
+            instances_dict=instances_dict, batch_size=3, progress_bars=True
+        )
+        predictions_dict3 = model.detect(
+            instances_dict=instances_dict, batch_size=4, progress_bars=True
+        )
+        assert predictions_dict1
+        assert predictions_dict2
+        assert predictions_dict3
+        assert_approx_objs(predictions_dict1, predictions_dict2, abs=1e-4)
+        assert_approx_objs(predictions_dict1, predictions_dict3, abs=1e-4)
+        logging.info("Detections (%s): %s", request.node.name, predictions_dict1)

@@ -358,6 +358,7 @@ def main(argv: list[str]) -> None:
             folders=_FOLDERS.value,
             folders_txt=_FOLDERS_TXT.value,
             run_mode=run_mode,
+            batch_size=_BATCH_SIZE.value,
             progress_bars=_PROGRESS_BARS.value,
             predictions_json=_PREDICTIONS_JSON.value,
         )
