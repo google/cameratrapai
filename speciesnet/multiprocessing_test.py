@@ -178,6 +178,6 @@ class TestMultiProcess:
         assert predictions_dict1
         assert predictions_dict2
         assert predictions_dict3
-        assert_approx_objs(predictions_dict1, predictions_dict2, abs=1e-4)
-        assert_approx_objs(predictions_dict1, predictions_dict3, abs=1e-4)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-4)
+        assert_approx_objs(predictions_dict1, predictions_dict3, atol=1e-4)
         logging.info("Detections (%s): %s", request.node.name, predictions_dict1)
