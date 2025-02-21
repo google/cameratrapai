@@ -95,9 +95,14 @@ ADMIN1_REGION_SUPPORTED_COUNTRIES = US_COUNTRY_CODES_ALPHA_3
 
 
 def find_admin1_region(
-    country: Optional[str], latitude: Optional[float], longitude: Optional[float]
+    country: Optional[str] = None,
+    admin1_region: Optional[str] = None,
+    latitude: Optional[float] = None,
+    longitude: Optional[float] = None,
 ) -> Optional[str]:
     """Finds the first-level administrative division for a given (lat, lon) location.
+
+    Skips doing any work if both `country` and `admin1_region` are already specified.
 
     Currently implemented only for USA and its territories:
         * If the country is "USA" and the (lat, lon) coordinates fall within a USA state
@@ -109,6 +114,8 @@ def find_admin1_region(
     Args:
         country:
             Country in ISO 3166-1 alpha-3 format. Optional.
+        admin1_region:
+            First-level administrative division in ISO 3166-2 format. Optional.
         latitude:
             Float value representing latitude. Optional.
         longitude:
@@ -119,6 +126,9 @@ def find_admin1_region(
         region is found (e.g. due to missing country, latitude or longitude, or due to
         country not supported), return `None`.
     """
+
+    if country and admin1_region:
+        return admin1_region
 
     if (
         country not in ADMIN1_REGION_SUPPORTED_COUNTRIES

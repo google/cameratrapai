@@ -23,10 +23,8 @@ from speciesnet.geolocation import *
 from speciesnet.multiprocessing import *
 from speciesnet.utils import *
 
-DEFAULT_MODEL = "models/v4.0.0a"  # FIXME
+DEFAULT_MODEL = "kaggle:google/speciesnet/keras/v4.0.0a"
 SUPPORTED_MODELS = [
-    "models/v4.0.0a",  # FIXME
-    "models/v4.0.0b",  # FIXME
-    # "kaggle:google/FIXME",
-    # "hf:google/FIXME",
+    "kaggle:google/speciesnet/keras/v4.0.0a",
+    "kaggle:google/speciesnet/keras/v4.0.0b",
 ]

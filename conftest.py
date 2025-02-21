@@ -14,9 +14,16 @@
 
 """Custom pytest configuration."""
 
+import multiprocessing as mp
+
 import pytest
 
 from speciesnet import SUPPORTED_MODELS
+
+
+@pytest.fixture(scope="session", autouse=True)
+def always_spawn():
+    mp.set_start_method("spawn")
 
 
 def pytest_addoption(parser):

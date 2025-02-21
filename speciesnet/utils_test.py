@@ -89,6 +89,31 @@ class TestPrepareInstancesDict:
     def instances_dict(self, filepaths_as_strings) -> dict:
         return {"instances": [{"filepath": f} for f in filepaths_as_strings]}
 
+    @pytest.fixture
+    def instances_dict_portugal(self, filepaths_as_strings) -> dict:
+        return {
+            "instances": [
+                {
+                    "filepath": f,
+                    "country": "PRT",
+                }
+                for f in filepaths_as_strings
+            ]
+        }
+
+    @pytest.fixture
+    def instances_dict_portugal_porto(self, filepaths_as_strings) -> dict:
+        return {
+            "instances": [
+                {
+                    "filepath": f,
+                    "country": "PRT",
+                    "admin1_region": "13",
+                }
+                for f in filepaths_as_strings
+            ]
+        }
+
     def test_invalid_inputs(
         self, instances_dict, filepaths_as_strings, folders_as_paths
     ) -> None:
@@ -148,6 +173,26 @@ class TestPrepareInstancesDict:
         assert (
             prepare_instances_dict(folders_txt=Path("test_data/local_folders.txt"))
             == instances_dict
+        )
+
+    def test_country_overwrites(self, instances_dict, instances_dict_portugal) -> None:
+        assert (
+            prepare_instances_dict(instances_dict=instances_dict, country="PRT")
+            == instances_dict_portugal
+        )
+
+    def test_admin1_region_overwrites(
+        self, instances_dict, instances_dict_portugal_porto
+    ) -> None:
+        assert (
+            prepare_instances_dict(instances_dict=instances_dict, admin1_region="13")
+            == instances_dict
+        )
+        assert (
+            prepare_instances_dict(
+                instances_dict=instances_dict, country="PRT", admin1_region="13"
+            )
+            == instances_dict_portugal_porto
         )
 
 

@@ -341,6 +341,7 @@ def _run_classifier(
 def _find_admin1_region(
     filepath: str,  # input
     country: Optional[str],  # input
+    admin1_region: Optional[str],  # input
     latitude: Optional[float],  # input
     longitude: Optional[float],  # input
     results_dict: dict,  # output
@@ -356,6 +357,8 @@ def _find_admin1_region(
             Image filepath.
         country:
             Country in ISO 3166-1 alpha-3 format. Optional.
+        admin1_region:
+            First-level administrative division in ISO 3166-2 format. Optional.
         latitude:
             Float value representing latitude. Optional.
         longitude:
@@ -364,10 +367,10 @@ def _find_admin1_region(
             Output dict for geolocation results.
     """
 
-    admin1_region = find_admin1_region(country, latitude, longitude)
+    admin1_result = find_admin1_region(country, admin1_region, latitude, longitude)
     results_dict[filepath] = {
         "country": country,
-        "admin1_region": admin1_region,
+        "admin1_region": admin1_result,
         "latitude": latitude,
         "longitude": longitude,
     }
@@ -710,6 +713,7 @@ class SpeciesNet:
         for instance in instances_to_process:
             filepath = instance["filepath"]
             country = instance.get("country")
+            admin1_region = instance.get("admin1_region")
             latitude = instance.get("latitude")
             longitude = instance.get("longitude")
 
@@ -742,10 +746,12 @@ class SpeciesNet:
             progress.update("classifier_predict")
 
             # Run geolocation.
-            admin1_region = find_admin1_region(country, latitude, longitude)
+            admin1_result = find_admin1_region(
+                country, admin1_region, latitude, longitude
+            )
             geolocation_results[filepath] = {
                 "country": country,
-                "admin1_region": admin1_region,
+                "admin1_region": admin1_result,
                 "latitude": latitude,
                 "longitude": longitude,
             }
@@ -884,11 +890,11 @@ class SpeciesNet:
             1
         )  # One single worker to run classifier inference.
         detector_queue = new_queue_fn(
-            max(2 * batch_size, 128)
+            max(2 * batch_size, 64)
         )  # Limited number of images to store in memory.
         bboxes_queue = new_queue_fn()  # Unlimited number of bboxes to store in memory.
         classifier_queue = new_queue_fn(
-            max(2 * batch_size, 128)
+            max(2 * batch_size, 64)
         )  # Limited number of images to store in memory.
 
         # Run a bunch of small tasks asynchronously.
@@ -921,6 +927,7 @@ class SpeciesNet:
                 args=(
                     instance["filepath"],
                     instance.get("country"),
+                    instance.get("admin1_region"),
                     instance.get("latitude"),
                     instance.get("longitude"),
                     geolocation_results,
@@ -1094,7 +1101,7 @@ class SpeciesNet:
         )  # One single worker to run classifier inference.
         bboxes_queue = new_queue_fn()  # Unlimited number of bboxes to store in memory.
         classifier_queue = new_queue_fn(
-            max(2 * batch_size, 128)
+            max(2 * batch_size, 64)
         )  # Limited number of images to store in memory.
 
         # Preprocess images for classifier.
@@ -1146,7 +1153,7 @@ class SpeciesNet:
             save_lock=save_lock,
         )
 
-    def _classify_using_thread_pools(
+    def _classify_using_thread_pools(  # pylint: disable=too-many-positional-arguments
         self,
         instances_dict: dict,
         detections_dict: Optional[dict] = None,
@@ -1166,7 +1173,7 @@ class SpeciesNet:
             new_rlock_fn=threading.RLock,
         )
 
-    def _classify_using_process_pools(
+    def _classify_using_process_pools(  # pylint: disable=too-many-positional-arguments
         self,
         instances_dict: dict,
         detections_dict: Optional[dict] = None,
@@ -1251,7 +1258,7 @@ class SpeciesNet:
         )  # Limited by the number of logical CPUs on the machine.
         detector_pool = new_pool_fn(1)  # One single worker to run detector inference.
         detector_queue = new_queue_fn(
-            max(2 * batch_size, 128)
+            max(2 * batch_size, 64)
         )  # Limited number of images to store in memory.
 
         # Preprocess images for detector.
@@ -1387,6 +1394,7 @@ class SpeciesNet:
         for instance in instances_to_process:
             filepath = instance["filepath"]
             country = instance.get("country")
+            admin1_region = instance.get("admin1_region")
             latitude = instance.get("latitude")
             longitude = instance.get("longitude")
 
@@ -1396,10 +1404,12 @@ class SpeciesNet:
                 exif_results[filepath] = img.getexif()
 
             # Run geolocation.
-            admin1_region = find_admin1_region(country, latitude, longitude)
+            admin1_result = find_admin1_region(
+                country, admin1_region, latitude, longitude
+            )
             geolocation_results[filepath] = {
                 "country": country,
-                "admin1_region": admin1_region,
+                "admin1_region": admin1_result,
                 "latitude": latitude,
                 "longitude": longitude,
             }
@@ -1434,6 +1444,8 @@ class SpeciesNet:
         filepaths_txt: Optional[StrPath] = None,
         folders: Optional[list[StrPath]] = None,
         folders_txt: Optional[StrPath] = None,
+        country: Optional[str] = None,
+        admin1_region: Optional[str] = None,
         run_mode: Literal[
             "single_thread", "multi_thread", "multi_process"
         ] = "multi_thread",
@@ -1448,6 +1460,8 @@ class SpeciesNet:
             filepaths_txt,
             folders,
             folders_txt,
+            country,
+            admin1_region,
         )
         if run_mode == "single_thread":
             return self._predict_using_single_thread(
@@ -1481,6 +1495,8 @@ class SpeciesNet:
         filepaths_txt: Optional[StrPath] = None,
         folders: Optional[list[StrPath]] = None,
         folders_txt: Optional[StrPath] = None,
+        country: Optional[str] = None,
+        admin1_region: Optional[str] = None,
         detections_dict: Optional[dict] = None,
         run_mode: Literal["multi_thread", "multi_process"] = "multi_thread",
         batch_size: int = 8,
@@ -1494,6 +1510,8 @@ class SpeciesNet:
             filepaths_txt,
             folders,
             folders_txt,
+            country,
+            admin1_region,
         )
         if run_mode == "multi_thread":
             return self._classify_using_thread_pools(
@@ -1523,6 +1541,8 @@ class SpeciesNet:
         filepaths_txt: Optional[StrPath] = None,
         folders: Optional[list[StrPath]] = None,
         folders_txt: Optional[StrPath] = None,
+        country: Optional[str] = None,
+        admin1_region: Optional[str] = None,
         run_mode: Literal["multi_thread", "multi_process"] = "multi_thread",
         batch_size: int = 8,
         progress_bars: bool = False,
@@ -1535,6 +1555,8 @@ class SpeciesNet:
             filepaths_txt,
             folders,
             folders_txt,
+            country,
+            admin1_region,
         )
         if run_mode == "multi_thread":
             return self._detect_using_thread_pools(
@@ -1562,6 +1584,8 @@ class SpeciesNet:
         filepaths_txt: Optional[StrPath] = None,
         folders: Optional[list[StrPath]] = None,
         folders_txt: Optional[StrPath] = None,
+        country: Optional[str] = None,
+        admin1_region: Optional[str] = None,
         classifications_dict: Optional[dict] = None,
         detections_dict: Optional[dict] = None,
         progress_bars: bool = False,
@@ -1574,6 +1598,8 @@ class SpeciesNet:
             filepaths_txt,
             folders,
             folders_txt,
+            country,
+            admin1_region,
         )
         return self._ensemble_using_single_thread(
             instances_dict,

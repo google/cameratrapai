@@ -83,6 +83,7 @@ dev = [
     "black[jupyter]",
     "isort",
     "pylint",
+    "pymarkdownlnt",
     "pyright",
     "pytest",
     "pytest-cov",
@@ -105,6 +106,12 @@ profile = "google"
 line_length = 88
 skip_gitignore = true
 extend_skip = ["third_party"]
+
+[tool.pymarkdown]
+# line-length
+plugins.md013.enabled = false
+# no-duplicate-heading
+plugins.md024.siblings_only = true
 
 [tool.pyright]
 exclude = [

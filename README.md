@@ -120,6 +120,29 @@ Once you have installed the necessary dependencies, you have several ways of run
 
 1. Programmatically via the internal API. See [this notebook](notebooks/run_model.ipynb) for several examples.
 
+## Inference pathways
+
+TODO(agentmorris): Please decide if this diagram is useful when you need to explain how to decouple various components.
+
+```mermaid
+flowchart TD;
+    instances(instances.json);
+    detections(detections.json);
+    classifications(classifications.json);
+    predictions(predictions.json);
+    model@{ shape: diamond, label: "SpeciesNet"};
+    detector@{ shape: diamond, label: "detector"};
+    classifier@{ shape: diamond, label: "classifier"};
+    ensemble@{ shape: diamond, label: "ensemble"};
+
+    instances --> model --> predictions;
+    instances --> detector --> detections -.-> classifier;
+    instances --> classifier --> classifications;
+    instances --> ensemble --> predictions
+    detections --> ensemble;
+    classifications --> ensemble;
+```
+
 ## Supported models
 
 - [v4.0.0a](model_cards/v4.0.0a) (default): Always crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
@@ -135,6 +158,7 @@ SpeciesNet runs inference on instances dicts in the following format. When you c
         {
             "filepath": str  => Image filepath.
             "country": str (optional)  => 3-letter country code (ISO 3166-1 Alpha-3) for the location where the image was taken.
+            "admin1_region": str (optional)  => First-level administrative division (in ISO 3166-2 format) within the country above.
             "latitude": float (optional)  => Latitude where the image was taken.
             "longitude": float (optional)  => Longitude where the image was taken.
         },
@@ -156,7 +180,7 @@ When you receive a response from SpeciesNet, it will be in one of the following 
             "filepath": str  => Image filepath.
             "failures": list[str] (optional)  => List of internal components that failed during prediction (e.g. "CLASSIFIER", "DETECTOR", "GEOLOCATION"). If absent, the prediction was successful.
             "country": str (optional)  => 3-letter country code (ISO 3166-1 Alpha-3) for the location where the image was taken. It can be overwritten if the country from the request doesn't match the country of (latitude, longitude).
-            "admin1_region": str (optional)  => First-level administrative division for the (latitude, longitude) in the request. Included only for some countries that are used in geofencing (e.g. "USA").
+            "admin1_region": str (optional)  => First-level administrative division (in ISO 3166-2 format) within the country above. If not provided in the request, it can be computed from (latitude, longitude) when those coordinates are specified. Included in the response only for some countries that are used in geofencing (e.g. "USA").
             "latitude": float (optional)  => Latitude where the image was taken, included only if (latitude, longitude) were present in the request.
             "longitude": float (optional)  => Longitude where the image was taken, included only if (latitude, longitude) were present in the request.
             "classifications": {  => dict (optional)  => Top-5 classifications. Included only if "CLASSIFIER" if not part of the "failures" field.
@@ -284,7 +308,7 @@ We use:
     isort .
     ```
 
-- [`pylint`](https://github.com/pylint-dev/pylint) for linting code and flag various issues:
+- [`pylint`](https://github.com/pylint-dev/pylint) for linting Python code and flag various issues:
 
     ```bash
     pylint . --recursive=yes
@@ -300,6 +324,12 @@ We use:
 
     ```bash
     pytest -vv
+    ```
+
+- [`pymarkdown`](https://github.com/jackdewinter/pymarkdown) for linting Markdown files:
+
+    ```bash
+    pymarkdown scan **/*.md
     ```
 
 If you submit a PR to contribute your code back to this repo, you will be asked to sign a contributor license agreement; see [CONTRIBUTING.md](CONTRIBUTING.md) for more information.

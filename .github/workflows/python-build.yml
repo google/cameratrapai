@@ -52,7 +52,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        python -m pip install black[jupyter] isort pylint pyright
+        python -m pip install black[jupyter] isort pylint pyright pymarkdownlnt
         python -m venv .direnv
         source .direnv/bin/activate
         python -m pip install --upgrade pip setuptools wheel
@@ -79,3 +79,7 @@ jobs:
       if: always()
       run: |
         pytest -vv --suppress-no-test-exit-code
+    - name: Lint with pymarkdown
+      if: always()
+      run: |
+        pymarkdown scan **/*.md

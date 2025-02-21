@@ -23,6 +23,22 @@ class TestFindAdmin1Region:
     def test_missing_country(self) -> None:
         assert admin1(country=None, latitude=None, longitude=None) is None
         assert admin1(country=None, latitude=0, longitude=0) is None
+        assert admin1(country=None, admin1_region="AK") is None
+
+    def test_given_admin1_region(self) -> None:
+        assert admin1(country="USA", admin1_region="HI") == "HI"
+        assert (
+            admin1(country="USA", admin1_region="CA", latitude=37, longitude=-119)
+            == "CA"
+        )
+        assert (
+            admin1(country="USA", admin1_region="CA", latitude=46.01, longitude=-69.19)
+            == "CA"
+        )
+        assert (
+            admin1(country="USA", admin1_region="DC", latitude=46.01, longitude=-69.19)
+            == "DC"
+        )
 
     def test_usa_states(self) -> None:
         assert admin1(country="USA", latitude=None, longitude=None) is None

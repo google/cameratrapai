@@ -84,6 +84,17 @@ _FOLDERS_TXT = flags.DEFINE_string(
     None,
     "Input TXT file with image folders to get predictions for.",
 )
+_COUNTRY = flags.DEFINE_string(
+    "country",
+    None,
+    "Country (in ISO 3166-1 alpha-3 format) to enforce on all instances.",
+)
+_ADMIN1_REGION = flags.DEFINE_string(
+    "admin1_region",
+    None,
+    "First-level administrative division (in ISO 3166-2 format) to enfore on all "
+    "instances.",
+)
 _CLASSIFICATIONS_JSON = flags.DEFINE_string(
     "classifications_json",
     None,
@@ -102,7 +113,7 @@ _PREDICTIONS_JSON = flags.DEFINE_string(
 _RUN_MODE = flags.DEFINE_enum(
     "run_mode",
     "multi_thread",
-    ["single_thread", "multi_thread", "multi_process"],
+    ["multi_thread", "multi_process"],
     "Running mode, determining the parallelism strategy to use at prediction time.",
 )
 _BATCH_SIZE = flags.DEFINE_integer(
@@ -265,6 +276,8 @@ def main(argv: list[str]) -> None:
         filepaths_txt=_FILEPATHS_TXT.value,
         folders=_FOLDERS.value,
         folders_txt=_FOLDERS_TXT.value,
+        country=_COUNTRY.value,
+        admin1_region=_ADMIN1_REGION.value,
     )
 
     # Check the compatibility of output predictions with existing partial predictions.
@@ -339,11 +352,7 @@ def main(argv: list[str]) -> None:
     )
     if _CLASSIFIER_ONLY.value:
         predictions_dict = model.classify(
-            instances_json=_INSTANCES_JSON.value,
-            filepaths=_FILEPATHS.value,
-            filepaths_txt=_FILEPATHS_TXT.value,
-            folders=_FOLDERS.value,
-            folders_txt=_FOLDERS_TXT.value,
+            instances_dict=instances_dict,
             detections_dict=detections_dict,
             run_mode=run_mode,
             batch_size=_BATCH_SIZE.value,
@@ -352,11 +361,7 @@ def main(argv: list[str]) -> None:
         )
     elif _DETECTOR_ONLY.value:
         predictions_dict = model.detect(
-            instances_json=_INSTANCES_JSON.value,
-            filepaths=_FILEPATHS.value,
-            filepaths_txt=_FILEPATHS_TXT.value,
-            folders=_FOLDERS.value,
-            folders_txt=_FOLDERS_TXT.value,
+            instances_dict=instances_dict,
             run_mode=run_mode,
             batch_size=_BATCH_SIZE.value,
             progress_bars=_PROGRESS_BARS.value,
@@ -364,11 +369,7 @@ def main(argv: list[str]) -> None:
         )
     elif _ENSEMBLE_ONLY.value:
         predictions_dict = model.ensemble_from_past_runs(
-            instances_json=_INSTANCES_JSON.value,
-            filepaths=_FILEPATHS.value,
-            filepaths_txt=_FILEPATHS_TXT.value,
-            folders=_FOLDERS.value,
-            folders_txt=_FOLDERS_TXT.value,
+            instances_dict=instances_dict,
             classifications_dict=classifications_dict,
             detections_dict=detections_dict,
             progress_bars=_PROGRESS_BARS.value,
@@ -376,11 +377,7 @@ def main(argv: list[str]) -> None:
         )
     else:
         predictions_dict = model.predict(
-            instances_json=_INSTANCES_JSON.value,
-            filepaths=_FILEPATHS.value,
-            filepaths_txt=_FILEPATHS_TXT.value,
-            folders=_FOLDERS.value,
-            folders_txt=_FOLDERS_TXT.value,
+            instances_dict=instances_dict,
             run_mode=run_mode,
             batch_size=_BATCH_SIZE.value,
             progress_bars=_PROGRESS_BARS.value,

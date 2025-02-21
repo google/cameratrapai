@@ -228,6 +228,8 @@ def prepare_instances_dict(  # pylint: disable=too-many-positional-arguments
     filepaths_txt: Optional[StrPath] = None,
     folders: Optional[list[StrPath]] = None,
     folders_txt: Optional[StrPath] = None,
+    country: Optional[str] = None,
+    admin1_region: Optional[str] = None,
 ) -> dict:
     """Transforms various input formats into an instances dict.
 
@@ -249,6 +251,10 @@ def prepare_instances_dict(  # pylint: disable=too-many-positional-arguments
             Optional list of folders to process.
         folders_txt:
             Optional path to load the list of folders to process from.
+        country:
+            Optional country to enforce on all instances.
+        admin1_region:
+            Optional first-level administrative division to enfore on all instances.
 
     Returns:
         An instances dict resulted from the input transformation.
@@ -257,6 +263,21 @@ def prepare_instances_dict(  # pylint: disable=too-many-positional-arguments
         ValueError:
             If more than one input argument was provided.
     """
+
+    def _enforce_location(
+        instances_dict: dict, country: Optional[str], admin1_region: Optional[str]
+    ) -> dict:
+        if not country:
+            return instances_dict
+        location_dict = {"country": country}
+        if admin1_region:
+            location_dict["admin1_region"] = admin1_region
+        return {
+            "instances": [
+                instance_dict | location_dict
+                for instance_dict in instances_dict["instances"]
+            ]
+        }
 
     inputs_str = (
         "["
@@ -279,7 +300,7 @@ def prepare_instances_dict(  # pylint: disable=too-many-positional-arguments
         with open(instances_json, mode="r", encoding="utf-8") as fp:
             instances_dict = json.load(fp)
     if instances_dict is not None:
-        return instances_dict
+        return _enforce_location(instances_dict, country, admin1_region)
 
     if folders_txt is not None:
         with open(folders_txt, mode="r", encoding="utf-8") as fp:
@@ -296,7 +317,11 @@ def prepare_instances_dict(  # pylint: disable=too-many-positional-arguments
         with open(filepaths_txt, mode="r", encoding="utf-8") as fp:
             filepaths = [line.strip() for line in fp.readlines()]
     assert filepaths is not None
-    return {"instances": [{"filepath": str(filepath)} for filepath in filepaths]}
+    return _enforce_location(
+        {"instances": [{"filepath": str(filepath)} for filepath in filepaths]},
+        country,
+        admin1_region,
+    )
 
 
 def load_partial_predictions(
