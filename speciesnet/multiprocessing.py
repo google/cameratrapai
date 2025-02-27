@@ -560,6 +560,7 @@ class SpeciesNet:
         *,
         components: Literal["all", "classifier", "detector", "ensemble"] = "all",
         geofence: bool = True,
+        target_species_txt: Optional[str] = None,
         combine_predictions_fn: Callable = combine_predictions_for_single_item,
         multiprocessing: bool = False,
     ) -> None:
@@ -574,6 +575,9 @@ class SpeciesNet:
             geofence:
                 Whether to enable geofencing during ensemble prediction. Defaults to
                 `True`.
+            target_species_txt:
+                Path to a text file containing the target species to always output
+                classification scores for. Optional.
             combine_predictions_fn:
                 Function to tell the ensemble how to combine predictions from the
                 individual model components (e.g. classifications, detections etc.)
@@ -585,7 +589,7 @@ class SpeciesNet:
             self.manager = SyncManager()
             self.manager.start()  # pylint: disable=consider-using-with
             if components in ["all", "classifier"]:
-                self.classifier = self.manager.Classifier(model_name)  # type: ignore
+                self.classifier = self.manager.Classifier(model_name, target_species_txt=target_species_txt)  # type: ignore
             if components in ["all", "detector"]:
                 self.detector = self.manager.Detector(model_name)  # type: ignore
             if components in ["all", "ensemble"]:
@@ -597,7 +601,9 @@ class SpeciesNet:
         else:
             self.manager = None
             if components in ["all", "classifier"]:
-                self.classifier = SpeciesNetClassifier(model_name)
+                self.classifier = SpeciesNetClassifier(
+                    model_name, target_species_txt=target_species_txt
+                )
             if components in ["all", "detector"]:
                 self.detector = SpeciesNetDetector(model_name)
             if components in ["all", "ensemble"]:

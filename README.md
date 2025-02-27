@@ -234,6 +234,8 @@ Each element always contains  field called "filepath"; the exact content of thos
             "classifications": {  => dict (optional)  => Top-5 classifications. Included only if "CLASSIFIER" if not part of the "failures" field.
                 "classes": list[str]  => List of top-5 classes predicted by the classifier, matching the decreasing order of their scores below.
                 "scores": list[float]  => List of scores corresponding to top-5 classes predicted by the classifier, in decreasing order.
+                "target_classes": list[str] (optional)  => List of target classes, only present if target classes are passed as arguments.
+                "target_logits": list[float] (optional)  => Raw confidence scores (logits) of the target classes, only present if target classes are passed as arguments.
             },
             "detections": [  => list (optional)  => List of detections with confidence scores > 0.01, in decreasing order of their scores. Included only if "DETECTOR" if not part of the "failures" field.
                 {
@@ -265,6 +267,8 @@ Each element always contains  field called "filepath"; the exact content of thos
             "classifications": {  => dict (optional)  => Top-5 classifications. Included only if "CLASSIFIER" if not part of the "failures" field.
                 "classes": list[str]  => List of top-5 classes predicted by the classifier, matching the decreasing order of their scores below.
                 "scores": list[float]  => List of scores corresponding to top-5 classes predicted by the classifier, in decreasing order.
+                "target_classes": list[str] (optional)  => List of target classes, only present if target classes are passed as arguments.
+                "target_logits": list[float] (optional)  => Raw confidence scores (logits) of the target classes, only present if target classes are passed as arguments.
             }
         },
         ...  => A response will contain one prediction for each instance in the request.

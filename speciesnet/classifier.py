@@ -46,7 +46,9 @@ class SpeciesNetClassifier:
     MAX_CROP_RATIO = 0.3
     MAX_CROP_SIZE = 400
 
-    def __init__(self, model_name: str) -> None:
+    def __init__(
+        self, model_name: str, target_species_txt: Optional[str] = None
+    ) -> None:
         """Loads the classifier resources.
 
         Args:
@@ -67,6 +69,16 @@ class SpeciesNetClassifier:
         )
         with open(self.model_info.classifier_labels, mode="r", encoding="utf-8") as fp:
             self.labels = {idx: line.strip() for idx, line in enumerate(fp.readlines())}
+
+        if target_species_txt is not None:
+            with open(target_species_txt, mode="r", encoding="utf-8") as fp:
+                self.target_labels = [
+                    line.strip()
+                    for line in fp.readlines()
+                    if line.strip() in self.labels.values()
+                ]
+            labels_to_idx = {label: idx for idx, label in self.labels.items()}
+            self.target_idx = [labels_to_idx[label] for label in self.target_labels]
 
         end_time = time.time()
         logging.info(
@@ -223,5 +235,15 @@ class SpeciesNetClassifier:
                     "scores": scores_arr.tolist(),
                 },
             }
+
+            if hasattr(self, "target_idx"):
+                predictions[filepath]["classifications"].update(
+                    {
+                        "target_classes": self.target_labels,
+                        "target_logits": [
+                            float(logits[0][idx]) for idx in self.target_idx
+                        ],
+                    }
+                )
 
         return [predictions[filepath] for filepath in filepaths]

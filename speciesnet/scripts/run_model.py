@@ -95,6 +95,11 @@ _ADMIN1_REGION = flags.DEFINE_string(
     "First-level administrative division (in ISO 3166-2 format, e.g. 'CA') to enforce on all "
     "instances.",
 )
+_TARGET_SPECIES_TXT = flags.DEFINE_string(
+    "target_species_txt",
+    None,
+    "Input TXT file with species of interest to always compute classification scores for.",
+)
 _CLASSIFICATIONS_JSON = flags.DEFINE_string(
     "classifications_json",
     None,
@@ -340,6 +345,14 @@ def main(argv: list[str]) -> None:
         ):
             return
 
+    # If a list of target species is given, check that it exists
+    if _TARGET_SPECIES_TXT.value is not None and not local_file_exists(
+        _TARGET_SPECIES_TXT.value
+    ):
+        raise RuntimeError(
+            f"Target species file '{_TARGET_SPECIES_TXT.value}' specified via --{_PREDICTIONS_JSON.name} does not exist."
+        )
+
     # Load classifications and/or detections from previous runs.
     classifications_dict, _ = load_partial_predictions(
         _CLASSIFICATIONS_JSON.value, instances_dict["instances"]
@@ -357,6 +370,7 @@ def main(argv: list[str]) -> None:
         _MODEL.value,
         components=components,
         geofence=_GEOFENCE.value,
+        target_species_txt=_TARGET_SPECIES_TXT.value,
         # Uncomment the line below if you want to run your own custom ensembling
         # routine. And also, implement that routine! :-)
         # combine_predictions_fn=custom_combine_predictions_fn,
