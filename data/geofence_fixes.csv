@@ -1,6 +1,6 @@
 species,rule,country_code,admin1_region_code
-mammalia;carnivora;ursidae;ursus;americanus,allow,USA,NJ
-mammalia;cetartiodactyla;cervidae;capreolus;capreolus,block,USA
+mammalia;carnivora;ursidae;ursus;americanus,allow,USA,NJ,
+mammalia;cetartiodactyla;cervidae;capreolus;capreolus,block,USA,
 mammalia;chordata;canidae;canis;lupus dingo,block,ABW,
 mammalia;chordata;canidae;canis;lupus dingo,block,AFG,
 mammalia;chordata;canidae;canis;lupus dingo,block,AGO,
