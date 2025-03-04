@@ -108,7 +108,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install "tensorflow[and-cuda]==2.15.1" --force-reinstall
 ```
 
-This is forcing a CPU-only installation of PyTorch in that environment (which is OK, we won't be using PyTorch in this environment), then forcing a GPU installation of TensorFlow.  After this, you should be able to "[running each component separately](#running-each-component-separately)", just be sure to activate the "speciesnet" environment before running the detector, and the "speciesnet-tf" environment before running the classifier.
+This is forcing a CPU-only installation of PyTorch in that environment (which is OK, we won't be using PyTorch in this environment), then forcing a GPU installation of TensorFlow.  After this, you should be able to run each component in its corresponding environment (see the following section, "[running each component separately](#running-each-component-separately)"), just be sure to activate the "speciesnet" environment before running the detector, and the "speciesnet-tf" environment before running the classifier.
 
 If this approach isn't working as advertised, [let us know](mailto:cameratraps@google.com).
 
