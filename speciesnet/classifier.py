@@ -86,6 +86,14 @@ class SpeciesNetClassifier:
             format_timespan(end_time - start_time),
         )
 
+        self._num_predictions_since_keras_reset = 0
+
+    def _update_keras_state(self, new_predictions: int) -> None:
+        self._num_predictions_since_keras_reset += new_predictions
+        if self._num_predictions_since_keras_reset > 1000:
+            tf.keras.backend.clear_session()
+            self._num_predictions_since_keras_reset = 0
+
     def preprocess(
         self,
         img: Optional[PIL.Image.Image],
@@ -217,6 +225,7 @@ class SpeciesNetClassifier:
                 batch_arr.append(img.arr / 255)
         if not batch_arr:
             return list(predictions.values())
+        self._update_keras_state(len(batch_arr))
         batch_arr = np.stack(batch_arr, axis=0)
 
         img_tensor = tf.convert_to_tensor(batch_arr)
