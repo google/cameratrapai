@@ -45,6 +45,27 @@ class SpeciesNetClassifier:
     IMG_SIZE = 480
     MAX_CROP_RATIO = 0.3
     MAX_CROP_SIZE = 400
+    MAX_IMAGES_BETWEEN_RELOADS = 300
+
+    def _initialize_model(self,model_name):
+                
+        start_time = time.time()
+
+        for gpu in tf.config.list_physical_devices("GPU"):
+            tf.config.experimental.set_memory_growth(gpu, True)
+
+        self.model = tf.keras.models.load_model(
+            self.model_info.classifier, compile=False
+        )
+        
+        end_time = time.time()
+        logging.info(
+            "Loaded SpeciesNetClassifier in %s.",
+            format_timespan(end_time - start_time),
+        )
+
+        self._num_predictions_since_keras_reset = 0
+        
 
     def __init__(
         self, model_name: str, target_species_txt: Optional[str] = None
@@ -57,16 +78,9 @@ class SpeciesNetClassifier:
                 identifier (starting with `kaggle:`), a HuggingFace identifier (starting
                 with `hf:`) or a local folder to load the model from.
         """
-
-        start_time = time.time()
-
-        for gpu in tf.config.list_physical_devices("GPU"):
-            tf.config.experimental.set_memory_growth(gpu, True)
-
+        
+        # Load model metadata
         self.model_info = ModelInfo(model_name)
-        self.model = tf.keras.models.load_model(
-            self.model_info.classifier, compile=False
-        )
         with open(self.model_info.classifier_labels, mode="r", encoding="utf-8") as fp:
             self.labels = {idx: line.strip() for idx, line in enumerate(fp.readlines())}
 
@@ -80,19 +94,22 @@ class SpeciesNetClassifier:
             labels_to_idx = {label: idx for idx, label in self.labels.items()}
             self.target_idx = [labels_to_idx[label] for label in self.target_labels]
 
-        end_time = time.time()
-        logging.info(
-            "Loaded SpeciesNetClassifier in %s.",
-            format_timespan(end_time - start_time),
-        )
+        # Treat the model name as metadata, i.e., persist it across model loads
+        self.model_name = model_name
+        
+        # Load model
+        self._initialize_model(self.model_name)        
 
-        self._num_predictions_since_keras_reset = 0
 
     def _update_keras_state(self, new_predictions: int) -> None:
         self._num_predictions_since_keras_reset += new_predictions
-        if self._num_predictions_since_keras_reset > 1000:
+        if self._num_predictions_since_keras_reset > SpeciesNetClassifier.MAX_IMAGES_BETWEEN_RELOADS:
+            print("Resetting Keras state")
             tf.keras.backend.clear_session()
+            del self.model
+            self._initialize_model(self.model_name)
             self._num_predictions_since_keras_reset = 0
+            print("Finished Keras reset")
 
     def preprocess(
         self,
@@ -188,7 +205,15 @@ class SpeciesNetClassifier:
             preprocessed image was provided.
         """
 
-        return self.batch_predict([filepath], [img])[0]
+        try:
+            r = self.batch_predict([filepath], [img])[0]
+            for p in r:
+                assert 'filepath' in p
+                if 'failures' in p:
+                    print('Inference failure: {}'.format(p))
+        except Exception as e:
+            print('Prediction error: {}'.format(str(e)))
+        return r
 
     def batch_predict(
         self, filepaths: list[str], imgs: list[Optional[PreprocessedImage]]
@@ -216,6 +241,7 @@ class SpeciesNetClassifier:
         batch_arr = []
         for filepath, img in zip(filepaths, imgs):
             if img is None:
+                print('No image available for filepath: {}'.format(filepath))
                 predictions[filepath] = {
                     "filepath": filepath,
                     "failures": [Failure.CLASSIFIER.name],

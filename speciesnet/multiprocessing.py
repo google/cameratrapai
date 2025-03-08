@@ -284,6 +284,7 @@ def _prepare_classifier_input(
         img = classifier.preprocess(img, bboxes=bboxes)
         classifier_queue.put((filepath, img))
     except:
+        print('Classifier preprocessing error')
         classifier_queue.put((filepath, None))
         raise
 
