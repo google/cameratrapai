@@ -43,6 +43,7 @@ dependencies = [
     "matplotlib",
     "numpy",
     "onnx2torch",
+    "onnxruntime",
     "pandas",
     "pillow",
     "requests",

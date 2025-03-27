@@ -30,6 +30,7 @@ from typing import Any, Optional
 from absl import logging
 from humanfriendly import format_timespan
 import numpy as np
+import onnxruntime
 import PIL.Image
 import tensorflow as tf
 
@@ -65,19 +66,12 @@ class SpeciesNetClassifier:
 
         self.model_info = ModelInfo(model_name)
 
-        # Load TF model from weights.
-        images = tf.keras.layers.Input(shape=(480, 480, 3))
-        x = tf.keras.applications.efficientnet_v2.preprocess_input(images * 255.0)
-        x = tf.keras.applications.EfficientNetV2M(
-            weights=None,
-            input_shape=(480, 480, 3),
-            include_top=False,
-            pooling="avg",
-        )(x, training=False)
-        x = tf.keras.layers.Dropout(0.3)(x)
-        logits = tf.keras.layers.Dense(2498)(x)
-        self.model = tf.keras.Model(images, logits, name="SpeciesNet")
-        self.model.load_weights(self.model_info.classifier.parent / "weights.h5")
+        # Create ONNX inference session.
+        self.session = onnxruntime.InferenceSession(
+            self.model_info.classifier.parent
+            / "always_crop_99710272_22x8_v12_epoch_00148.onnx",
+            providers=onnxruntime.get_available_providers(),
+        )
 
         with open(self.model_info.classifier_labels, mode="r", encoding="utf-8") as fp:
             self.labels = {idx: line.strip() for idx, line in enumerate(fp.readlines())}
@@ -229,10 +223,13 @@ class SpeciesNetClassifier:
                 batch_arr.append(img.arr / 255)
         if not batch_arr:
             return list(predictions.values())
-        batch_arr = np.stack(batch_arr, axis=0)
+        batch_arr = np.stack(batch_arr, axis=0, dtype=np.float32)
 
         img_tensor = tf.convert_to_tensor(batch_arr)
-        logits = self.model(img_tensor, training=False)
+        input_name = self.session.get_inputs()[0].name
+        output_name = self.session.get_outputs()[0].name
+        logits = self.session.run([output_name], {input_name: img_tensor.numpy()})[0]
+        logits = tf.convert_to_tensor(logits)
         scores = tf.keras.activations.softmax(logits)
         scores, indices = tf.math.top_k(scores, k=5)
 

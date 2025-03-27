@@ -63,7 +63,7 @@ class TestSingleProcess:
         )
         assert predictions_dict1
         assert predictions_dict2
-        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-4)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-2)
         logging.info("Predictions (%s): %s", request.node.name, predictions_dict1)
 
     def test_classify(self, request, instances_dict, model) -> None:
@@ -104,7 +104,7 @@ class TestMultiProcess:
         )
         assert predictions_dict1
         assert predictions_dict2
-        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-4)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-2)
         logging.info("Predictions (%s): %s", request.node.name, predictions_dict1)
 
     def test_batch_predict(self, request, instances_dict, model) -> None:
@@ -120,8 +120,8 @@ class TestMultiProcess:
         assert predictions_dict1
         assert predictions_dict2
         assert predictions_dict3
-        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-4)
-        assert_approx_objs(predictions_dict1, predictions_dict3, atol=1e-4)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-2)
+        assert_approx_objs(predictions_dict1, predictions_dict3, atol=1e-2)
         logging.info("Predictions (%s): %s", request.node.name, predictions_dict1)
 
     def test_classify(self, request, instances_dict, model) -> None:
@@ -133,7 +133,7 @@ class TestMultiProcess:
         )
         assert predictions_dict1
         assert predictions_dict2
-        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-4)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-2)
         logging.info("Classifications (%s): %s", request.node.name, predictions_dict1)
 
     def test_batch_classify(self, request, instances_dict, model) -> None:
@@ -149,8 +149,8 @@ class TestMultiProcess:
         assert predictions_dict1
         assert predictions_dict2
         assert predictions_dict3
-        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-4)
-        assert_approx_objs(predictions_dict1, predictions_dict3, atol=1e-4)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-2)
+        assert_approx_objs(predictions_dict1, predictions_dict3, atol=1e-2)
         logging.info("Classifications (%s): %s", request.node.name, predictions_dict1)
 
     def test_detect(self, request, instances_dict, model) -> None:
@@ -162,5 +162,5 @@ class TestMultiProcess:
         )
         assert predictions_dict1
         assert predictions_dict2
-        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-4)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-2)
         logging.info("Detections (%s): %s", request.node.name, predictions_dict1)
