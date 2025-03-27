@@ -64,9 +64,21 @@ class SpeciesNetClassifier:
             tf.config.experimental.set_memory_growth(gpu, True)
 
         self.model_info = ModelInfo(model_name)
-        self.model = tf.keras.models.load_model(
-            self.model_info.classifier, compile=False
-        )
+
+        # Load TF model from weights.
+        images = tf.keras.layers.Input(shape=(480, 480, 3))
+        x = tf.keras.applications.efficientnet_v2.preprocess_input(images * 255.0)
+        x = tf.keras.applications.EfficientNetV2M(
+            weights=None,
+            input_shape=(480, 480, 3),
+            include_top=False,
+            pooling="avg",
+        )(x, training=False)
+        x = tf.keras.layers.Dropout(0.3)(x)
+        logits = tf.keras.layers.Dense(2498)(x)
+        self.model = tf.keras.Model(images, logits, name="SpeciesNet")
+        self.model.load_weights(self.model_info.classifier.parent / "weights.h5")
+
         with open(self.model_info.classifier_labels, mode="r", encoding="utf-8") as fp:
             self.labels = {idx: line.strip() for idx, line in enumerate(fp.readlines())}
 
