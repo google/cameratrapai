@@ -72,9 +72,7 @@ class SpeciesNetClassifier:
 
         # Load the model.
         self.model = torch.load(
-            self.model_info.classifier.parent,
-            map_location=self.device,
-            weights_only=False,
+            self.model_info.classifier, map_location=self.device, weights_only=False
         )
         self.model.eval()
 

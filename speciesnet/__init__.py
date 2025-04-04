@@ -23,7 +23,7 @@ from speciesnet.geolocation import *
 from speciesnet.multiprocessing import *
 from speciesnet.utils import *
 
-DEFAULT_MODEL = "hf:stefanistrate/speciesnet-v4.0.0a-pt"
+DEFAULT_MODEL = "hf:stefanistrate/speciesnet-v4.0.0a_pt"
 SUPPORTED_MODELS = [
-    "hf:stefanistrate/speciesnet-v4.0.0a-pt",
+    "hf:stefanistrate/speciesnet-v4.0.0a_pt",
 ]
