@@ -23,8 +23,8 @@ from speciesnet.geolocation import *
 from speciesnet.multiprocessing import *
 from speciesnet.utils import *
 
-DEFAULT_MODEL = "kaggle:google/speciesnet/keras/v4.0.0a"
+DEFAULT_MODEL = "hf:stefanistrate/speciesnet-v4.0.0a-pt"
 SUPPORTED_MODELS = [
-    "kaggle:google/speciesnet/keras/v4.0.0a",
-    "kaggle:google/speciesnet/keras/v4.0.0b",
+    "hf:stefanistrate/speciesnet-v4.0.0a-pt",
+    "hf:stefanistrate/speciesnet-v4.0.0b-pt",
 ]

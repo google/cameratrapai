@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,30 +21,31 @@ jobs:
         id: changes
         with:
           filters: |
-            py_files:
+            target_files:
               - '**/*.py'
+              - '.github/workflows/**'
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
         uses: actions/setup-python@v5
-        if: steps.changes.outputs.py_files == 'true'
+        if: steps.changes.outputs.target_files == 'true'
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        if: steps.changes.outputs.py_files == 'true'
+        if: steps.changes.outputs.target_files == 'true'
         run: |
           python -m pip install -e .[github]
       - name: Check formatting with black
-        if: steps.changes.outputs.py_files == 'true'
+        if: steps.changes.outputs.target_files == 'true'
         run: |
           black . --check --diff
       - name: Check sorted imports with isort
-        if: steps.changes.outputs.py_files == 'true'
+        if: steps.changes.outputs.target_files == 'true'
         run: |
           isort . --check --diff
       - name: Lint with pylint
-        if: steps.changes.outputs.py_files == 'true'
+        if: steps.changes.outputs.target_files == 'true'
         run: |
           pylint . --recursive=yes
       - name: Check types with pyright
-        if: steps.changes.outputs.py_files == 'true'
+        if: steps.changes.outputs.target_files == 'true'
         run: |
           pyright

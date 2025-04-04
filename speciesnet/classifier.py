@@ -16,8 +16,7 @@
 
 Defines the SpeciesNetClassifier class, responsible for image classification for
 SpeciesNet. It handles loading of classification models, preprocessing of input images,
-and generating species predictions. The classifier uses TensorFlow and Keras for model
-loading and inference.
+and generating species predictions.
 """
 
 __all__ = [
@@ -30,9 +29,9 @@ from typing import Any, Optional
 from absl import logging
 from humanfriendly import format_timespan
 import numpy as np
-import onnxruntime
 import PIL.Image
-import tensorflow as tf
+import torch
+import torchvision.transforms.functional as F
 
 from speciesnet.constants import Failure
 from speciesnet.utils import BBox
@@ -61,21 +60,29 @@ class SpeciesNetClassifier:
 
         start_time = time.time()
 
-        for gpu in tf.config.list_physical_devices("GPU"):
-            tf.config.experimental.set_memory_growth(gpu, True)
-
         self.model_info = ModelInfo(model_name)
 
-        # Create ONNX inference session.
-        self.session = onnxruntime.InferenceSession(
-            self.model_info.classifier.parent
-            / "always_crop_99710272_22x8_v12_epoch_00148.onnx",
-            providers=onnxruntime.get_available_providers(),
-        )
+        # Select the best device available.
+        if torch.cuda.is_available():
+            self.device = "cuda"
+        elif torch.backends.mps.is_available():
+            self.device = "mps"
+        else:
+            self.device = "cpu"
 
+        # Load the model.
+        self.model = torch.load(
+            self.model_info.classifier.parent,
+            map_location=self.device,
+            weights_only=False,
+        )
+        self.model.eval()
+
+        # Load the labels.
         with open(self.model_info.classifier_labels, mode="r", encoding="utf-8") as fp:
             self.labels = {idx: line.strip() for idx, line in enumerate(fp.readlines())}
 
+        # Load optional target labels.
         if target_species_txt is not None:
             with open(target_species_txt, mode="r", encoding="utf-8") as fp:
                 self.target_labels = [
@@ -88,8 +95,9 @@ class SpeciesNetClassifier:
 
         end_time = time.time()
         logging.info(
-            "Loaded SpeciesNetClassifier in %s.",
+            "Loaded SpeciesNetClassifier in %s on %s.",
             format_timespan(end_time - start_time),
+            self.device.upper(),
         )
 
     def preprocess(
@@ -125,47 +133,38 @@ class SpeciesNetClassifier:
         if img is None:
             return None
 
-        with tf.device("/cpu"):
-            img_tensor = tf.convert_to_tensor(img)
-            img_tensor = tf.image.convert_image_dtype(img_tensor, tf.float32)
+        img_tensor = torch.from_numpy(np.asarray(img))
+        img_tensor = img_tensor.permute([2, 0, 1])  # HWC to CHW.
+        img_tensor = F.convert_image_dtype(img_tensor, torch.float32)
 
-            if self.model_info.type_ == "always_crop":
-                # Crop to top bbox if available, otherwise leave image uncropped.
-                if bboxes:
-                    img_tensor = tf.image.crop_to_bounding_box(
-                        img_tensor,
-                        int(bboxes[0].ymin * img.height),
-                        int(bboxes[0].xmin * img.width),
-                        int(bboxes[0].height * img.height),
-                        int(bboxes[0].width * img.width),
-                    )
-            elif self.model_info.type_ == "full_image":
-                # Crop top and bottom of image.
-                target_height = tf.cast(
-                    tf.math.floor(
-                        tf.multiply(
-                            tf.cast(tf.shape(img_tensor)[0], tf.float32),
-                            tf.constant(1.0 - SpeciesNetClassifier.MAX_CROP_RATIO),
-                        )
-                    ),
-                    tf.int32,
-                )
-                target_height = tf.math.maximum(
-                    target_height,
-                    tf.shape(img_tensor)[0] - SpeciesNetClassifier.MAX_CROP_SIZE,
-                )
-                img_tensor = tf.image.resize_with_crop_or_pad(
-                    img_tensor, target_height, tf.shape(img_tensor)[1]
-                )
-
-            if resize:
-                img_tensor = tf.image.resize(
+        if self.model_info.type_ == "always_crop":
+            # Crop to top bbox if available, otherwise leave image uncropped.
+            if bboxes:
+                img_tensor = F.crop(
                     img_tensor,
-                    [SpeciesNetClassifier.IMG_SIZE, SpeciesNetClassifier.IMG_SIZE],
+                    int(bboxes[0].ymin * img.height),
+                    int(bboxes[0].xmin * img.width),
+                    int(bboxes[0].height * img.height),
+                    int(bboxes[0].width * img.width),
                 )
+        elif self.model_info.type_ == "full_image":
+            # Crop top and bottom of image.
+            target_height = max(
+                int(img.height * (1.0 - SpeciesNetClassifier.MAX_CROP_RATIO)),
+                img.height - SpeciesNetClassifier.MAX_CROP_SIZE,
+            )
+            img_tensor = F.center_crop(img_tensor, [target_height, img.width])
 
-            img_tensor = tf.image.convert_image_dtype(img_tensor, tf.uint8)
-            return PreprocessedImage(img_tensor.numpy(), img.width, img.height)
+        if resize:
+            img_tensor = F.resize(
+                img_tensor,
+                [SpeciesNetClassifier.IMG_SIZE, SpeciesNetClassifier.IMG_SIZE],
+                antialias=False,
+            )
+
+        img_tensor = F.convert_image_dtype(img_tensor, torch.uint8)
+        img_tensor = img_tensor.permute([1, 2, 0])  # CHW to HWC.
+        return PreprocessedImage(img_tensor.numpy(), img.width, img.height)
 
     def predict(
         self, filepath: str, img: Optional[PreprocessedImage]
@@ -225,13 +224,10 @@ class SpeciesNetClassifier:
             return list(predictions.values())
         batch_arr = np.stack(batch_arr, axis=0, dtype=np.float32)
 
-        img_tensor = tf.convert_to_tensor(batch_arr)
-        input_name = self.session.get_inputs()[0].name
-        output_name = self.session.get_outputs()[0].name
-        logits = self.session.run([output_name], {input_name: img_tensor.numpy()})[0]
-        logits = tf.convert_to_tensor(logits)
-        scores = tf.keras.activations.softmax(logits)
-        scores, indices = tf.math.top_k(scores, k=5)
+        batch_tensor = torch.from_numpy(batch_arr).to(self.device)
+        logits = self.model(batch_tensor).detach().cpu()
+        scores = torch.softmax(logits, dim=-1)
+        scores, indices = torch.topk(scores, k=5, dim=-1)
 
         for filepath, scores_arr, indices_arr in zip(
             inference_filepaths, scores.numpy(), indices.numpy()

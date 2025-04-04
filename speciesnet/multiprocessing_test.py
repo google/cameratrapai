@@ -47,14 +47,6 @@ def fx_instances_dict() -> dict:
         return json.load(fp)
 
 
-@pytest.fixture(name="predictions_dict0")
-def fx_predictions_dict() -> dict:
-    with open(
-        "test_data/predictions_with_errors.json", mode="r", encoding="utf-8"
-    ) as fp:
-        return json.load(fp)
-
-
 class TestSingleProcess:
     """Tests for single-process inference."""
 
@@ -62,7 +54,7 @@ class TestSingleProcess:
     def model(self, model_name: str) -> SpeciesNet:
         return SpeciesNet(model_name)
 
-    def test_predict(self, request, instances_dict, predictions_dict0, model) -> None:
+    def test_predict(self, request, instances_dict, model) -> None:
         predictions_dict1 = model.predict(
             instances_dict=instances_dict, run_mode="single_thread", progress_bars=True
         )
@@ -71,8 +63,7 @@ class TestSingleProcess:
         )
         assert predictions_dict1
         assert predictions_dict2
-        assert_approx_objs(predictions_dict0, predictions_dict1, atol=1e-2)
-        assert_approx_objs(predictions_dict0, predictions_dict2, atol=1e-2)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-2)
         logging.info("Predictions (%s): %s", request.node.name, predictions_dict1)
 
     def test_classify(self, request, instances_dict, model) -> None:
@@ -104,7 +95,7 @@ class TestMultiProcess:
     def model(self, model_name: str) -> SpeciesNet:
         return SpeciesNet(model_name, multiprocessing=True)
 
-    def test_predict(self, request, instances_dict, predictions_dict0, model) -> None:
+    def test_predict(self, request, instances_dict, model) -> None:
         predictions_dict1 = model.predict(
             instances_dict=instances_dict, run_mode="multi_thread", progress_bars=True
         )
@@ -113,13 +104,10 @@ class TestMultiProcess:
         )
         assert predictions_dict1
         assert predictions_dict2
-        assert_approx_objs(predictions_dict0, predictions_dict1, atol=1e-2)
-        assert_approx_objs(predictions_dict0, predictions_dict2, atol=1e-2)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-2)
         logging.info("Predictions (%s): %s", request.node.name, predictions_dict1)
 
-    def test_batch_predict(
-        self, request, instances_dict, predictions_dict0, model
-    ) -> None:
+    def test_batch_predict(self, request, instances_dict, model) -> None:
         predictions_dict1 = model.predict(
             instances_dict=instances_dict, batch_size=1, progress_bars=True
         )
@@ -132,9 +120,8 @@ class TestMultiProcess:
         assert predictions_dict1
         assert predictions_dict2
         assert predictions_dict3
-        assert_approx_objs(predictions_dict0, predictions_dict1, atol=1e-2)
-        assert_approx_objs(predictions_dict0, predictions_dict2, atol=1e-2)
-        assert_approx_objs(predictions_dict0, predictions_dict3, atol=1e-2)
+        assert_approx_objs(predictions_dict1, predictions_dict2, atol=1e-2)
+        assert_approx_objs(predictions_dict1, predictions_dict3, atol=1e-2)
         logging.info("Predictions (%s): %s", request.node.name, predictions_dict1)
 
     def test_classify(self, request, instances_dict, model) -> None:

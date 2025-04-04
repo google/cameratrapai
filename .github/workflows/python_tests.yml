@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-13, windows-latest]
-        python-version: ['3.9', '3.10', '3.11']
+        os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,18 +22,19 @@ jobs:
         id: changes
         with:
           filters: |
-            py_files:
+            target_files:
               - '**/*.py'
+              - '.github/workflows/**'
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
         uses: actions/setup-python@v5
-        if: steps.changes.outputs.py_files == 'true'
+        if: steps.changes.outputs.target_files == 'true'
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        if: steps.changes.outputs.py_files == 'true'
+        if: steps.changes.outputs.target_files == 'true'
         run: |
           python -m pip install -e .[github]
       - name: Run tests with pytest
-        if: steps.changes.outputs.py_files == 'true'
+        if: steps.changes.outputs.target_files == 'true'
         run: |
           pytest -vv --suppress-no-test-exit-code
