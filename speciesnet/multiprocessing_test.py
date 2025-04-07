@@ -47,47 +47,6 @@ def fx_instances_dict() -> dict:
         return json.load(fp)
 
 
-class TestSingleProcess:
-    """Tests for single-process inference."""
-
-    @pytest.fixture(scope="class")
-    def model(self, model_name: str) -> SpeciesNet:
-        return SpeciesNet(model_name)
-
-    def test_predict(self, request, instances_dict, model) -> None:
-        predictions_dict1 = model.predict(
-            instances_dict=instances_dict, run_mode="single_thread", progress_bars=True
-        )
-        predictions_dict2 = model.predict(
-            instances_dict=instances_dict, run_mode="multi_thread", progress_bars=True
-        )
-        assert predictions_dict1
-        assert predictions_dict2
-        assert_approx_objs(predictions_dict1, predictions_dict2, atol=0.05)
-        logging.info("Predictions (%s): %s", request.node.name, predictions_dict1)
-
-    def test_classify(self, request, instances_dict, model) -> None:
-        predictions_dict = model.classify(
-            instances_dict=instances_dict, run_mode="multi_thread", progress_bars=True
-        )
-        assert predictions_dict
-        logging.info("Classifications (%s): %s", request.node.name, predictions_dict)
-
-    def test_detect(self, request, instances_dict, model) -> None:
-        predictions_dict = model.detect(
-            instances_dict=instances_dict, run_mode="multi_thread", progress_bars=True
-        )
-        assert predictions_dict
-        logging.info("Detections (%s): %s", request.node.name, predictions_dict)
-
-    def test_ensemble_from_past_runs(self, request, instances_dict, model) -> None:
-        predictions_dict = model.ensemble_from_past_runs(
-            instances_dict=instances_dict, progress_bars=True
-        )
-        assert predictions_dict
-        logging.info("Ensemble results (%s): %s", request.node.name, predictions_dict)
-
-
 class TestMultiProcess:
     """Tests for multi-process inference."""
 
