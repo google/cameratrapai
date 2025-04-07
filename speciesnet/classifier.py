@@ -131,8 +131,7 @@ class SpeciesNetClassifier:
         if img is None:
             return None
 
-        img_tensor = torch.from_numpy(np.asarray(img))
-        img_tensor = img_tensor.permute([2, 0, 1])  # HWC to CHW.
+        img_tensor = F.pil_to_tensor(img)  # HWC to CHW.
         img_tensor = F.convert_image_dtype(img_tensor, torch.float32)
 
         if self.model_info.type_ == "always_crop":

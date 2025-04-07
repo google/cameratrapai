@@ -26,4 +26,5 @@ from speciesnet.utils import *
 DEFAULT_MODEL = "hf:stefanistrate/speciesnet-v4.0.0a_pt"
 SUPPORTED_MODELS = [
     "hf:stefanistrate/speciesnet-v4.0.0a_pt",
+    "hf:stefanistrate/speciesnet-v4.0.0b_pt",
 ]
