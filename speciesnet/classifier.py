@@ -74,7 +74,11 @@ class SpeciesNetClassifier:
         self.model = torch.load(
             self.model_info.classifier, map_location=self.device, weights_only=False
         )
+
+        # Set the model in inference mode.
         self.model.eval()
+        for param in self.model.parameters():
+            param.requires_grad = False
 
         # Load the labels.
         with open(self.model_info.classifier_labels, mode="r", encoding="utf-8") as fp:
@@ -222,7 +226,7 @@ class SpeciesNetClassifier:
         batch_arr = np.stack(batch_arr, axis=0, dtype=np.float32)
 
         batch_tensor = torch.from_numpy(batch_arr).to(self.device)
-        logits = self.model(batch_tensor).detach().cpu()
+        logits = self.model(batch_tensor).cpu()
         scores = torch.softmax(logits, dim=-1)
         scores, indices = torch.topk(scores, k=5, dim=-1)
 

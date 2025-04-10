@@ -81,7 +81,11 @@ class SpeciesNetDetector:
         else:
             checkpoint = torch.load(self.model_info.detector, weights_only=False)
             self.model = checkpoint["model"].float().to(self.device)
+
+        # Set the model in inference mode.
         self.model.eval()
+        for param in self.model.parameters():
+            param.requires_grad = False
 
         # Fix compatibility issues to be able to load older YOLOv5 models with newer
         # versions of PyTorch.
