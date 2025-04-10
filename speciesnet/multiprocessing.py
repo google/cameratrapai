@@ -862,7 +862,10 @@ class SpeciesNet:
         common_pool = (
             new_pool_fn()
         )  # Limited by the number of logical CPUs on the machine.
-        inference_pool = new_pool_fn(1)  # One single worker to run inference.
+        detector_pool = new_pool_fn(1)  # One single worker to run detector inference.
+        classifier_pool = new_pool_fn(
+            1
+        )  # One single worker to run classifier inference.
         detector_queue = new_queue_fn(
             max(2 * batch_size, 64)
         )  # Limited number of images to store in memory.
@@ -907,7 +910,7 @@ class SpeciesNet:
 
         # Run detector inference asynchronously.
         for _ in range(num_instances_to_process):
-            inference_pool.apply_async(
+            detector_pool.apply_async(
                 _run_detector,
                 args=(self.detector, detector_queue, detector_results, bboxes_queue),
                 callback=lambda _: progress.update("detector_predict"),
@@ -916,7 +919,7 @@ class SpeciesNet:
 
         # Run classifier inference asynchronously.
         for batch_idx in range(num_batches):
-            inference_pool.apply_async(
+            classifier_pool.apply_async(
                 _run_classifier,
                 args=(
                     self.classifier,
@@ -930,9 +933,11 @@ class SpeciesNet:
 
         # Wait for all workers to finish.
         common_pool.close()
-        inference_pool.close()
+        detector_pool.close()
+        classifier_pool.close()
         common_pool.join()
-        inference_pool.join()
+        detector_pool.join()
+        classifier_pool.join()
 
         # Stop progress tracking.
         progress.stop()
@@ -1056,7 +1061,9 @@ class SpeciesNet:
         common_pool = (
             new_pool_fn()
         )  # Limited by the number of logical CPUs on the machine.
-        inference_pool = new_pool_fn(1)  # One single worker to run inference.
+        classifier_pool = new_pool_fn(
+            1
+        )  # One single worker to run classifier inference.
         bboxes_queue = new_queue_fn()  # Unlimited number of bboxes to store in memory.
         classifier_queue = new_queue_fn(
             max(2 * batch_size, 64)
@@ -1076,7 +1083,7 @@ class SpeciesNet:
 
         # Run classifier.
         for batch_idx in range(num_batches):
-            inference_pool.apply_async(
+            classifier_pool.apply_async(
                 _run_classifier,
                 args=(
                     self.classifier,
@@ -1090,9 +1097,9 @@ class SpeciesNet:
 
         # Wait for all workers to finish.
         common_pool.close()
-        inference_pool.close()
+        classifier_pool.close()
         common_pool.join()
-        inference_pool.join()
+        classifier_pool.join()
 
         # Stop progress tracking.
         progress.stop()
@@ -1206,7 +1213,7 @@ class SpeciesNet:
         common_pool = (
             new_pool_fn()
         )  # Limited by the number of logical CPUs on the machine.
-        inference_pool = new_pool_fn(1)  # One single worker to run inference.
+        detector_pool = new_pool_fn(1)  # One single worker to run detector inference.
         detector_queue = new_queue_fn(
             64
         )  # Limited number of images to store in memory.
@@ -1222,7 +1229,7 @@ class SpeciesNet:
 
         # Run detector.
         for _ in range(num_instances_to_process):
-            inference_pool.apply_async(
+            detector_pool.apply_async(
                 _run_detector,
                 args=(self.detector, detector_queue, detector_results),
                 callback=lambda _: progress.update("detector_predict"),
@@ -1231,9 +1238,9 @@ class SpeciesNet:
 
         # Wait for all workers to finish.
         common_pool.close()
-        inference_pool.close()
+        detector_pool.close()
         common_pool.join()
-        inference_pool.join()
+        detector_pool.join()
 
         # Stop progress tracking.
         progress.stop()

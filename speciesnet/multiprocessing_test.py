@@ -112,10 +112,10 @@ class TestMultiProcess:
             instances_dict=instances_dict, batch_size=1, progress_bars=True
         )
         predictions_dict2 = model.predict(
-            instances_dict=instances_dict, batch_size=2, progress_bars=True
+            instances_dict=instances_dict, batch_size=4, progress_bars=True
         )
         predictions_dict3 = model.predict(
-            instances_dict=instances_dict, batch_size=3, progress_bars=True
+            instances_dict=instances_dict, batch_size=7, progress_bars=True
         )
         assert predictions_dict1
         assert predictions_dict2
@@ -141,10 +141,10 @@ class TestMultiProcess:
             instances_dict=instances_dict, batch_size=1, progress_bars=True
         )
         predictions_dict2 = model.classify(
-            instances_dict=instances_dict, batch_size=2, progress_bars=True
+            instances_dict=instances_dict, batch_size=4, progress_bars=True
         )
         predictions_dict3 = model.classify(
-            instances_dict=instances_dict, batch_size=3, progress_bars=True
+            instances_dict=instances_dict, batch_size=7, progress_bars=True
         )
         assert predictions_dict1
         assert predictions_dict2
