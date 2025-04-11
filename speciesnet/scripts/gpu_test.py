@@ -12,21 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Script to check GPU availability for both TensorFlow and PyTorch in the current
-Python environment.
-"""
-
-import os
-
-# Minimize TF printouts
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "1"
-
-try:
-    import logging
-
-    logging.getLogger("tensorflow").setLevel(logging.ERROR)
-except Exception:
-    pass
+"""Script to check GPU availability for PyTorch in the current Python environment."""
 
 
 def torch_test():
@@ -77,67 +63,7 @@ def torch_test():
     return len(device_ids)
 
 
-def tf_test():
-    """Print diagnostic information about TF/CUDA status."""
-
-    try:
-        import tensorflow as tf
-    except Exception as e:
-        print(
-            "TensorFlow unavailable, not running TF tests. "
-            "TF import error was:\n{}".format(str(e))
-        )
-        return
-
-    from tensorflow.python.platform import build_info as build
-
-    print(f"TF version: {tf.__version__}")
-
-    if "cuda_version" not in build.build_info:
-        print("TF does not appear to be built with CUDA")
-    else:
-        print(
-            "CUDA build version reported by TensorFlow:",
-            build.build_info["cuda_version"],
-        )
-    if "cudnn_version" not in build.build_info:
-        print("TF does not appear to be built with CuDNN")
-    else:
-        print(
-            "CuDNN build version reported by TensorFlow:",
-            build.build_info["cudnn_version"],
-        )
-
-    try:
-        from tensorflow.python.compiler.tensorrt import trt_convert as trt
-
-        print(
-            "Linked TensorRT version: {}".format(
-                trt.trt_utils._pywrap_py_utils.get_linked_tensorrt_version()
-            )
-        )
-    except Exception:
-        print("Could not probe TensorRT version")
-
-    gpus = tf.config.list_physical_devices("GPU")
-    if gpus is None:
-        gpus = []
-
-    if len(gpus) > 0:
-        print("TensorFlow found the following GPUs:")
-        for gpu in gpus:
-            print(gpu.name)
-
-    else:
-        print("No GPUs reported by TensorFlow")
-
-    return len(gpus)
-
-
 if __name__ == "__main__":
 
     print("*** Running Torch tests ***\n")
     torch_test()
-
-    print("\n*** Running TF tests ***\n")
-    tf_test()
