@@ -617,8 +617,11 @@ class SpeciesNet:
 
     def __del__(self) -> None:
         """Cleanup method."""
-        if self.manager and hasattr(self.manager, "shutdown"):
-            self.manager.shutdown()
+
+        if self.manager:
+            tqdm.set_lock(threading.RLock())
+            if hasattr(self.manager, "shutdown"):
+                self.manager.shutdown()
 
     def _predict_using_single_thread(
         self,
