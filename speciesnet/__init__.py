@@ -23,8 +23,8 @@ from speciesnet.geolocation import *
 from speciesnet.multiprocessing import *
 from speciesnet.utils import *
 
-DEFAULT_MODEL = "hf:stefanistrate/speciesnet-v4.0.0a_pt"
+DEFAULT_MODEL = "kaggle:google/speciesnet/pyTorch/v4.0.1a"
 SUPPORTED_MODELS = [
-    "hf:stefanistrate/speciesnet-v4.0.0a_pt",
-    "hf:stefanistrate/speciesnet-v4.0.0b_pt",
+    "kaggle:google/speciesnet/pyTorch/v4.0.1a",
+    "kaggle:google/speciesnet/pyTorch/v4.0.1b",
 ]
