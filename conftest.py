@@ -20,8 +20,6 @@ import pytest
 
 from speciesnet import SUPPORTED_MODELS
 
-collect_ignore = ["speciesnet/scripts/run_model_in_chunks.py"]
-
 
 @pytest.fixture(scope="session", autouse=True)
 def always_spawn():

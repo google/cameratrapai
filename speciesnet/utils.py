@@ -409,7 +409,7 @@ def load_partial_predictions(
             if prediction["filepath"] not in target_filepaths:
                 raise RuntimeError(
                     f"Filepath from loaded predictions is missing from the set of "
-                    f"instances to process: `{prediction['filepath']}`. Make sure "
+                    f"instances to process: `{prediction["filepath"]}`. Make sure "
                     f"you're resuming the work using the same set of instances."
                 )
 
