@@ -90,32 +90,30 @@ If your images are from the USA, you can also specify a state name using the two
 
 If you don't have an NVIDIA GPU, you can ignore this section.
 
-If you have an NVIDIA GPU, you should be able to use it for both the detection and classification steps.  However, because our detector runs in PyTorch and our classifier runs in TensorFlow, this comes with two caveats...
+If you have an NVIDIA GPU, SpeciesNet should use it.  If SpeciesNet is using your GPU, when you start `run_model`, in the output, you will see something like this:
 
-#### 1. TensorFlow can only use GPUs in Windows inside WSL
+<pre>Loaded SpeciesNetClassifier in 0.96 seconds on <b>CUDA</b>.
+Loaded SpeciesNetDetector in 0.7 seconds on <b>CUDA</b></pre>
 
-Recent versions of TensorFlow do not support GPUs on "native Windows".  Everything will work fine on Windows, but our code won't use your GPU to run the classifier.  However, TensorFlow *does* support GPUs in [WSL](https://learn.microsoft.com/en-us/windows/wsl/) (the Windows Subsystem for Linux), which has been available as part of Windows since Windows 10, and is installed by default in Windows 11.  WSL is like a Linux prompt that runs inside your Windows OS.  If you're using Windows, and it's working great, but you want to use your GPU, try WSL, and feel free to [email us](mailto:cameratraps@google.com) if you get stuck setting things up in WSL.
+"CUDA" is good news, that means "GPU".  
 
-#### 2. TensorFlow and PyTorch don't usually like using the GPU in the same Python environment
+If SpeciesNet is <i>not</i> using your GPU, you will see something like this instead:
 
-Most of the time, after installing the speciesnet Python package, the GPU will be available to *either* TensorFlow or PyTorch, but not both.  You can test which framework(s) can see your GPU by running:
+<pre>Loaded SpeciesNetClassifier in 9.45 seconds on <b>CPU</b>
+Loaded SpeciesNetDetector in 0.57 seconds on <b>CPU</b></pre>
+
+You can also directly check whether SpeciesNet can see your GPU by running:
 
 `python -m speciesnet.scripts.gpu_test`
 
-You might see "No GPUs reported by PyTorch" and/or "No GPUs reported by Tensorflow".  If both frameworks show that a GPU is available, congratulations, you've won the Python IT lottery.  More commonly, TensorFlow will not see the GPU.  If this is what you observe, don't worry, everything will still work, you'll just need to run each step in a separate Python environment.  We recommend creating an extra environment in this case called "speciesnet-tf", like this:
+99% of the time, after you install SpeciesNet on Linux, it will correctly see your GPU right away.  On Windows, you will likely need to take at least one more step:
 
-```bash
-conda create -n speciesnet-tf python=3.11 pip -y
-conda activate speciesnet-tf
-pip install speciesnet
-pip install "numpy<2.0"
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --force-reinstall
-pip install "tensorflow[and-cuda]==2.15.1" --force-reinstall
-```
+1. Install the GPU version of PyTorch, by activating your speciesnet Python environment (e.g. by running "conda activate speciesnet"), then running:
 
-This is forcing a CPU-only installation of PyTorch in that environment (which is OK, we won't be using PyTorch in this environment), then forcing a GPU installation of TensorFlow.  After this, you should be able to [run each component separately](#running-each-component-separately), just be sure to activate the "speciesnet" environment before running the detector, and the "speciesnet-tf" environment before running the classifier.
+   > ```pip install torch torchvision --upgrade --force-reinstall --index-url https://download.pytorch.org/whl/cu118```
+   
+2. If the GPU doesn't work immediately after that step, update your [GPU driver](https://www.nvidia.com/en-us/geforce/drivers/), then reboot.  Really, don't skip the reboot part, most problems related to GPU access can be fixed by upgrading your driver.
 
-If this approach isn't working as advertised, [let us know](mailto:cameratraps@google.com).
 
 ### Running each component separately
 
@@ -140,8 +138,8 @@ Note that in this example, we have specified the country code only for the ensem
 The `run_model.py` script recommended above will download model weights automatically.  If you want to use the SpeciesNet model weights outside of our script, or if you plan to be offline when you first run the script, you can download model weights directly from Kaggle.  Running our ensemble also requires [MegaDetector](https://github.com/agentmorris/MegaDetector), so in this list of links, we also include a direct link to the MegaDetector model weights.
 
 - [SpeciesNet page on Kaggle](https://www.kaggle.com/models/google/speciesnet)
-- [Direct link to version 4.0.0a weights](https://www.kaggle.com/api/v1/models/google/speciesnet/keras/v4.0.0a/3/download) (the crop classifier)
-- [Direct link to version 4.0.0b weights](https://www.kaggle.com/api/v1/models/google/speciesnet/keras/v4.0.0b/3/download) (the whole-image classifier)
+- [Direct link to version 4.0.1a weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.1a/1/download) (the crop classifier)
+- [Direct link to version 4.0.1b weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.1b/1/download) (the whole-image classifier)
 - [Direct link to MegaDetector weights](https://github.com/agentmorris/MegaDetector/releases/download/v5.0/md_v5a.0.0.pt)
 
 ## Contacting us
@@ -190,18 +188,18 @@ Depending on how you plan to run SpeciesNet, you may want to install additional 
 
 There are two variants of the SpeciesNet classifier, which lend themselves to different ensemble strategies:
 
-- [v4.0.0a](model_cards/v4.0.0a) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
-- [v4.0.0b](model_cards/v4.0.0b): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
+- [v4.0.1a](model_cards/v4.0.1a) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
+- [v4.0.1b](model_cards/v4.0.1b): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
 
-run_model.py defaults to v4.0.0a, but you can specify one model or the other using the --model option, for example:
+run_model.py defaults to v4.0.1a, but you can specify one model or the other using the --model option, for example:
 
-- `--model kaggle:google/speciesnet/keras/v4.0.0a`
-- `--model kaggle:google/speciesnet/keras/v4.0.0b`
+- `--model kaggle:google/speciesnet/pyTorch/v4.0.1a`
+- `--model kaggle:google/speciesnet/pyTorch/v4.0.1b`
 
 If you are a DIY type and you plan to run the models outside of our ensemble, a couple of notes:
 
-- The crop classifier (v4.0.0a) expects images to be cropped tightly to animals, then resized to 480x480px.
-- The whole-image classifier (v4.0.0b) expects images to have been cropped vertically to remove some pixels from the top and bottom, then resized to 480x480px.
+- The crop classifier (v4.0.1a) expects images to be cropped tightly to animals, then resized to 480x480px.
+- The whole-image classifier (v4.0.1b) expects images to have been cropped vertically to remove some pixels from the top and bottom, then resized to 480x480px.
 
 See [classifier.py](https://github.com/google/cameratrapai/blob/master/speciesnet/classifier.py) to see how preprocessing is implemented for both classifiers.
 

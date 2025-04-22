@@ -43,7 +43,7 @@ dependencies = [
     "kagglehub",
     "matplotlib",
     "numpy < 2.0 ; sys_platform == 'darwin' and platform_machine == 'x86_64'",
-    "numpy >= 2.0 ; sys_platform != 'darwin' or platform_machine != 'x86_64'",
+    "numpy ; sys_platform != 'darwin' or platform_machine != 'x86_64'",
     "onnx2torch",
     "pandas",
     "pillow",
@@ -117,6 +117,9 @@ exclude = [
     "**/__pycache__",
     "**/node_modules",
     "third_party",
+]
+ignore = [
+    "speciesnet/scripts/run_model_in_chunks.py",
 ]
 useLibraryCodeForTypes = false
 

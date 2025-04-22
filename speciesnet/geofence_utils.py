@@ -262,7 +262,7 @@ def geofence_animal_classification(
             return (
                 rollup_label,
                 rollup_score,
-                f"classifier+geofence+{rollup_source[len('classifier+'):]}",
+                "classifier+geofence+" + rollup_source[len("classifier+") :],
             )
         else:
             # Normally, this return statement should never be reached since the

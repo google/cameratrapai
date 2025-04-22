@@ -303,9 +303,9 @@ def main(argv: list[str]) -> None:
         )
     instances_dict = prepare_instances_dict(
         instances_json=_INSTANCES_JSON.value,
-        filepaths=_FILEPATHS.value,
+        filepaths=list(_FILEPATHS.value) if _FILEPATHS.value else None,
         filepaths_txt=_FILEPATHS_TXT.value,
-        folders=_FOLDERS.value,
+        folders=list(_FOLDERS.value) if _FOLDERS.value else None,
         folders_txt=_FOLDERS_TXT.value,
         country=_COUNTRY.value,
         admin1_region=_ADMIN1_REGION.value,
@@ -371,7 +371,7 @@ def main(argv: list[str]) -> None:
     )
 
     # Set running mode.
-    run_mode = _RUN_MODE.value
+    run_mode: Literal["multi_thread", "multi_process"] = _RUN_MODE.value  # type: ignore
     mp.set_start_method("spawn")
 
     # Make predictions.
