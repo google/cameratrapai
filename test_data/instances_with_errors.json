@@ -63,15 +63,9 @@
         },
         {
             "filepath": "http://missing.jpg"
-        },
-        {
-            "filepath": "http://picsum.photos/id/237/200/300"
-        },
+        },        
         {
             "filepath": "https://missing.jpg"
-        },
-        {
-            "filepath": "https://picsum.photos/id/237/400/500"
         }
     ]
 }
