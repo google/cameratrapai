@@ -70,7 +70,7 @@ class SpeciesNetClassifier:
 
         # Select the best device available.
         if device is not None:
-            print(f"Using caller-supplied device {device}")
+            logging.info("Using caller-supplied device %s.", device)
             self.device = device
         else:
             if torch.cuda.is_available():
