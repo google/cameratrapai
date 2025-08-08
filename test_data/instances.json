@@ -57,12 +57,6 @@
         },
         {
             "filepath": "test_data/vehicle.jpg"
-        },
-        {
-            "filepath": "http://picsum.photos/id/237/200/300"
-        },
-        {
-            "filepath": "https://picsum.photos/id/237/400/500"
         }
     ]
 }

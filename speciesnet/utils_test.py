@@ -32,6 +32,8 @@ from speciesnet.utils import save_predictions
 
 AZ_VIA_HTTPS_TEST_DIR = "https://lilawildlife.blob.core.windows.net/lila-wildlife/caltech-unzipped"
 AZ_VIA_HTTPS_TEST_IMG = "https://lilawildlife.blob.core.windows.net/lila-wildlife/caltech-unzipped/cct_images/59420eea-23d2-11e8-a6a3-ec086b02610b.jpg"
+HTTPS_TEST_IMG = AZ_VIA_HTTPS_TEST_IMG
+
 GS_TEST_DIR = "gs://public-datasets-lila/caltech-unzipped"
 GS_TEST_IMG = "gs://public-datasets-lila/caltech-unzipped/cct_images/59420eea-23d2-11e8-a6a3-ec086b02610b.jpg"
 S3_TEST_DIR = "s3://us-west-2.opendata.source.coop/agentmorris/lila-wildlife/caltech-unzipped"
@@ -203,13 +205,9 @@ class TestFileExists:
         assert file_exists("test_data/blank.jpg")
         assert not file_exists("test_data/missing.jpg")
 
-    def test_http_file(self) -> None:
-        assert file_exists("http://picsum.photos/200/300")
-        assert not file_exists("http://picsum.photos/missing.jpg")
-
     def test_https_file(self) -> None:
-        assert file_exists("https://picsum.photos/300/400")
-        assert not file_exists("https://picsum.photos/missing.jpg")
+        assert file_exists(HTTPS_TEST_IMG)
+        assert not file_exists(HTTPS_TEST_IMG + "-invalid")
 
     @pytest.mark.az
     def test_az_via_https_file(self) -> None:
@@ -271,16 +269,10 @@ class TestLoadRGBImage:
         assert img.size == (2048, 1536)
         assert img.mode == "RGB"
 
-    def test_http_image(self) -> None:
-        img = load_rgb_image("http://picsum.photos/200/300")
-        assert img
-        assert img.size == (200, 300)
-        assert img.mode == "RGB"
-
     def test_https_image(self) -> None:
-        img = load_rgb_image("https://picsum.photos/300/400")
+        img = load_rgb_image(HTTPS_TEST_IMG)
         assert img
-        assert img.size == (300, 400)
+        assert img.size == (2048, 1494)
         assert img.mode == "RGB"
 
     @pytest.mark.az

@@ -47,7 +47,10 @@ class SpeciesNetClassifier:
     MAX_CROP_SIZE = 400
 
     def __init__(
-        self, model_name: str, target_species_txt: Optional[str] = None
+        self,
+        model_name: str,
+        target_species_txt: Optional[str] = None,
+        device: Optional[str] = None,
     ) -> None:
         """Loads the classifier resources.
 
@@ -56,6 +59,9 @@ class SpeciesNetClassifier:
                 String value identifying the model to be loaded. It can be a Kaggle
                 identifier (starting with `kaggle:`), a HuggingFace identifier (starting
                 with `hf:`) or a local folder to load the model from.
+            device:
+                Specific device identifier, e.g. "cpu" or "cuda".  If None, "cuda"
+                and "mps" will be used if available.
         """
 
         start_time = time.time()
@@ -63,12 +69,16 @@ class SpeciesNetClassifier:
         self.model_info = ModelInfo(model_name)
 
         # Select the best device available.
-        if torch.cuda.is_available():
-            self.device = "cuda"
-        elif torch.backends.mps.is_available():
-            self.device = "mps"
+        if device is not None:
+            logging.info("Using caller-supplied device %s.", device)
+            self.device = device
         else:
-            self.device = "cpu"
+            if torch.cuda.is_available():
+                self.device = "cuda"
+            elif torch.backends.mps.is_available():
+                self.device = "mps"
+            else:
+                self.device = "cpu"
 
         # Load the model.
         self.model = torch.load(
