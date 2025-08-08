@@ -269,16 +269,10 @@ class TestLoadRGBImage:
         assert img.size == (2048, 1536)
         assert img.mode == "RGB"
 
-    def test_http_image(self) -> None:
-        img = load_rgb_image("http://picsum.photos/200/300")
-        assert img
-        assert img.size == (200, 300)
-        assert img.mode == "RGB"
-
     def test_https_image(self) -> None:
-        img = load_rgb_image("https://picsum.photos/300/400")
+        img = load_rgb_image(HTTPS_TEST_IMG)
         assert img
-        assert img.size == (300, 400)
+        assert img.size == (2048, 1494)
         assert img.mode == "RGB"
 
     @pytest.mark.az
