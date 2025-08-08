@@ -207,7 +207,7 @@ class TestFileExists:
 
     def test_https_file(self) -> None:
         assert file_exists(HTTPS_TEST_IMG)
-        assert not file_exists(HTTPS_TEST_IMG + '-invalid')
+        assert not file_exists(HTTPS_TEST_IMG + "-invalid")
 
     @pytest.mark.az
     def test_az_via_https_file(self) -> None:
