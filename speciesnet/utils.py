@@ -20,6 +20,8 @@ __all__ = [
     "file_exists",
     "load_rgb_image",
     "prepare_instances_dict",
+    "load_json",
+    "write_json",
 ]
 
 from dataclasses import dataclass
@@ -99,8 +101,7 @@ class ModelInfo:
         base_dir = Path(base_dir)
 
         # Load model info.
-        with open(base_dir / "info.json", mode="r", encoding="utf-8") as fp:
-            info = json.load(fp)
+        info = load_json(base_dir / "info.json")
 
         # Download detector weights if not provided with the other model files.
         filepath_or_url = info["detector"]
@@ -163,6 +164,30 @@ class BBox:
     ymin: float
     width: float
     height: float
+
+
+def load_json(filepath: StrPath) -> dict:
+    """Loads a JSON file with UTF-8 encoding.
+
+    Args:
+        filepath: Path to the JSON file to load.
+
+    Returns:
+        The loaded JSON data as a dictionary.
+    """
+    with open(filepath, mode="r", encoding="utf-8") as fp:
+        return json.load(fp)
+
+
+def write_json(data: dict, filepath: StrPath) -> None:
+    """Writes a dictionary to a JSON file with UTF-8 encoding.
+
+    Args:
+        data: The dictionary to write as JSON.
+        filepath: Path where to write the JSON file.
+    """
+    with open(filepath, mode="w", encoding="utf-8") as fp:
+        json.dump(data, fp, ensure_ascii=False, indent=4)
 
 
 def only_one_true(*args) -> bool:
@@ -331,8 +356,7 @@ def prepare_instances_dict(  # pylint: disable=too-many-positional-arguments
         )
 
     if instances_json is not None:
-        with open(instances_json, mode="r", encoding="utf-8") as fp:
-            instances_dict = json.load(fp)
+        instances_dict = load_json(instances_json)
     if instances_dict is not None:
         return _enforce_location(instances_dict, country, admin1_region)
 
@@ -403,21 +427,20 @@ def load_partial_predictions(
 
     partial_predictions = {}
     target_filepaths = {instance["filepath"] for instance in instances}
-    with open(predictions_json, mode="r", encoding="utf-8") as fp:
-        predictions_dict = json.load(fp)
-        for prediction in predictions_dict["predictions"]:
-            filepath = prediction["filepath"]
-            if filepath not in target_filepaths:
-                raise RuntimeError(
-                    f"Filepath from loaded predictions is missing from the set of "
-                    f"instances to process: `{filepath}`. Make sure you're resuming "
-                    f"the work using the same set of instances."
-                )
+    predictions_dict = load_json(predictions_json)
+    for prediction in predictions_dict["predictions"]:
+        filepath = prediction["filepath"]
+        if filepath not in target_filepaths:
+            raise RuntimeError(
+                f"Filepath from loaded predictions is missing from the set of "
+                f"instances to process: `{filepath}`. Make sure you're resuming "
+                f"the work using the same set of instances."
+            )
 
-            if "failures" in prediction:
-                continue
+        if "failures" in prediction:
+            continue
 
-            partial_predictions[prediction["filepath"]] = prediction
+        partial_predictions[prediction["filepath"]] = prediction
 
     instances_to_process = [
         instance
@@ -439,14 +462,11 @@ def save_predictions(predictions_dict: dict, output_json: StrPath) -> None:
     """
 
     output_json = Path(output_json)
-    with tempfile.NamedTemporaryFile(
-        mode="w",
+    output_json_tmp = Path(tempfile.mktemp(
         dir=output_json.parent,
         prefix=f"{output_json.name}.tmp.",
-        delete=False,
-    ) as fp:
-        logging.info("Saving predictions to `%s`.", fp.name)
-        output_json_tmp = Path(fp.name)
-        json.dump(predictions_dict, fp, ensure_ascii=False, indent=4)
+    ))
+    logging.info("Saving predictions to `%s`.", output_json_tmp)
+    write_json(predictions_dict, output_json_tmp)
     logging.info("Moving `%s` to `%s`.", output_json_tmp, output_json)
     output_json_tmp.replace(output_json)  # Atomic operation.
