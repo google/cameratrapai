@@ -499,6 +499,6 @@ def save_predictions(predictions_dict: dict, output_json: StrPath) -> None:
         )
     )
     logging.info("Saving predictions to `%s`.", output_json_tmp)
-    write_json(predictions_dict, output_json_tmp, precision=3)
+    write_json(predictions_dict, output_json_tmp, precision=4)
     logging.info("Moving `%s` to `%s`.", output_json_tmp, output_json)
     output_json_tmp.replace(output_json)  # Atomic operation.
