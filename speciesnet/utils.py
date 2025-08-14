@@ -29,7 +29,7 @@ from io import BytesIO
 import json
 from pathlib import Path
 import tempfile
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from absl import logging
 from cloudpathlib import CloudPath
@@ -179,15 +179,45 @@ def load_json(filepath: StrPath) -> dict:
         return json.load(fp)
 
 
-def write_json(data: dict, filepath: StrPath) -> None:
-    """Writes a dictionary to a JSON file with UTF-8 encoding.
+def limit_float_precision(obj: Any, precision: int) -> Any:
+    """Recursively limits precision of floating-point numbers in nested data structures.
 
     Args:
-        data: The dictionary to write as JSON.
-        filepath: Path where to write the JSON file.
+        obj: The object to process (can be dict, list, float, or other types).
+        precision: Number of decimal places to which we should round floating-point
+            numbers.
+
+    Returns:
+        The processed object with limited floating-point precision.
     """
+    if isinstance(obj, (float, np.floating)):
+        return round(float(obj), precision)
+    elif isinstance(obj, dict):
+        return {
+            key: limit_float_precision(value, precision) for key, value in obj.items()
+        }
+    elif isinstance(obj, list):
+        return [limit_float_precision(item, precision) for item in obj]
+    elif isinstance(obj, tuple):
+        return tuple(limit_float_precision(item, precision) for item in obj)
+    else:
+        return obj
+
+
+def write_json(data: Any, filepath: StrPath, precision: Optional[int] = None) -> None:
+    """Writes JSON-serializable data to a file with UTF-8 encoding.
+
+    Args:
+        data: The JSON-serializable data to write.
+        filepath: Path where to write the JSON file.
+        precision: Optional number of decimal places to which we should round
+            floating-point numbers.  If None, no precision limiting is applied.
+    """
+    if precision is not None:
+        data = limit_float_precision(data, precision)
+
     with open(filepath, mode="w", encoding="utf-8") as fp:
-        json.dump(data, fp, ensure_ascii=False, indent=4)
+        json.dump(data, fp, ensure_ascii=False, indent=1)
 
 
 def only_one_true(*args) -> bool:
@@ -462,11 +492,13 @@ def save_predictions(predictions_dict: dict, output_json: StrPath) -> None:
     """
 
     output_json = Path(output_json)
-    output_json_tmp = Path(tempfile.mktemp(
-        dir=output_json.parent,
-        prefix=f"{output_json.name}.tmp.",
-    ))
+    output_json_tmp = Path(
+        tempfile.mktemp(
+            dir=output_json.parent,
+            prefix=f"{output_json.name}.tmp.",
+        )
+    )
     logging.info("Saving predictions to `%s`.", output_json_tmp)
-    write_json(predictions_dict, output_json_tmp)
+    write_json(predictions_dict, output_json_tmp, precision=3)
     logging.info("Moving `%s` to `%s`.", output_json_tmp, output_json)
     output_json_tmp.replace(output_json)  # Atomic operation.
