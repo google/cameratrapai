@@ -28,8 +28,8 @@ from dataclasses import dataclass
 from io import BytesIO
 import json
 from pathlib import Path
-import tempfile
 from typing import Any, Optional, Union
+import uuid
 
 from absl import logging
 from cloudpathlib import CloudPath
@@ -179,42 +179,45 @@ def load_json(filepath: StrPath) -> dict:
         return json.load(fp)
 
 
-def limit_float_precision(obj: Any, precision: int) -> Any:
+def limit_float_precision(obj: Any, num_decimals: int) -> Any:
     """Recursively limits precision of floating-point numbers in nested data structures.
 
     Args:
         obj: The object to process (can be dict, list, float, or other types).
-        precision: Number of decimal places to which we should round floating-point
+        num_decimals: Number of decimal places to which we should round floating-point
             numbers.
 
     Returns:
         The processed object with limited floating-point precision.
     """
     if isinstance(obj, (float, np.floating)):
-        return round(float(obj), precision)
+        return round(float(obj), num_decimals)
     elif isinstance(obj, dict):
         return {
-            key: limit_float_precision(value, precision) for key, value in obj.items()
+            key: limit_float_precision(value, num_decimals)
+            for key, value in obj.items()
         }
     elif isinstance(obj, list):
-        return [limit_float_precision(item, precision) for item in obj]
+        return [limit_float_precision(item, num_decimals) for item in obj]
     elif isinstance(obj, tuple):
-        return tuple(limit_float_precision(item, precision) for item in obj)
+        return tuple(limit_float_precision(item, num_decimals) for item in obj)
     else:
         return obj
 
 
-def write_json(data: Any, filepath: StrPath, precision: Optional[int] = None) -> None:
+def write_json(
+    data: Any, filepath: StrPath, num_decimals: Optional[int] = None
+) -> None:
     """Writes JSON-serializable data to a file with UTF-8 encoding.
 
     Args:
         data: The JSON-serializable data to write.
         filepath: Path where to write the JSON file.
-        precision: Optional number of decimal places to which we should round
+        num_decimals: Optional number of decimal places to which we should round
             floating-point numbers.  If None, no precision limiting is applied.
     """
-    if precision is not None:
-        data = limit_float_precision(data, precision)
+    if num_decimals is not None:
+        data = limit_float_precision(data, num_decimals)
 
     with open(filepath, mode="w", encoding="utf-8") as fp:
         json.dump(data, fp, ensure_ascii=False, indent=1)
@@ -492,13 +495,10 @@ def save_predictions(predictions_dict: dict, output_json: StrPath) -> None:
     """
 
     output_json = Path(output_json)
-    output_json_tmp = Path(
-        tempfile.mktemp(
-            dir=output_json.parent,
-            prefix=f"{output_json.name}.tmp.",
-        )
-    )
+    stem = output_json.stem
+    suffix = output_json.suffix
+    output_json_tmp = output_json.parent / f"{stem}.tmp.{uuid.uuid4()}{suffix}"
     logging.info("Saving predictions to `%s`.", output_json_tmp)
-    write_json(predictions_dict, output_json_tmp, precision=4)
+    write_json(predictions_dict, output_json_tmp, num_decimals=4)
     logging.info("Moving `%s` to `%s`.", output_json_tmp, output_json)
     output_json_tmp.replace(output_json)  # Atomic operation.

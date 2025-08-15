@@ -658,7 +658,7 @@ class TestPrecisionLimiting:
         }
 
         output_file = tmp_path / "test_precision.json"
-        write_json(test_data, output_file, precision=3)
+        write_json(test_data, output_file, num_decimals=3)
 
         # Read the file back and verify precision was limited
         loaded_data = load_json(output_file)
