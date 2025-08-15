@@ -18,14 +18,18 @@ import json
 from pathlib import Path
 from typing import Generator
 
+import numpy as np
 import pytest
 
 from speciesnet.utils import file_exists
+from speciesnet.utils import limit_float_precision
+from speciesnet.utils import load_json
 from speciesnet.utils import load_partial_predictions
 from speciesnet.utils import load_rgb_image
 from speciesnet.utils import ModelInfo
 from speciesnet.utils import prepare_instances_dict
 from speciesnet.utils import save_predictions
+from speciesnet.utils import write_json
 
 # fmt: off
 # pylint: disable=line-too-long
@@ -514,3 +518,168 @@ class TestSavePredictions:
         }
         with pytest.raises(TypeError):
             save_predictions(predictions, tmp_path)
+
+
+class TestPrecisionLimiting:
+    """Tests for precision limiting functionality in JSON operations."""
+
+    def test_limit_float_precision_simple_float(self) -> None:
+        """Test precision limiting for simple floats."""
+        assert limit_float_precision(3.14159265359, 2) == 3.14
+        assert limit_float_precision(3.14159265359, 4) == 3.1416
+        assert limit_float_precision(2.0, 2) == 2.0
+
+    def test_limit_float_precision_numpy_float(self) -> None:
+        """Test precision limiting for numpy floats."""
+        assert limit_float_precision(np.float32(3.14159265359), 2) == 3.14
+        assert limit_float_precision(np.float64(3.14159265359), 4) == 3.1416
+        assert limit_float_precision(np.float16(2.0), 2) == 2.0
+
+    def test_limit_float_precision_non_float_types(self) -> None:
+        """Test that non-float types are unchanged."""
+        assert limit_float_precision("string", 2) == "string"
+        assert limit_float_precision(42, 2) == 42
+        assert limit_float_precision(True, 2) is True
+        assert limit_float_precision(None, 2) is None
+
+    def test_limit_float_precision_simple_list(self) -> None:
+        """Test precision limiting for lists with floats."""
+        input_list = [1.23456, 2.0, "string", 42, 9.87654]
+        expected = [1.23, 2.0, "string", 42, 9.88]
+        assert limit_float_precision(input_list, 2) == expected
+
+    def test_limit_float_precision_simple_dict(self) -> None:
+        """Test precision limiting for dictionaries with floats."""
+        input_dict = {
+            "float_val": 3.14159,
+            "string_val": "test",
+            "int_val": 42,
+            "another_float": 2.718281828,
+        }
+        expected = {
+            "float_val": 3.14,
+            "string_val": "test",
+            "int_val": 42,
+            "another_float": 2.72,
+        }
+        assert limit_float_precision(input_dict, 2) == expected
+
+    def test_limit_float_precision_nested_dict_in_list(self) -> None:
+        """Test precision limiting for dictionaries nested in lists."""
+        input_data = [
+            {"score": 0.123456, "name": "item1"},
+            {"score": 0.987654, "name": "item2"},
+            "string_item",
+            42,
+        ]
+        expected = [
+            {"score": 0.123, "name": "item1"},
+            {"score": 0.988, "name": "item2"},
+            "string_item",
+            42,
+        ]
+        assert limit_float_precision(input_data, 3) == expected
+
+    def test_limit_float_precision_nested_list_in_dict(self) -> None:
+        """Test precision limiting for lists nested in dictionaries."""
+        input_data = {
+            "scores": [0.12345, 0.67890, 0.99999],
+            "names": ["A", "B", "C"],
+            "metadata": {"threshold": 0.54321, "version": "1.0"},
+        }
+        expected = {
+            "scores": [0.12, 0.68, 1.0],
+            "names": ["A", "B", "C"],
+            "metadata": {"threshold": 0.54, "version": "1.0"},
+        }
+        assert limit_float_precision(input_data, 2) == expected
+
+    def test_limit_float_precision_deeply_nested(self) -> None:
+        """Test precision limiting for deeply nested structures."""
+        input_data = {
+            "level1": {
+                "level2": {
+                    "level3": [
+                        {"deep_float": 3.14159265359, "items": [1.23456, 7.89012]},
+                        {"another_deep": 2.71828, "values": [9.87654, 5.43210]},
+                    ]
+                }
+            }
+        }
+        expected = {
+            "level1": {
+                "level2": {
+                    "level3": [
+                        {"deep_float": 3.1416, "items": [1.2346, 7.8901]},
+                        {"another_deep": 2.7183, "values": [9.8765, 5.4321]},
+                    ]
+                }
+            }
+        }
+        assert limit_float_precision(input_data, 4) == expected
+
+    def test_limit_float_precision_tuples(self) -> None:
+        """Test precision limiting for tuples."""
+        input_tuple = (1.23456, "string", 7.89012, 42)
+        expected = (1.23, "string", 7.89, 42)
+        assert limit_float_precision(input_tuple, 2) == expected
+
+    def test_limit_float_precision_mixed_numpy_types(self) -> None:
+        """Test precision limiting with mixed numpy and Python floats."""
+        input_data = {
+            "python_float": 3.14159,
+            "numpy_float32": np.float32(2.71828),
+            "numpy_float64": np.float64(1.41421),
+            "list_mixed": [1.23456, np.float32(9.87654), "string", np.float64(5.55555)],
+        }
+        expected = {
+            "python_float": 3.14,
+            "numpy_float32": 2.72,
+            "numpy_float64": 1.41,
+            "list_mixed": [1.23, 9.88, "string", 5.56],
+        }
+        assert limit_float_precision(input_data, 2) == expected
+
+    def test_write_json_with_precision(self, tmp_path) -> None:
+        """Test write_json function with precision parameter."""
+        test_data = {
+            "predictions": [
+                {
+                    "filepath": "test.jpg",
+                    "scores": [0.123456789, 0.987654321],
+                    "bbox": [0.111111, 0.222222, 0.333333, 0.444444],
+                    "confidence": 0.876543210,
+                    "nested": {
+                        "value": 1.414213562,
+                        "items": [2.718281828, 3.141592654],
+                    },
+                }
+            ]
+        }
+
+        output_file = tmp_path / "test_precision.json"
+        write_json(test_data, output_file, num_decimals=3)
+
+        # Read the file back and verify precision was limited
+        loaded_data = load_json(output_file)
+        prediction = loaded_data["predictions"][0]
+
+        assert prediction["scores"] == [0.123, 0.988]
+        assert prediction["bbox"] == [0.111, 0.222, 0.333, 0.444]
+        assert prediction["confidence"] == 0.877
+        assert prediction["nested"]["value"] == 1.414
+        assert prediction["nested"]["items"] == [2.718, 3.142]
+
+    def test_write_json_without_precision(self, tmp_path) -> None:
+        """Test write_json function without precision parameter.
+
+        Should preserve original precision.
+        """
+        test_data = {"value": 3.14159265359, "scores": [0.123456789, 0.987654321]}
+
+        output_file = tmp_path / "test_no_precision.json"
+        write_json(test_data, output_file)
+
+        loaded_data = load_json(output_file)
+        assert loaded_data["value"] == 3.14159265359
+        assert loaded_data["scores"] == [0.123456789, 0.987654321]

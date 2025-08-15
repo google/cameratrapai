@@ -269,3 +269,13 @@ tags
 
 /benchmark_data/
 /models/
+
+################
+### AI stuff ###
+################
+
+GEMINI.md
+claude.md
+**/*settings.json
+**/*settings.local.json
+
