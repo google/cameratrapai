@@ -851,7 +851,7 @@ cb553c4e-42c9-4fe0-9bd0-da2d6ed5bfa1;mammalia;carnivora;canidae;urocyon;littoral
 04a19f01-3ba7-44c6-b4ec-a64d3dc2d5c5;mammalia;rodentia;muridae;maxomys;;maxomys species
 00339477-70ab-42aa-9a4f-ed2cca9a028f;aves;musophagiformes;musophagidae;tauraco;schuettii;black-billed turaco
 3b8b3ede-0f6d-41ba-877e-2d9304b80469;mammalia;carnivora;canidae;lycalopex;culpaeus;culpeo
-36b9abce-005b-439a-858f-1660e5027ccb;mammalia;chordata;canidae;canis;lupus dingo;dingo
+36b9abce-005b-439a-858f-1660e5027ccb;mammalia;carnivora;canidae;canis;lupus dingo;dingo
 3d736243-38c7-4daa-9f31-0bfad84e786e;aves;passeriformes;monarchidae;terpsiphone;mutata;madagascar paradise-flycatcher
 4f5aa07c-eae6-4c7d-9ce5-f0306e0249bb;mammalia;rodentia;caviidae;hydrochoerus;;hydrochoerus species
 bf821325-fbf8-4b48-a437-4c238ad07f90;reptilia;squamata;varanidae;varanus;salvator;common water monitor

@@ -773,7 +773,7 @@
 36207ee9-3eea-413f-b313-0721f3c61530;mammalia;eulipotyphla;erinaceidae;mesechinus;;mesechinus species
 364adb3c-2e0b-45fd-9074-8c8725c08f39;mammalia;carnivora;mephitidae;conepatus;chinga;molina's hog-nosed skunk
 36998f41-62da-49ce-8f08-50a9ea8d54f0;aves;charadriiformes;turnicidae;turnix;maculosus;red-backed buttonquail
-36b9abce-005b-439a-858f-1660e5027ccb;mammalia;chordata;canidae;canis;lupus dingo;dingo
+36b9abce-005b-439a-858f-1660e5027ccb;mammalia;carnivora;canidae;canis;lupus dingo;dingo
 36c727f7-9fce-42d3-9e97-64e429ce3ed2;mammalia;rodentia;cricetidae;peromyscus;californicus;california mouse
 36e77cae-f158-42d0-ad6a-ed0d7f7e908b;aves;passeriformes;tyrannidae;lessonia;rufa;austral negrito
 36f66669-b5db-4c71-8cad-ed6b15e0e624;aves;galliformes;phasianidae;rheinardia;ocellata;crested argus
