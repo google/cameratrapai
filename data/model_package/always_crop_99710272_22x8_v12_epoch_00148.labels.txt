@@ -1152,7 +1152,7 @@ b4c4fc9c-71d0-4e3e-84b0-f02c29fe4374;mammalia;lagomorpha;leporidae;nesolagus;tim
 7ade12e0-5b31-4402-b97b-7a3631bcec6e;mammalia;cetartiodactyla;bovidae;naemorhedus;griseus;chinese goral
 2f4bd885-dec3-4ba0-841a-d84325c0b51f;mammalia;didelphimorphia;didelphidae;monodelphis;brevicaudata;northern red-sided opossum
 d01f67fd-836b-4b25-89fc-2239e59f56b0;mammalia;rodentia;sciuridae;otospermophilus;beecheyi;california ground squirrel
-bd335502-4199-4eff-8e5e-471d7fabf3eb;mammalia;carnivora;procyonidae;;;coati family
+bd335502-4199-4eff-8e5e-471d7fabf3eb;mammalia;carnivora;procyonidae;;;procyonidae family
 fb03e3e9-d1f1-4494-8c48-bdf14a7d09c0;mammalia;diprotodontia;pseudocheiridae;pseudocheirus;peregrinus;common ringtail possum
 d620e25c-eed1-40f1-8101-6d3b33f3a723;mammalia;carnivora;felidae;felis;silvestris lybica;african wild cat
 f20f3ef6-d63d-49ab-89d9-85eaec6ce6e0;mammalia;cingulata;dasypodidae;;;armadillo family

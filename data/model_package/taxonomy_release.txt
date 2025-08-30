@@ -2610,7 +2610,7 @@ bcf10da0-9b0d-4121-aafb-d5a163e93468;aves;passeriformes;ptilonorhynchidae;ailuro
 bd0e2290-0028-437d-aa65-383d3db559b7;aves;passeriformes;troglodytidae;cantorchilus;leucotis;buff-breasted wren
 bd1f2d88-7e64-4f2a-9170-43005cee2b8c;mammalia;cetartiodactyla;bovidae;raphicerus;;raphicerus species
 bd2da9ff-db8f-4dfd-8bc7-01fc060d9bb3;aves;bucerotiformes;bucerotidae;aceros;nipalensis;rufous-necked hornbill
-bd335502-4199-4eff-8e5e-471d7fabf3eb;mammalia;carnivora;procyonidae;;;coati family
+bd335502-4199-4eff-8e5e-471d7fabf3eb;mammalia;carnivora;procyonidae;;;procyonidae family
 bd42604b-3278-4fd4-b2e5-fbfff0fe7dea;mammalia;primates;cercopithecidae;cercopithecus;cephus;moustached monkey
 bd498c7d-021a-43ac-950c-83351a70d247;aves;passeriformes;paridae;melaniparus;fasciiventer;stripe-breasted tit
 bd53c080-cdd8-4fb9-b5f3-fe921fa44dd5;aves;gruiformes;rallidae;aramides;;aramides species

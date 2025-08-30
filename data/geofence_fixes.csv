@@ -1004,3 +1004,7 @@ mammalia;diprotodontia;macropodidae;;,block,ZMB,
 mammalia;diprotodontia;macropodidae;;,block,ZWE,
 mammalia;carnivora;mustelidae;meles;meles,block,USA,
 mammalia;diprotodontia;potoroidae;;,allow,AUS,
+mammalia;cetartiodactyla;cervidae;cervus;nippon,allow,USA,NJ
+mammalia;cetartiodactyla;cervidae;cervus;nippon,allow,USA,DE
+mammalia;cetartiodactyla;cervidae;cervus;nippon,block,USA,OH
+mammalia;cetartiodactyla;cervidae;cervus;nippon,block,USA,NY
