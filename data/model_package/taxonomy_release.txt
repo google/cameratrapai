@@ -962,7 +962,7 @@
 443797ef-8a48-4d05-b2a2-0e00492e4209;mammalia;carnivora;mustelidae;melogale;everetti;bornean ferret badger
 4452f0b8-c2bb-425b-abb8-da4330dc9300;aves;passeriformes;meliphagidae;meliphaga;lewinii;lewin's honeyeater
 4457a0c6-cb68-44c0-9c27-ad08abe57755;mammalia;carnivora;canidae;vulpes;macrotis;kit fox
-446887df-3477-4f4a-a434-852f96ba48d9;reptilia;testudines;emydidae;emys;marmorata;western pond turtle
+446887df-3477-4f4a-a434-852f96ba48d9;reptilia;testudines;emydidae;actinemys;marmorata;western pond turtle
 448349bf-58aa-4768-9d60-49d66b367b5d;aves;anseriformes;anatidae;dendrocygna;autumnalis;black-bellied whistling-duck
 448f6912-7077-4155-9981-e0d13fda9930;mammalia;monotremata;tachyglossidae;;;echidna family
 449a0024-dc35-4523-b37d-83deb0297ae7;mammalia;didelphimorphia;didelphidae;glironia;venusta;bushy-tailed opossum
@@ -3403,7 +3403,7 @@ f89b9e67-04af-4bc1-a525-937cee9ce33f;aves;passeriformes;rhipiduridae;rhipidura;r
 f8b77ec8-1dc9-4a93-8ce4-181531ff96df;aves;passeriformes;acanthizidae;sericornis;;scrubwren species
 f8bdec5f-ae9a-410a-a9b7-a4c5e17ee3f3;mammalia;rodentia;muridae;hylomyscus;stella;
 f8c06538-a79b-478d-b004-cfd647379dce;aves;cuculiformes;cuculidae;piaya;;piaya species
-f8db21f0-6b79-4444-8be4-b87906d56e6a;aves;pelecaniformes;ardeidae;ardea;albus;great egret
+f8db21f0-6b79-4444-8be4-b87906d56e6a;aves;pelecaniformes;ardeidae;ardea;alba;great white egret
 f8f200dd-08cf-4eab-b441-c122ca96fe5e;aves;falconiformes;falconidae;caracara;plancus;southern caracara
 f8fb780f-44e3-4eb3-8637-0c9409319c1f;aves;piciformes;picidae;sphyrapicus;nuchalis;red-naped sapsucker
 f90d4fad-59e0-4e14-bbae-20ca9bbf3369;aves;galliformes;odontophoridae;odontophorus;leucolaemus;black-breasted wood-quail

@@ -2177,7 +2177,7 @@ ba9611a3-432b-472e-91d7-4578b6f78478;aves;charadriiformes;burhinidae;burhinus;ca
 f8073852-d0eb-435a-b2ca-33ba2e416415;aves;cathartiformes;cathartidae;cathartes;;cathartes species
 0aee0a05-b5b5-4123-8088-66f577b33c7a;aves;passeriformes;pittidae;pitta;guajana;banded pitta
 330a97e8-e3d8-4280-ace0-b5adee2ffcfc;aves;passeriformes;ploceidae;ploceus;insignis;brown-capped weaver
-446887df-3477-4f4a-a434-852f96ba48d9;reptilia;testudines;emydidae;emys;marmorata;western pond turtle
+446887df-3477-4f4a-a434-852f96ba48d9;reptilia;testudines;emydidae;actinemys;marmorata;western pond turtle
 cd42651f-852f-4cfd-9d42-c4ca414829a9;mammalia;cetartiodactyla;bovidae;cephalophus;spadix;abbott's duiker
 62937835-ba6a-49cd-8e00-2040a21c8459;mammalia;rodentia;muridae;hybomys;univittatus;peters' hybomys
 3c5ca701-7ce1-481b-acf4-c1ae4f78a781;mammalia;carnivora;viverridae;viverra;zibetha;large indian civet
@@ -2368,7 +2368,7 @@ b7f162c7-1d82-4533-9cc8-bd0c2c7e3bbe;aves;gruiformes;rallidae;hypotaenidia;phili
 ce747ad7-5f1c-4e9f-baee-8e8e0759e6c2;aves;charadriiformes;scolopacidae;limnodromus;scolopaceus;long-billed dowitcher
 a71ae710-7033-40e6-8aa7-cba453daf950;mammalia;rodentia;sciuridae;neotamias;speciosus;lodgepole chipmunk
 b72e9e54-9d97-4267-a501-77484125496d;mammalia;didelphimorphia;didelphidae;philander;;philander species
-f8db21f0-6b79-4444-8be4-b87906d56e6a;aves;pelecaniformes;ardeidae;ardea;albus;great egret
+f8db21f0-6b79-4444-8be4-b87906d56e6a;aves;pelecaniformes;ardeidae;ardea;alba;great white egret
 33729eeb-5126-453c-a4b8-bf6d8018057c;aves;falconiformes;falconidae;micrastur;;micrastur species
 45613340-19ff-4b4c-875b-561d7f0f499f;aves;passeriformes;pittidae;pitta;sordida;western hooded pitta
 55f0ddfa-047b-4971-956f-ddfac7a9f394;aves;passeriformes;muscicapidae;chamaetylas;fuelleborni;white-chested alethe
