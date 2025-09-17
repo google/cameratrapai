@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "speciesnet"
-version = "5.0.1"
+version = "5.0.2"
 authors = [
     {name = "Google Camera Traps AI team", email = "cameratraps@google.com"},
 ]
