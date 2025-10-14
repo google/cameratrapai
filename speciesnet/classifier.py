@@ -240,9 +240,9 @@ class SpeciesNetClassifier:
         scores = torch.softmax(logits, dim=-1)
         scores, indices = torch.topk(scores, k=5, dim=-1)
 
-        for file_idx, (filepath, scores_arr, indices_arr) in enumerate(zip(
-            inference_filepaths, scores.numpy(), indices.numpy()
-        )):
+        for file_idx, (filepath, scores_arr, indices_arr) in enumerate(
+            zip(inference_filepaths, scores.numpy(), indices.numpy())
+        ):
 
             predictions[filepath] = {
                 "filepath": filepath,
