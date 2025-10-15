@@ -322,3 +322,105 @@ class TestClassifier:
         assert classifications["scores"] == sorted(
             classifications["scores"], reverse=True
         )
+
+    def test_target_species_batched_vs_non_batched(
+        self, model_name: str, tmp_path
+    ) -> None:
+        """Test that target_species_txt works consistently
+        with batch and non-batch predict."""
+
+        # Create a temporary target species file with a subset of species
+        target_species_file = tmp_path / "target_species.txt"
+        target_species = [
+            AFRICAN_ELEPHANT,
+            DOMESTIC_DOG,
+            HUMAN,
+            BLANK,
+        ]
+        target_species_file.write_text("\n".join(target_species) + "\n")
+
+        # Create a classifier with target_species_txt
+        classifier_with_targets = SpeciesNetClassifier(
+            model_name,
+            target_species_txt=str(target_species_file),
+        )
+
+        # Test images with various species
+        test_cases = [
+            ("test_data/african_elephants.jpg", [BBox(0.7041, 0.4765, 0.1108, 0.125)]),
+            ("test_data/domestic_dog.jpg", [BBox(0.2377, 0.08398, 0.5161, 0.6497)]),
+            ("test_data/human.jpg", [BBox(0.7115, 0.4976, 0.0664, 0.2424)]),
+            ("test_data/blank.jpg", []),
+        ]
+
+        # Preprocess all images
+        filepaths = []
+        preprocessed_imgs = []
+        for filepath, bboxes in test_cases:
+            img = classifier_with_targets.preprocess(
+                load_rgb_image(filepath), bboxes=bboxes
+            )
+            filepaths.append(filepath)
+            preprocessed_imgs.append(img)
+
+        # Test 1: Non-batched prediction (batch_size=1)
+        non_batched_predictions = []
+        for filepath, img in zip(filepaths, preprocessed_imgs):
+            prediction = classifier_with_targets.predict(filepath, img)
+            non_batched_predictions.append(prediction)
+
+        # Test 2: Batched prediction (batch_size>1)
+        batched_predictions = classifier_with_targets.batch_predict(
+            filepaths, preprocessed_imgs
+        )
+
+        # Verify that both approaches produce identical results
+        assert len(non_batched_predictions) == len(batched_predictions)
+
+        for i, (non_batched, batched) in enumerate(
+            zip(non_batched_predictions, batched_predictions)
+        ):
+            # Check that both have target_logits
+            assert "target_logits" in non_batched["classifications"]
+            assert "target_logits" in batched["classifications"]
+
+            # Check that target_classes are present and identical
+            assert "target_classes" in non_batched["classifications"]
+            assert "target_classes" in batched["classifications"]
+            assert (
+                non_batched["classifications"]["target_classes"]
+                == batched["classifications"]["target_classes"]
+            )
+
+            # Check that target_logits are identical
+            non_batched_logits = non_batched["classifications"]["target_logits"]
+            batched_logits = batched["classifications"]["target_logits"]
+
+            assert len(non_batched_logits) == len(batched_logits)
+            assert len(non_batched_logits) == len(target_species)
+
+            # Use np.allclose for floating point comparison
+            # Note: Using relaxed tolerances to account for minor numerical differences
+            # in batched vs non-batched processing (e.g., from fp32 operations).
+            # If this test fails with larger differences, it indicates a bug where
+            # batched and non-batched predictions produce different results.
+            np.testing.assert_allclose(
+                non_batched_logits,
+                batched_logits,
+                rtol=1e-3,  # 0.1% relative tolerance
+                atol=1e-3,  # 0.001 absolute tolerance
+                err_msg=f"Target logits mismatch for image {i} ({filepaths[i]})",
+            )
+
+            # Also verify that regular classifications match
+            assert (
+                non_batched["classifications"]["classes"]
+                == batched["classifications"]["classes"]
+            )
+            np.testing.assert_allclose(
+                non_batched["classifications"]["scores"],
+                batched["classifications"]["scores"],
+                rtol=1e-3,  # 0.1% relative tolerance
+                atol=1e-5,  # 0.00001 absolute tolerance
+                err_msg=f"Scores mismatch for image {i} ({filepaths[i]})",
+            )
