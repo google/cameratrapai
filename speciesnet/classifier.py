@@ -240,8 +240,8 @@ class SpeciesNetClassifier:
         scores = torch.softmax(logits, dim=-1)
         scores, indices = torch.topk(scores, k=5, dim=-1)
 
-        for filepath, scores_arr, indices_arr in zip(
-            inference_filepaths, scores.numpy(), indices.numpy()
+        for file_idx, (filepath, scores_arr, indices_arr) in enumerate(
+            zip(inference_filepaths, scores.numpy(), indices.numpy())
         ):
 
             predictions[filepath] = {
@@ -257,7 +257,7 @@ class SpeciesNetClassifier:
                     {
                         "target_classes": self.target_labels,
                         "target_logits": [
-                            float(logits[0][idx]) for idx in self.target_idx
+                            float(logits[file_idx][idx]) for idx in self.target_idx
                         ],
                     }
                 )
