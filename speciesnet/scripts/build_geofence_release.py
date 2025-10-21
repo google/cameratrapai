@@ -77,12 +77,10 @@ def fix_geofence_base(
     for idx, fix in fixes.iterrows():
         label = fix["species"].lower()
         label_parts = label.split(";")
-        if len(label_parts) != 5 or not all(label_parts):
+        if len(label_parts) != 5:
             raise ValueError(
-                "Fixes should provide only species-level rules. "
-                f"Please correct rule #{idx + 1}:\n{fix}"
+                "Fixes should always use five-token taxon strings"
             )
-
         rule = fix["rule"].lower()
         if rule not in {"allow", "block"}:
             raise ValueError(
@@ -145,7 +143,7 @@ def propagate_to_higher_taxa(geofence: dict[str, dict]) -> dict[str, dict]:
 
         label_parts = label.split(";")
 
-        # Keep species rule.
+        # Keep original rule.
         new_geofence[label] = rule
 
         # Propagate to higher taxa.
@@ -156,7 +154,7 @@ def propagate_to_higher_taxa(geofence: dict[str, dict]) -> dict[str, dict]:
             if new_label not in new_geofence:
                 new_geofence[new_label] = {"allow": {}}
 
-            # Country wide "allow" rules at species level get propagated directly, but
+            # Country-wide "allow" rules at species level get propagated directly, but
             # regional "allow" rules become country wide "allow" rules at genus level
             # and above.
             if "allow" in rule:
