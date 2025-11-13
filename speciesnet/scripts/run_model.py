@@ -140,6 +140,13 @@ _BYPASS_PROMPTS = flags.DEFINE_bool(
     "unexpected files are supplied. --bypass_prompts bypasses prompts, --nobypass_prompts "
     "(default) does not.",
 )
+_IGNORE_EXISTING_PREDICTIONS = flags.DEFINE_bool(
+    "ignore_existing_predictions",
+    False,
+    "Whether to ignore existing predictions in the output JSON file and reprocess all "
+    "instances. --ignore_existing_predictions bypasses loading partial results, "
+    "--noignore_existing_predictions (default) resumes from existing predictions.",
+)
 
 
 def guess_predictions_source(
@@ -313,37 +320,50 @@ def main(argv: list[str]) -> None:
 
     # Check the compatibility of output predictions with existing partial predictions.
     if _PREDICTIONS_JSON.value:
-        partial_predictions, _ = load_partial_predictions(
-            _PREDICTIONS_JSON.value, instances_dict["instances"]
-        )
-        predictions_source = guess_predictions_source(partial_predictions)
-
-        if _CLASSIFIER_ONLY.value and predictions_source not in [
-            "classifier",
-            "unknown",
-        ]:
-            raise RuntimeError(
-                f"The classifier risks overwriting previous predictions from "
-                f"`{_PREDICTIONS_JSON.value}` that were produced by different "
-                f"components. Make sure to provide a different output location to "
-                f"--{_PREDICTIONS_JSON.name}."
+        if _IGNORE_EXISTING_PREDICTIONS.value:
+            # When ignoring existing predictions, delete the file to ensure all instances
+            # are reprocessed from scratch.
+            if local_file_exists(_PREDICTIONS_JSON.value):
+                print(f"Deleting existing predictions in `{_PREDICTIONS_JSON.value}`.")
+                Path(_PREDICTIONS_JSON.value).unlink()
+        else:
+            partial_predictions, _ = load_partial_predictions(
+                _PREDICTIONS_JSON.value, instances_dict["instances"]
             )
+            predictions_source = guess_predictions_source(partial_predictions)
 
-        if _DETECTOR_ONLY.value and predictions_source not in ["detector", "unknown"]:
-            raise RuntimeError(
-                f"The detector risks overwriting previous predictions from "
-                f"`{_PREDICTIONS_JSON.value}` that were produced by different "
-                f"components. Make sure to provide a different output location to "
-                f"--{_PREDICTIONS_JSON.name}."
-            )
+            if _CLASSIFIER_ONLY.value and predictions_source not in [
+                "classifier",
+                "unknown",
+            ]:
+                raise RuntimeError(
+                    f"The classifier risks overwriting previous predictions from "
+                    f"`{_PREDICTIONS_JSON.value}` that were produced by different "
+                    f"components. Make sure to provide a different output location to "
+                    f"--{_PREDICTIONS_JSON.name}."
+                )
 
-        if _ENSEMBLE_ONLY.value and predictions_source not in ["ensemble", "unknown"]:
-            raise RuntimeError(
-                f"The ensemble risks overwriting previous predictions from "
-                f"`{_PREDICTIONS_JSON.value}` that were produced by different "
-                f"components. Make sure to provide a different output location to "
-                f"--{_PREDICTIONS_JSON.name}."
-            )
+            if _DETECTOR_ONLY.value and predictions_source not in [
+                "detector",
+                "unknown",
+            ]:
+                raise RuntimeError(
+                    f"The detector risks overwriting previous predictions from "
+                    f"`{_PREDICTIONS_JSON.value}` that were produced by different "
+                    f"components. Make sure to provide a different output location to "
+                    f"--{_PREDICTIONS_JSON.name}."
+                )
+
+            if _ENSEMBLE_ONLY.value and predictions_source not in [
+                "ensemble",
+                "unknown",
+            ]:
+                raise RuntimeError(
+                    f"The ensemble risks overwriting previous predictions from "
+                    f"`{_PREDICTIONS_JSON.value}` that were produced by different "
+                    f"components. Make sure to provide a different output location to "
+                    f"--{_PREDICTIONS_JSON.name}."
+                )
 
     else:
         if not say_yes_to_continue(
