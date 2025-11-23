@@ -73,7 +73,7 @@ def fix_geofence_base(
 
     geofence = copy.deepcopy(geofence_base)
 
-    fixes = pd.read_csv(fixes_path, keep_default_na=False, comment='#'):
+    fixes = pd.read_csv(fixes_path, keep_default_na=False, comment='#')
     for idx, fix in fixes.iterrows():
         label = fix["species"].lower()
         label_parts = label.split(";")
