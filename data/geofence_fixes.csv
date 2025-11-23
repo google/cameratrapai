@@ -1,6 +1,7 @@
 species,rule,country_code,admin1_region_code
 mammalia;carnivora;ursidae;ursus;americanus,allow,USA,NJ
 mammalia;cetartiodactyla;cervidae;capreolus;capreolus,block,USA,
+# Dingos were incorrectly allowed globally; block outside of Australia
 mammalia;chordata;canidae;canis;lupus dingo,block,ABW,
 mammalia;chordata;canidae;canis;lupus dingo,block,AFG,
 mammalia;chordata;canidae;canis;lupus dingo,block,AGO,
@@ -246,6 +247,7 @@ mammalia;chordata;canidae;canis;lupus dingo,block,ZAF,
 mammalia;chordata;canidae;canis;lupus dingo,block,ZMB,
 mammalia;chordata;canidae;canis;lupus dingo,block,ZWE,
 mammalia;cetartiodactyla;cervidae;capreolus;,block,USA,
+# hippopotamidae was incorrectly allowed globally; block everywhere it doesn't belong
 mammalia;cetartiodactyla;hippopotamidae;hippopotamus;amphibius,allow,COL,
 mammalia;cetartiodactyla;hippopotamidae;hippopotamus;,block,ABW,
 mammalia;cetartiodactyla;hippopotamidae;hippopotamus;,block,AFG,
@@ -666,6 +668,7 @@ mammalia;cetartiodactyla;hippopotamidae;;,block,VUT,
 mammalia;cetartiodactyla;hippopotamidae;;,block,WLF,
 mammalia;cetartiodactyla;hippopotamidae;;,block,WSM,
 mammalia;cetartiodactyla;hippopotamidae;;,block,YEM,
+# pittidae (common name pittas) should be allowed only in Asia, Africa, and Australia, block everywhere else
 aves;passeriformes;pittidae;;,block,ALB,
 aves;passeriformes;pittidae;;,block,AND,
 aves;passeriformes;pittidae;;,block,AUT,
@@ -757,6 +760,7 @@ aves;passeriformes;pittidae;;,block,PRY,
 aves;passeriformes;pittidae;;,block,SUR,
 aves;passeriformes;pittidae;;,block,URY,
 aves;passeriformes;pittidae;;,block,VEN,
+# Australian marsupials should be blocked outside of Australasia
 mammalia;diprotodontia;macropodidae;;,block,ABW,
 mammalia;diprotodontia;macropodidae;;,block,AFG,
 mammalia;diprotodontia;macropodidae;;,block,AGO,
@@ -1002,10 +1006,13 @@ mammalia;diprotodontia;macropodidae;;,block,YEM,
 mammalia;diprotodontia;macropodidae;;,block,ZAF,
 mammalia;diprotodontia;macropodidae;;,block,ZMB,
 mammalia;diprotodontia;macropodidae;;,block,ZWE,
-mammalia;carnivora;mustelidae;meles;meles,block,USA,
 mammalia;diprotodontia;potoroidae;;,allow,AUS,
+# Block European badgers in the US
+mammalia;carnivora;mustelidae;meles;meles,block,USA,
+# Block Sika deer in the US, except for NJ and DE, where feral populations exist
 mammalia;cetartiodactyla;cervidae;cervus;nippon,allow,USA,NJ
 mammalia;cetartiodactyla;cervidae;cervus;nippon,allow,USA,DE
 mammalia;cetartiodactyla;cervidae;cervus;nippon,block,USA,OH
 mammalia;cetartiodactyla;cervidae;cervus;nippon,block,USA,NY
+# Block Eurasian red squirrels in the US
 mammalia;rodentia;sciuridae;sciurus;vulgaris,block,USA,
