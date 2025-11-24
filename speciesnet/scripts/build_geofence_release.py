@@ -234,13 +234,16 @@ def validate_geofence(geofence: dict[str, dict]) -> bool:
             if len(allowed_regions) == 0:
                 allowed_regions = [None]
             for region in allowed_regions:
-                # We know this taxon is allowed in this region
-                assert _taxon_allowed_in_region(
+                # This taxon might also be blocked, which supersedes the allow rule.  If
+                # it's actually blocked, don't confirm that its parents are allowed.
+                if not _taxon_allowed_in_region(
                     label=taxon,
                     country=country,
                     admin1_region=region,
                     geofence_map=geofence,
-                )
+                ):
+                    continue
+
                 for parent_taxon in parent_taxa:
                     allowed = _taxon_allowed_in_region(
                         label=parent_taxon,
@@ -362,13 +365,15 @@ def fix_geofence_base(
     return geofence
 
 
-def propagate_rules(geofence: dict[str, dict]) -> dict[str, dict]:
+def propagate_rules(geofence: dict[str, dict], labels_path: StrPath) -> dict[str, dict]:
     """Propagates allow rules up the taxonomy tree, and block rules down the taxonomic tree.
     If species X is allowed in country Y, all taxonomic parents of X also need to be allowed
-    in Y; if species A is blocked in country B, all taxonomic children of A need to be blocked in B.
+    in Y; if species A is blocked in country B, all taxonomic children of A need to be blocked
+    in B.
 
     Args:
         geofence: global geofencing dict.  See module header for format information.
+        labels_path: text file containing labels in seven-token format.
 
     Returns:
         Modified global geofencing dict.
@@ -376,6 +381,7 @@ def propagate_rules(geofence: dict[str, dict]) -> dict[str, dict]:
 
     new_geofence = {}
 
+    # Propagate allow rules up
     for label, rule in geofence.items():
 
         label_parts = label.split(";")
@@ -388,6 +394,9 @@ def propagate_rules(geofence: dict[str, dict]) -> dict[str, dict]:
             new_label = ";".join(label_parts[:taxa_level_end]) + (
                 ";" * (5 - taxa_level_end)
             )
+
+            # By convention, create an allow rule for all parent taxa, even if
+            # we're about adding a block rule for the child taxon.
             if new_label not in new_geofence:
                 new_geofence[new_label] = {"allow": {}}
 
@@ -399,12 +408,97 @@ def propagate_rules(geofence: dict[str, dict]) -> dict[str, dict]:
                     if country not in new_geofence[new_label]["allow"]:
                         new_geofence[new_label]["allow"][country] = []
 
+    # Create a list of block rules we need to propagate down the tree.  This maps
+    # five-token taxon strings to a "regional rules dict"; see module header.
+    block_rules = {}
+
+    for label, rule in geofence.items():
+
+        if "block" not in rule:
+            continue
+
+        for country in rule["block"]:
+            country_rule = rule["block"][country]
+            if label not in block_rules:
+                block_rules[label] = {}
+            assert country not in block_rules[label]
+            block_rules[label][country] = country_rule
+
+    # Read the label list
+    labels = _read_label_list(labels_path)
+
+    s = "aves;passeriformes;pittidae;hydrornis;"
+    print("{} in labels: {}".format(s, s in labels))
+
+    s = "aves;passeriformes;pittidae;;"
+    print("{} in block rules: {}".format(s, s in block_rules))
+
+    # Propagate block rules down the taxonomy.
+    new_block_rules = {}
+
+    def _add_block_rules(source, target):
+        """Add block rules from source into target,
+        modifying target in place.
+        """
+        for country in source:
+            if country not in target:
+                # Create an empty list of regions by default
+                target[country] = []
+            # What regions are we adding to this block list in
+            # this country (from the parent)?
+            new_regions = source
+            # Add the regions we're blocking as part of the new rule
+            target[country].extend(new_regions)
+            # Remove redundant items
+            target[country] = list(set(target[country]))
+
+    for label in labels:
+
+        for taxon_with_block_rule in block_rules.keys():
+
+            # Don't add a new copy of the same block rule
+            if label == taxon_with_block_rule:
+                continue
+
+            taxon_prefix = taxon_with_block_rule.rstrip(";")
+
+            # If "taxon_prefix" is a substring of "label", that means that "label"
+            # is a taxonomic child of "taxon_with_block_rule"
+            if taxon_prefix in label:
+
+                print(
+                    "Adding block rule to {} because of parent {}".format(
+                        label, taxon_with_block_rule
+                    )
+                )
+
+                if label not in new_block_rules:
+                    new_block_rules[label] = {}
+
+                _add_block_rules(
+                    block_rules[taxon_with_block_rule], new_block_rules[label]
+                )
+
+    print(f"Adding {len(new_block_rules)} new block rules during propagation")
+
+    for label in new_block_rules:
+        if label not in new_geofence or "block" not in new_geofence[label]:
+            new_geofence[label] = {"block": {}}
+        _add_block_rules(new_block_rules[label], new_geofence[label]["block"])
+
     return new_geofence
 
 
-def trim_to_supported_labels(
-    geofence: dict[str, dict], labels_path: StrPath
-) -> dict[str, dict]:
+def _read_label_list(labels_path: StrPath) -> set[str]:
+    """Create a list of five-token labels from a file of seven-token labels.
+
+    Args:
+        geofence: global geofencing dict.  See module header for format information.
+        labels_path: text file containing labels in seven-token format.
+
+    Returns:
+        Set of labels.
+    """
 
     with open(labels_path, mode="r", encoding="utf-8") as fp:
         lines = [line.strip() for line in fp.readlines()]
@@ -417,6 +511,24 @@ def trim_to_supported_labels(
                 )
                 labels.add(new_label)
 
+    return labels
+
+
+def trim_to_supported_labels(
+    geofence: dict[str, dict], labels_path: StrPath
+) -> dict[str, dict]:
+    """Trim the geofence rules to labels that are used in the labels file.
+
+    Args:
+        geofence: global geofencing dict.  See module header for format information.
+        labels_path: text file containing labels in seven-token format.
+
+    Returns:
+        Modified global geofencing dict.
+
+    """
+
+    labels = _read_label_list(labels_path)
     return {k: v for k, v in geofence.items() if k in labels}
 
 
@@ -433,15 +545,9 @@ def main(argv: list[str]) -> None:
     validate_geofence(geofence_base)
 
     geofence_release = fix_geofence_base(geofence_base, _FIXES.value)
-    geofence_release = propagate_rules(geofence_release)
-    if _TRIM.value:
-        logging.info(
-            "Trimming to labels (and their corresponding higher taxa) from `%s`.",
-            _TRIM.value,
-        )
-        geofence_release = trim_to_supported_labels(geofence_release, _TRIM.value)
-    else:
-        logging.info("No trimming was performed.")
+    geofence_release = propagate_rules(geofence_release, _TRIM.value)
+    geofence_release = trim_to_supported_labels(geofence_release, _TRIM.value)
+
     validate_geofence(geofence_release)
 
     save_geofence(geofence_release, _OUTPUT.value)

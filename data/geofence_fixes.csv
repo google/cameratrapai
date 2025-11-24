@@ -1,5 +1,7 @@
 species,rule,country_code,admin1_region_code
 mammalia;carnivora;ursidae;ursus;americanus,allow,USA,NJ
+# This genus is European deer, block in the US
+mammalia;cetartiodactyla;cervidae;capreolus;,block,USA,
 mammalia;cetartiodactyla;cervidae;capreolus;capreolus,block,USA,
 # Dingos were incorrectly allowed globally; block outside of Australia
 mammalia;chordata;canidae;canis;lupus dingo,block,ABW,
@@ -246,7 +248,6 @@ mammalia;chordata;canidae;canis;lupus dingo,block,YEM,
 mammalia;chordata;canidae;canis;lupus dingo,block,ZAF,
 mammalia;chordata;canidae;canis;lupus dingo,block,ZMB,
 mammalia;chordata;canidae;canis;lupus dingo,block,ZWE,
-mammalia;cetartiodactyla;cervidae;capreolus;,block,USA,
 # hippopotamidae was incorrectly allowed globally; block everywhere it doesn't belong
 mammalia;cetartiodactyla;hippopotamidae;hippopotamus;amphibius,allow,COL,
 mammalia;cetartiodactyla;hippopotamidae;hippopotamus;,block,ABW,
