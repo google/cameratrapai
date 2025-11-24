@@ -376,7 +376,7 @@ def propagate_rules(geofence: dict[str, dict], labels_path: StrPath) -> dict[str
         labels_path: text file containing labels in seven-token format.
 
     Returns:
-        Modified global geofencing dict.
+        Global geofencing dict.  Does not modify "geofence" in place.
     """
 
     new_geofence = {}
@@ -408,8 +408,10 @@ def propagate_rules(geofence: dict[str, dict], labels_path: StrPath) -> dict[str
                     if country not in new_geofence[new_label]["allow"]:
                         new_geofence[new_label]["allow"][country] = []
 
-    # Create a list of block rules we need to propagate down the tree.  This maps
-    # five-token taxon strings to a "regional rules dict"; see module header.
+    # Create a list of block rules we need to propagate down the tree.
+    #
+    # "block_rules" will be formatted like a global geofence dict,
+    # but it will only contain rules of type "block".
     block_rules = {}
 
     for label, rule in geofence.items():
@@ -421,45 +423,72 @@ def propagate_rules(geofence: dict[str, dict], labels_path: StrPath) -> dict[str
             country_rule = rule["block"][country]
             if label not in block_rules:
                 block_rules[label] = {}
-            assert country not in block_rules[label]
-            block_rules[label][country] = country_rule
+                block_rules[label]["block"] = {}
+            assert country not in block_rules[label]["block"]
+            block_rules[label]["block"][country] = country_rule
 
     # Read the label list
     labels = _read_label_list(labels_path)
 
-    s = "aves;passeriformes;pittidae;hydrornis;"
-    print("{} in labels: {}".format(s, s in labels))
+    # We're *probably* going to trim this geofencing dict to the set
+    # of allowable labels later, so it won't really matter whether we
+    # also propagate block rules through labels that exist in the base
+    # geofence but aren't valid SpeciesNet classes.  However, if we want
+    # this function to return a valid geofencing dict, we also need to
+    # propagate block rules over all the labels that exist in the geofence.
+    labels_in_geofence = set(geofence.keys())
 
-    s = "aves;passeriformes;pittidae;;"
-    print("{} in block rules: {}".format(s, s in block_rules))
+    labels = set(labels) | labels_in_geofence
+
+    # We also need to add all parent taxa of all labels
+    all_parent_taxa = set()
+    for label in labels:
+        parent_taxa = _generate_parent_taxon_strings(label)
+        for taxon in parent_taxa:
+            all_parent_taxa.add(taxon)
+
+    for taxon in all_parent_taxa:
+        labels.add(taxon)
+
+    labels = sorted(list(labels))
 
     # Propagate block rules down the taxonomy.
+    #
+    # "new_block_rules" will be formatted like a global geofence dict,
+    # but it will only include rules of type "block".
     new_block_rules = {}
 
-    def _add_block_rules(source, target):
-        """Add block rules from source into target,
-        modifying target in place.
-        """
-        for country in source:
-            if country not in target:
-                # Create an empty list of regions by default
-                target[country] = []
-            # What regions are we adding to this block list in
-            # this country (from the parent)?
-            new_regions = source
-            # Add the regions we're blocking as part of the new rule
-            target[country].extend(new_regions)
-            # Remove redundant items
-            target[country] = list(set(target[country]))
+    def _merge_country_rule_lists(source, target):
+        """Add rules from source into target.
 
+        Args:
+            source: a regional rules dict, e.g. "{'RUS':[],'USA':['AZ']}"
+            target: a regional rules dict, modified in place
+        """
+        assert isinstance(source, dict)
+        assert isinstance(target, dict)
+        for country in source:
+            assert (isinstance(country, str)) and (len(country) == 3)
+            if country not in target:
+                target[country] = []
+            assert isinstance(target[country], list)
+            assert isinstance(source[country], list)
+            for region in source[country]:
+                if region not in target[country]:
+                    target[country].append(region)
+
+    # "label" is a five-token taxon string
     for label in labels:
 
+        # taxon_with_block_rule is a five-token taxon string
         for taxon_with_block_rule in block_rules.keys():
 
             # Don't add a new copy of the same block rule
             if label == taxon_with_block_rule:
                 continue
 
+            # "taxon_prefix" is a semicolon-delimited list, but it may have
+            # anywhere from one to five tokens
             taxon_prefix = taxon_with_block_rule.rstrip(";")
 
             # If "taxon_prefix" is a substring of "label", that means that "label"
@@ -474,9 +503,11 @@ def propagate_rules(geofence: dict[str, dict], labels_path: StrPath) -> dict[str
 
                 if label not in new_block_rules:
                     new_block_rules[label] = {}
+                    new_block_rules[label]["block"] = {}
 
-                _add_block_rules(
-                    block_rules[taxon_with_block_rule], new_block_rules[label]
+                _merge_country_rule_lists(
+                    block_rules[taxon_with_block_rule]["block"],
+                    new_block_rules[label]["block"],
                 )
 
     print(f"Adding {len(new_block_rules)} new block rules during propagation")
@@ -484,13 +515,17 @@ def propagate_rules(geofence: dict[str, dict], labels_path: StrPath) -> dict[str
     for label in new_block_rules:
         if label not in new_geofence or "block" not in new_geofence[label]:
             new_geofence[label] = {"block": {}}
-        _add_block_rules(new_block_rules[label], new_geofence[label]["block"])
+        _merge_country_rule_lists(
+            new_block_rules[label]["block"], new_geofence[label]["block"]
+        )
 
     return new_geofence
 
 
 def _read_label_list(labels_path: StrPath) -> set[str]:
     """Create a list of five-token labels from a file of seven-token labels.
+    The resulting list includes all taxa in the input list, as well as all
+    parents of those taxa.
 
     Args:
         geofence: global geofencing dict.  See module header for format information.
@@ -524,7 +559,8 @@ def trim_to_supported_labels(
         labels_path: text file containing labels in seven-token format.
 
     Returns:
-        Modified global geofencing dict.
+        Global geofencing dict trimmed to specified labels.  Does not modify
+        "geofence" in place.
 
     """
 
