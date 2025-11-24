@@ -61,6 +61,7 @@ This taxon would be blocked in ABW and AFG, allowed everywhere else:
 Additional conventions:
 
 * If a taxon is not included in the geofence, it's allowed everywhere.
+* If a taxon has only an empty allow-list, it's allowed everywhere.
 * If allow rules exist for a taxon, any country not on the allow-list for that
   taxon is blocked.
 * Block rules "win" over allow rules.  Taxa that are allowed in the base geofence
@@ -361,19 +362,16 @@ def fix_geofence_base(
     return geofence
 
 
-def propagate_to_higher_taxa(geofence: dict[str, dict]) -> dict[str, dict]:
-    """Propagates rules up the taxonomy tree.  For example, if species X is allowed
-    in country Y, all taxonomic parents of X also need to be allowed in Y.
+def propagate_rules(geofence: dict[str, dict]) -> dict[str, dict]:
+    """Propagates allow rules up the taxonomy tree, and block rules down the taxonomic tree.
+    If species X is allowed in country Y, all taxonomic parents of X also need to be allowed
+    in Y; if species A is blocked in country B, all taxonomic children of A need to be blocked in B.
 
     Args:
-        geofence: Dict of predictions, keyed by filepaths.
+        geofence: global geofencing dict.  See module header for format information.
 
     Returns:
-        Returns "classifier", "detector" or "ensemble" when the corresponding component
-        was identified as the source of predictions. Returns "invalid" when predictions
-        contain both classifications and detections, but couldn't identify results from
-        the ensemble. Returns "unknown" when no prediction is recognizable (e.g. when
-        there are only failures).
+        Modified global geofencing dict.
     """
 
     new_geofence = {}
@@ -394,11 +392,12 @@ def propagate_to_higher_taxa(geofence: dict[str, dict]) -> dict[str, dict]:
                 new_geofence[new_label] = {"allow": {}}
 
             # Country-wide "allow" rules at species level get propagated directly, but
-            # regional "allow" rules become country wide "allow" rules at genus level
+            # regional "allow" rules become country-wide "allow" rules at genus level
             # and above.
             if "allow" in rule:
                 for country in rule["allow"]:
-                    new_geofence[new_label]["allow"][country] = []
+                    if country not in new_geofence[new_label]["allow"]:
+                        new_geofence[new_label]["allow"][country] = []
 
     return new_geofence
 
@@ -434,7 +433,7 @@ def main(argv: list[str]) -> None:
     validate_geofence(geofence_base)
 
     geofence_release = fix_geofence_base(geofence_base, _FIXES.value)
-    geofence_release = propagate_to_higher_taxa(geofence_release)
+    geofence_release = propagate_rules(geofence_release)
     if _TRIM.value:
         logging.info(
             "Trimming to labels (and their corresponding higher taxa) from `%s`.",
