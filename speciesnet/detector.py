@@ -30,8 +30,12 @@ import torch.backends
 import torch.backends.mps
 from yolov5.utils.augmentations import letterbox as yolov5_letterbox
 from yolov5.utils.general import non_max_suppression as yolov5_non_max_suppression
-from yolov5.utils.general import scale_boxes as yolov5_scale_boxes
 from yolov5.utils.general import xyxy2xywhn as yolov5_xyxy2xywhn
+
+try:
+    from yolov5.utils.general import scale_boxes as yolov5_scale_boxes
+except ImportError:
+    from yolov5.utils.general import scale_coords as yolov5_scale_boxes
 
 from speciesnet.constants import Detection
 from speciesnet.constants import Failure
@@ -196,7 +200,18 @@ class SpeciesNetDetector:
         ).round()
         for result in results:  # (x_min, y_min, x_max, y_max, conf, category)
             xyxy = result[:4]
+
+            # We want to support multiple versions of xyxy2xywhn, some of which
+            # are agnostic to input dimensionality (so can support 1D or 2D arrays),
+            # some of which require 2D input.  To support both cases, we pass xyxy as
+            # a 2D array, and convert back to 1D if necessary.
+            ndims = xyxy.ndim
+            if ndims == 1:
+                xyxy = xyxy[None, :]
             xywhn = yolov5_xyxy2xywhn(xyxy, w=img.orig_width, h=img.orig_height)
+            if ndims == 1:
+                xywhn = xywhn[0]
+
             bbox = self._convert_yolo_xywhn_to_md_xywhn(xywhn.tolist())
 
             conf = result[4].item()
