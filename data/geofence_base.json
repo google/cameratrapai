@@ -467681,7 +467681,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;antilocapridae;antilocapra;americana": {
+    "mammalia;artiodactyla;antilocapridae;antilocapra;americana": {
         "allow": {
             "CAN": [],
             "MEX": [],
@@ -467707,7 +467707,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;balaenidae;balaena;mysticetus": {
+    "mammalia;artiodactyla;balaenidae;balaena;mysticetus": {
         "allow": {
             "CAN": [],
             "GRL": [],
@@ -467720,7 +467720,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;balaenidae;eubalaena;australis": {
+    "mammalia;artiodactyla;balaenidae;eubalaena;australis": {
         "allow": {
             "AGO": [],
             "ARG": [],
@@ -467745,7 +467745,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;balaenidae;eubalaena;glacialis": {
+    "mammalia;artiodactyla;balaenidae;eubalaena;glacialis": {
         "allow": {
             "BEL": [],
             "BMU": [],
@@ -467787,7 +467787,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;balaenidae;eubalaena;japonica": {
+    "mammalia;artiodactyla;balaenidae;eubalaena;japonica": {
         "allow": {
             "CAN": [],
             "CHN": [],
@@ -467804,7 +467804,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;balaenopteridae;balaenoptera;acutorostrata": {
+    "mammalia;artiodactyla;balaenopteridae;balaenoptera;acutorostrata": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -468079,7 +468079,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;balaenopteridae;balaenoptera;bonaerensis": {
+    "mammalia;artiodactyla;balaenopteridae;balaenoptera;bonaerensis": {
         "allow": {
             "AGO": [],
             "ARG": [],
@@ -468133,7 +468133,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;balaenopteridae;balaenoptera;borealis": {
+    "mammalia;artiodactyla;balaenopteridae;balaenoptera;borealis": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -468406,7 +468406,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;balaenopteridae;balaenoptera;edeni": {
+    "mammalia;artiodactyla;balaenopteridae;balaenoptera;edeni": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -468592,7 +468592,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;balaenopteridae;balaenoptera;musculus": {
+    "mammalia;artiodactyla;balaenopteridae;balaenoptera;musculus": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -468867,7 +468867,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;balaenopteridae;balaenoptera;omurai": {
+    "mammalia;artiodactyla;balaenopteridae;balaenoptera;omurai": {
         "allow": {
             "ARE": [],
             "ATF": [],
@@ -468922,7 +468922,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;balaenopteridae;balaenoptera;physalus": {
+    "mammalia;artiodactyla;balaenopteridae;balaenoptera;physalus": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -469197,7 +469197,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;balaenopteridae;megaptera;novaeangliae": {
+    "mammalia;artiodactyla;balaenopteridae;megaptera;novaeangliae": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -469431,12 +469431,12 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;addax;nasomaculatus": {
+    "mammalia;artiodactyla;bovidae;addax;nasomaculatus": {
         "allow": {
             "NER": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;aepyceros;melampus": {
+    "mammalia;artiodactyla;bovidae;aepyceros;melampus": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -469455,7 +469455,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;alcelaphus;buselaphus": {
+    "mammalia;artiodactyla;bovidae;alcelaphus;buselaphus": {
         "allow": {
             "AGO": [],
             "BEN": [],
@@ -469493,13 +469493,13 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;ammodorcas;clarkei": {
+    "mammalia;artiodactyla;bovidae;ammodorcas;clarkei": {
         "allow": {
             "ETH": [],
             "SOM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;ammotragus;lervia": {
+    "mammalia;artiodactyla;bovidae;ammotragus;lervia": {
         "allow": {
             "DZA": [],
             "EGY": [],
@@ -469520,7 +469520,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;bovidae;antidorcas;marsupialis": {
+    "mammalia;artiodactyla;bovidae;antidorcas;marsupialis": {
         "allow": {
             "AGO": [],
             "BWA": [],
@@ -469530,7 +469530,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;antilope;cervicapra": {
+    "mammalia;artiodactyla;bovidae;antilope;cervicapra": {
         "allow": {
             "IND": [],
             "NPL": [],
@@ -469539,18 +469539,18 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;bovidae;arabitragus;jayakari": {
+    "mammalia;artiodactyla;bovidae;arabitragus;jayakari": {
         "allow": {
             "ARE": [],
             "OMN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;beatragus;hunteri": {
+    "mammalia;artiodactyla;bovidae;beatragus;hunteri": {
         "allow": {
             "KEN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bison;bison": {
+    "mammalia;artiodactyla;bovidae;bison;bison": {
         "allow": {
             "CAN": [],
             "DEU": [],
@@ -469579,7 +469579,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bison;bonasus": {
+    "mammalia;artiodactyla;bovidae;bison;bonasus": {
         "allow": {
             "AUT": [],
             "BLR": [],
@@ -469596,7 +469596,7 @@
             "UKR": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bos;gaurus": {
+    "mammalia;artiodactyla;bovidae;bos;gaurus": {
         "allow": {
             "BGD": [],
             "BTN": [],
@@ -469611,7 +469611,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bos;javanicus": {
+    "mammalia;artiodactyla;bovidae;bos;javanicus": {
         "allow": {
             "CHN": [],
             "IDN": [],
@@ -469624,12 +469624,12 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bos;mutus": {
+    "mammalia;artiodactyla;bovidae;bos;mutus": {
         "allow": {
             "CHN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bos;primigenius": {
+    "mammalia;artiodactyla;bovidae;bos;primigenius": {
         "allow": {
             "ALB": [],
             "AND": [],
@@ -469713,14 +469713,14 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bos;sauveli": {
+    "mammalia;artiodactyla;bovidae;bos;sauveli": {
         "allow": {
             "KHM": [],
             "LAO": [],
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bos;taurus": {
+    "mammalia;artiodactyla;bovidae;bos;taurus": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -469973,7 +469973,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;boselaphus;tragocamelus": {
+    "mammalia;artiodactyla;bovidae;boselaphus;tragocamelus": {
         "allow": {
             "IND": [],
             "NPL": [],
@@ -469983,7 +469983,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bubalus;arnee": {
+    "mammalia;artiodactyla;bovidae;bubalus;arnee": {
         "allow": {
             "BTN": [],
             "ESP": [],
@@ -469996,22 +469996,22 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bubalus;depressicornis": {
+    "mammalia;artiodactyla;bovidae;bubalus;depressicornis": {
         "allow": {
             "IDN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bubalus;mindorensis": {
+    "mammalia;artiodactyla;bovidae;bubalus;mindorensis": {
         "allow": {
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;bubalus;quarlesi": {
+    "mammalia;artiodactyla;bovidae;bubalus;quarlesi": {
         "allow": {
             "IDN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;budorcas;taxicolor": {
+    "mammalia;artiodactyla;bovidae;budorcas;taxicolor": {
         "allow": {
             "BTN": [],
             "CHN": [],
@@ -470019,7 +470019,7 @@
             "MMR": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;aegagrus": {
+    "mammalia;artiodactyla;bovidae;capra;aegagrus": {
         "allow": {
             "AFG": [],
             "ARM": [],
@@ -470050,7 +470050,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;aegagrus hircus": {
+    "mammalia;artiodactyla;bovidae;capra;aegagrus hircus": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -470303,20 +470303,20 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;caucasica": {
+    "mammalia;artiodactyla;bovidae;capra;caucasica": {
         "allow": {
             "GEO": [],
             "RUS": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;cylindricornis": {
+    "mammalia;artiodactyla;bovidae;capra;cylindricornis": {
         "allow": {
             "AZE": [],
             "GEO": [],
             "RUS": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;falconeri": {
+    "mammalia;artiodactyla;bovidae;capra;falconeri": {
         "allow": {
             "AFG": [],
             "IND": [],
@@ -470326,7 +470326,7 @@
             "UZB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;ibex": {
+    "mammalia;artiodactyla;bovidae;capra;ibex": {
         "allow": {
             "AUT": [],
             "CHE": [],
@@ -470336,7 +470336,7 @@
             "LIE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;nubiana": {
+    "mammalia;artiodactyla;bovidae;capra;nubiana": {
         "allow": {
             "EGY": [],
             "ERI": [],
@@ -470349,13 +470349,13 @@
             "YEM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;pyrenaica": {
+    "mammalia;artiodactyla;bovidae;capra;pyrenaica": {
         "allow": {
             "ESP": [],
             "PRT": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;sibirica": {
+    "mammalia;artiodactyla;bovidae;capra;sibirica": {
         "allow": {
             "AFG": [],
             "CHN": [],
@@ -470369,17 +470369,17 @@
             "UZB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capra;walie": {
+    "mammalia;artiodactyla;bovidae;capra;walie": {
         "allow": {
             "ETH": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capricornis;crispus": {
+    "mammalia;artiodactyla;bovidae;capricornis;crispus": {
         "allow": {
             "JPN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capricornis;milneedwardsii": {
+    "mammalia;artiodactyla;bovidae;capricornis;milneedwardsii": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -470632,14 +470632,14 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capricornis;rubidus": {
+    "mammalia;artiodactyla;bovidae;capricornis;rubidus": {
         "allow": {
             "CHN": [],
             "IND": [],
             "MMR": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capricornis;sumatraensis": {
+    "mammalia;artiodactyla;bovidae;capricornis;sumatraensis": {
         "allow": {
             "BGD": [],
             "BTN": [],
@@ -470656,12 +470656,12 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capricornis;swinhoei": {
+    "mammalia;artiodactyla;bovidae;capricornis;swinhoei": {
         "allow": {
             "TWN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;capricornis;thar": {
+    "mammalia;artiodactyla;bovidae;capricornis;thar": {
         "allow": {
             "BTN": [],
             "CHN": [],
@@ -470670,13 +470670,13 @@
             "PAK": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;adersi": {
+    "mammalia;artiodactyla;bovidae;cephalophus;adersi": {
         "allow": {
             "KEN": [],
             "TZA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;callipygus": {
+    "mammalia;artiodactyla;bovidae;cephalophus;callipygus": {
         "allow": {
             "CAF": [],
             "CMR": [],
@@ -470686,7 +470686,7 @@
             "GNQ": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;dorsalis": {
+    "mammalia;artiodactyla;bovidae;cephalophus;dorsalis": {
         "allow": {
             "AGO": [],
             "BEN": [],
@@ -470708,7 +470708,7 @@
             "TGO": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;harveyi": {
+    "mammalia;artiodactyla;bovidae;cephalophus;harveyi": {
         "allow": {
             "ETH": [],
             "KEN": [],
@@ -470718,7 +470718,7 @@
             "ZMB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;jentinki": {
+    "mammalia;artiodactyla;bovidae;cephalophus;jentinki": {
         "allow": {
             "CIV": [],
             "GIN": [],
@@ -470726,7 +470726,7 @@
             "SLE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;leucogaster": {
+    "mammalia;artiodactyla;bovidae;cephalophus;leucogaster": {
         "allow": {
             "AGO": [],
             "CAF": [],
@@ -470737,7 +470737,7 @@
             "GNQ": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;natalensis": {
+    "mammalia;artiodactyla;bovidae;cephalophus;natalensis": {
         "allow": {
             "GAB": [],
             "MOZ": [],
@@ -470748,7 +470748,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;niger": {
+    "mammalia;artiodactyla;bovidae;cephalophus;niger": {
         "allow": {
             "BEN": [],
             "CIV": [],
@@ -470760,7 +470760,7 @@
             "TGO": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;nigrifrons": {
+    "mammalia;artiodactyla;bovidae;cephalophus;nigrifrons": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -470776,7 +470776,7 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;ogilbyi": {
+    "mammalia;artiodactyla;bovidae;cephalophus;ogilbyi": {
         "allow": {
             "CIV": [],
             "CMR": [],
@@ -470790,7 +470790,7 @@
             "SLE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;ogilbyi ssp. brookei": {
+    "mammalia;artiodactyla;bovidae;cephalophus;ogilbyi ssp. brookei": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -471043,7 +471043,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;rufilatus": {
+    "mammalia;artiodactyla;bovidae;cephalophus;rufilatus": {
         "allow": {
             "BEN": [],
             "BFA": [],
@@ -471067,7 +471067,7 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;silvicultor": {
+    "mammalia;artiodactyla;bovidae;cephalophus;silvicultor": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -471099,13 +471099,13 @@
             "ZMB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;spadix": {
+    "mammalia;artiodactyla;bovidae;cephalophus;spadix": {
         "allow": {
             "KEN": [],
             "TZA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;weynsi": {
+    "mammalia;artiodactyla;bovidae;cephalophus;weynsi": {
         "allow": {
             "BDI": [],
             "CAF": [],
@@ -471118,7 +471118,7 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;cephalophus;zebra": {
+    "mammalia;artiodactyla;bovidae;cephalophus;zebra": {
         "allow": {
             "CIV": [],
             "GIN": [],
@@ -471126,7 +471126,7 @@
             "SLE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;connochaetes;gnou": {
+    "mammalia;artiodactyla;bovidae;connochaetes;gnou": {
         "allow": {
             "BWA": [],
             "LSO": [],
@@ -471134,7 +471134,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;connochaetes;taurinus": {
+    "mammalia;artiodactyla;bovidae;connochaetes;taurinus": {
         "allow": {
             "AGO": [],
             "BWA": [],
@@ -471148,7 +471148,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;damaliscus;lunatus": {
+    "mammalia;artiodactyla;bovidae;damaliscus;lunatus": {
         "allow": {
             "AGO": [],
             "BEN": [],
@@ -471177,27 +471177,27 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;damaliscus;pygargus": {
+    "mammalia;artiodactyla;bovidae;damaliscus;pygargus": {
         "allow": {
             "LSO": [],
             "SWZ": [],
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;dorcatragus;megalotis": {
+    "mammalia;artiodactyla;bovidae;dorcatragus;megalotis": {
         "allow": {
             "DJI": [],
             "ETH": [],
             "SOM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;eudorcas;albonotata": {
+    "mammalia;artiodactyla;bovidae;eudorcas;albonotata": {
         "allow": {
             "ETH": [],
             "SSD": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;eudorcas;rufifrons": {
+    "mammalia;artiodactyla;bovidae;eudorcas;rufifrons": {
         "allow": {
             "BEN": [],
             "BFA": [],
@@ -471213,7 +471213,7 @@
             "TCD": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;eudorcas;rufina": {
+    "mammalia;artiodactyla;bovidae;eudorcas;rufina": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -471466,20 +471466,20 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;eudorcas;thomsonii": {
+    "mammalia;artiodactyla;bovidae;eudorcas;thomsonii": {
         "allow": {
             "KEN": [],
             "TZA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;eudorcas;tilonura": {
+    "mammalia;artiodactyla;bovidae;eudorcas;tilonura": {
         "allow": {
             "ERI": [],
             "ETH": [],
             "SDN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;arabica": {
+    "mammalia;artiodactyla;bovidae;gazella;arabica": {
         "allow": {
             "ARE": [],
             "OMN": [],
@@ -471487,7 +471487,7 @@
             "YEM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;bennettii": {
+    "mammalia;artiodactyla;bovidae;gazella;bennettii": {
         "allow": {
             "AFG": [],
             "IND": [],
@@ -471495,7 +471495,7 @@
             "PAK": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;bilkis": {
+    "mammalia;artiodactyla;bovidae;gazella;bilkis": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -471748,7 +471748,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;cuvieri": {
+    "mammalia;artiodactyla;bovidae;gazella;cuvieri": {
         "allow": {
             "DZA": [],
             "ESH": [],
@@ -471757,7 +471757,7 @@
             "TUN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;dorcas": {
+    "mammalia;artiodactyla;bovidae;gazella;dorcas": {
         "allow": {
             "BFA": [],
             "DJI": [],
@@ -471781,7 +471781,7 @@
             "TUN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;gazella": {
+    "mammalia;artiodactyla;bovidae;gazella;gazella": {
         "allow": {
             "EGY": [],
             "ISR": [],
@@ -471790,7 +471790,7 @@
             "TUR": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;leptoceros": {
+    "mammalia;artiodactyla;bovidae;gazella;leptoceros": {
         "allow": {
             "DZA": [],
             "EGY": [],
@@ -471801,7 +471801,7 @@
             "TUN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;marica": {
+    "mammalia;artiodactyla;bovidae;gazella;marica": {
         "allow": {
             "ARE": [],
             "BHR": [],
@@ -471812,7 +471812,7 @@
             "SYR": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;saudiya": {
+    "mammalia;artiodactyla;bovidae;gazella;saudiya": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -472065,13 +472065,13 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;spekei": {
+    "mammalia;artiodactyla;bovidae;gazella;spekei": {
         "allow": {
             "ETH": [],
             "SOM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;gazella;subgutturosa": {
+    "mammalia;artiodactyla;bovidae;gazella;subgutturosa": {
         "allow": {
             "AFG": [],
             "AZE": [],
@@ -472091,14 +472091,14 @@
             "UZB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;hemitragus;jemlahicus": {
+    "mammalia;artiodactyla;bovidae;hemitragus;jemlahicus": {
         "allow": {
             "CHN": [],
             "IND": [],
             "NPL": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;hippotragus;equinus": {
+    "mammalia;artiodactyla;bovidae;hippotragus;equinus": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -472132,7 +472132,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;hippotragus;leucophaeus": {
+    "mammalia;artiodactyla;bovidae;hippotragus;leucophaeus": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -472385,7 +472385,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;hippotragus;niger": {
+    "mammalia;artiodactyla;bovidae;hippotragus;niger": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -472401,7 +472401,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;kobus;ellipsiprymnus": {
+    "mammalia;artiodactyla;bovidae;kobus;ellipsiprymnus": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -472443,7 +472443,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;kobus;kob": {
+    "mammalia;artiodactyla;bovidae;kobus;kob": {
         "allow": {
             "BEN": [],
             "BFA": [],
@@ -472469,7 +472469,7 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;kobus;leche": {
+    "mammalia;artiodactyla;bovidae;kobus;leche": {
         "allow": {
             "AGO": [],
             "BWA": [],
@@ -472479,14 +472479,14 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;kobus;megaceros": {
+    "mammalia;artiodactyla;bovidae;kobus;megaceros": {
         "allow": {
             "ETH": [],
             "SDN": [],
             "SSD": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;kobus;vardonii": {
+    "mammalia;artiodactyla;bovidae;kobus;vardonii": {
         "allow": {
             "AGO": [],
             "BWA": [],
@@ -472497,7 +472497,7 @@
             "ZMB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;litocranius;walleri": {
+    "mammalia;artiodactyla;bovidae;litocranius;walleri": {
         "allow": {
             "DJI": [],
             "ETH": [],
@@ -472506,7 +472506,7 @@
             "TZA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;madoqua;guentheri": {
+    "mammalia;artiodactyla;bovidae;madoqua;guentheri": {
         "allow": {
             "ETH": [],
             "KEN": [],
@@ -472515,18 +472515,18 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;madoqua;kirkii": {
+    "mammalia;artiodactyla;bovidae;madoqua;kirkii": {
         "allow": {
             "KEN": [],
             "SOM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;madoqua;piacentinii": {
+    "mammalia;artiodactyla;bovidae;madoqua;piacentinii": {
         "allow": {
             "SOM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;madoqua;saltiana": {
+    "mammalia;artiodactyla;bovidae;madoqua;saltiana": {
         "allow": {
             "DJI": [],
             "ERI": [],
@@ -472537,14 +472537,14 @@
             "YEM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;naemorhedus;baileyi": {
+    "mammalia;artiodactyla;bovidae;naemorhedus;baileyi": {
         "allow": {
             "CHN": [],
             "IND": [],
             "MMR": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;naemorhedus;caudatus": {
+    "mammalia;artiodactyla;bovidae;naemorhedus;caudatus": {
         "allow": {
             "CHN": [],
             "KOR": [],
@@ -472552,12 +472552,12 @@
             "RUS": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;naemorhedus;goral": {
+    "mammalia;artiodactyla;bovidae;naemorhedus;goral": {
         "allow": {
             "CHN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;naemorhedus;griseus": {
+    "mammalia;artiodactyla;bovidae;naemorhedus;griseus": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -472809,7 +472809,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;nanger;dama": {
+    "mammalia;artiodactyla;bovidae;nanger;dama": {
         "allow": {
             "DZA": [],
             "MAR": [],
@@ -472818,13 +472818,13 @@
             "TCD": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;nanger;granti": {
+    "mammalia;artiodactyla;bovidae;nanger;granti": {
         "allow": {
             "KEN": [],
             "TZA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;nanger;soemmerringii": {
+    "mammalia;artiodactyla;bovidae;nanger;soemmerringii": {
         "allow": {
             "DJI": [],
             "ERI": [],
@@ -472833,7 +472833,7 @@
             "SOM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;neotragus;batesi": {
+    "mammalia;artiodactyla;bovidae;neotragus;batesi": {
         "allow": {
             "CAF": [],
             "CMR": [],
@@ -472845,7 +472845,7 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;neotragus;pygmaeus": {
+    "mammalia;artiodactyla;bovidae;neotragus;pygmaeus": {
         "allow": {
             "CIV": [],
             "GHA": [],
@@ -472854,7 +472854,7 @@
             "SLE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;nesotragus;moschatus": {
+    "mammalia;artiodactyla;bovidae;nesotragus;moschatus": {
         "allow": {
             "KEN": [],
             "MOZ": [],
@@ -472867,12 +472867,12 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;nilgiritragus;hylocrius": {
+    "mammalia;artiodactyla;bovidae;nilgiritragus;hylocrius": {
         "allow": {
             "IND": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;oreamnos;americanus": {
+    "mammalia;artiodactyla;bovidae;oreamnos;americanus": {
         "allow": {
             "CAN": [],
             "ISR": [],
@@ -472886,7 +472886,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;bovidae;oreotragus;oreotragus": {
+    "mammalia;artiodactyla;bovidae;oreotragus;oreotragus": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -472914,7 +472914,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;oryx;beisa": {
+    "mammalia;artiodactyla;bovidae;oryx;beisa": {
         "allow": {
             "DJI": [],
             "ERI": [],
@@ -472927,13 +472927,13 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;oryx;dammah": {
+    "mammalia;artiodactyla;bovidae;oryx;dammah": {
         "allow": {
             "NER": [],
             "TCD": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;oryx;gazella": {
+    "mammalia;artiodactyla;bovidae;oryx;gazella": {
         "allow": {
             "AGO": [],
             "BWA": [],
@@ -472946,14 +472946,14 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;oryx;leucoryx": {
+    "mammalia;artiodactyla;bovidae;oryx;leucoryx": {
         "allow": {
             "ISR": [],
             "OMN": [],
             "SAU": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;ourebia;ourebi": {
+    "mammalia;artiodactyla;bovidae;ourebia;ourebi": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -472994,7 +472994,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;ovibos;moschatus": {
+    "mammalia;artiodactyla;bovidae;ovibos;moschatus": {
         "allow": {
             "CAN": [],
             "GRL": [],
@@ -473003,7 +473003,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;bovidae;ovis;ammon": {
+    "mammalia;artiodactyla;bovidae;ovis;ammon": {
         "allow": {
             "AFG": [],
             "BTN": [],
@@ -473024,7 +473024,7 @@
             "UZB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;ovis;canadensis": {
+    "mammalia;artiodactyla;bovidae;ovis;canadensis": {
         "allow": {
             "CAN": [],
             "MEX": [],
@@ -473047,7 +473047,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;bovidae;ovis;dalli": {
+    "mammalia;artiodactyla;bovidae;ovis;dalli": {
         "allow": {
             "CAN": [],
             "USA": [
@@ -473055,7 +473055,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;bovidae;ovis;nivicola": {
+    "mammalia;artiodactyla;bovidae;ovis;nivicola": {
         "allow": {
             "BEL": [],
             "CAN": [],
@@ -473072,7 +473072,7 @@
             "UKR": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;ovis;orientalis": {
+    "mammalia;artiodactyla;bovidae;ovis;orientalis": {
         "allow": {
             "ARG": [],
             "ARM": [],
@@ -473145,13 +473145,13 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;pantholops;hodgsonii": {
+    "mammalia;artiodactyla;bovidae;pantholops;hodgsonii": {
         "allow": {
             "CHN": [],
             "IND": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;pelea;capreolus": {
+    "mammalia;artiodactyla;bovidae;pelea;capreolus": {
         "allow": {
             "LSO": [],
             "NAM": [],
@@ -473159,7 +473159,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;philantomba;maxwellii": {
+    "mammalia;artiodactyla;bovidae;philantomba;maxwellii": {
         "allow": {
             "BFA": [],
             "CIV": [],
@@ -473173,7 +473173,7 @@
             "SLE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;philantomba;monticola": {
+    "mammalia;artiodactyla;bovidae;philantomba;monticola": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -473199,7 +473199,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;philantomba;walteri": {
+    "mammalia;artiodactyla;bovidae;philantomba;walteri": {
         "allow": {
             "BEN": [],
             "GHA": [],
@@ -473207,25 +473207,25 @@
             "TGO": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;procapra;gutturosa": {
+    "mammalia;artiodactyla;bovidae;procapra;gutturosa": {
         "allow": {
             "CHN": [],
             "MNG": [],
             "RUS": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;procapra;picticaudata": {
+    "mammalia;artiodactyla;bovidae;procapra;picticaudata": {
         "allow": {
             "CHN": [],
             "IND": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;procapra;przewalskii": {
+    "mammalia;artiodactyla;bovidae;procapra;przewalskii": {
         "allow": {
             "CHN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;pseudois;nayaur": {
+    "mammalia;artiodactyla;bovidae;pseudois;nayaur": {
         "allow": {
             "BTN": [],
             "CHN": [],
@@ -473235,13 +473235,13 @@
             "PAK": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;pseudoryx;nghetinhensis": {
+    "mammalia;artiodactyla;bovidae;pseudoryx;nghetinhensis": {
         "allow": {
             "LAO": [],
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;raphicerus;campestris": {
+    "mammalia;artiodactyla;bovidae;raphicerus;campestris": {
         "allow": {
             "AGO": [],
             "BWA": [],
@@ -473256,13 +473256,13 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;raphicerus;melanotis": {
+    "mammalia;artiodactyla;bovidae;raphicerus;melanotis": {
         "allow": {
             "LSO": [],
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;raphicerus;sharpei": {
+    "mammalia;artiodactyla;bovidae;raphicerus;sharpei": {
         "allow": {
             "MOZ": [],
             "MWI": [],
@@ -473270,7 +473270,7 @@
             "ZMB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;redunca;arundinum": {
+    "mammalia;artiodactyla;bovidae;redunca;arundinum": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -473289,7 +473289,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;redunca;fulvorufula": {
+    "mammalia;artiodactyla;bovidae;redunca;fulvorufula": {
         "allow": {
             "BWA": [],
             "CMR": [],
@@ -473306,7 +473306,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;redunca;redunca": {
+    "mammalia;artiodactyla;bovidae;redunca;redunca": {
         "allow": {
             "BDI": [],
             "BEN": [],
@@ -473337,7 +473337,7 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;rupicapra;pyrenaica": {
+    "mammalia;artiodactyla;bovidae;rupicapra;pyrenaica": {
         "allow": {
             "AND": [],
             "ESP": [],
@@ -473345,7 +473345,7 @@
             "ITA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;rupicapra;rupicapra": {
+    "mammalia;artiodactyla;bovidae;rupicapra;rupicapra": {
         "allow": {
             "ALB": [],
             "AUT": [],
@@ -473372,7 +473372,7 @@
             "TUR": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;saiga;tatarica": {
+    "mammalia;artiodactyla;bovidae;saiga;tatarica": {
         "allow": {
             "KAZ": [],
             "MNG": [],
@@ -473380,7 +473380,7 @@
             "UZB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;sylvicapra;grimmia": {
+    "mammalia;artiodactyla;bovidae;sylvicapra;grimmia": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -473423,7 +473423,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;syncerus;caffer": {
+    "mammalia;artiodactyla;bovidae;syncerus;caffer": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -473466,13 +473466,13 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tetracerus;quadricornis": {
+    "mammalia;artiodactyla;bovidae;tetracerus;quadricornis": {
         "allow": {
             "IND": [],
             "NPL": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tragelaphus;angasii": {
+    "mammalia;artiodactyla;bovidae;tragelaphus;angasii": {
         "allow": {
             "BWA": [],
             "MOZ": [],
@@ -473486,13 +473486,13 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tragelaphus;buxtoni": {
+    "mammalia;artiodactyla;bovidae;tragelaphus;buxtoni": {
         "allow": {
             "ETH": [],
             "IDN": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tragelaphus;derbianus": {
+    "mammalia;artiodactyla;bovidae;tragelaphus;derbianus": {
         "allow": {
             "CAF": [],
             "CMR": [],
@@ -473505,7 +473505,7 @@
             "TCD": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tragelaphus;eurycerus": {
+    "mammalia;artiodactyla;bovidae;tragelaphus;eurycerus": {
         "allow": {
             "BEN": [],
             "CAF": [],
@@ -473524,7 +473524,7 @@
             "TGO": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tragelaphus;imberbis": {
+    "mammalia;artiodactyla;bovidae;tragelaphus;imberbis": {
         "allow": {
             "ETH": [],
             "KEN": [],
@@ -473534,7 +473534,7 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tragelaphus;oryx": {
+    "mammalia;artiodactyla;bovidae;tragelaphus;oryx": {
         "allow": {
             "AGO": [],
             "BWA": [],
@@ -473555,7 +473555,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tragelaphus;scriptus": {
+    "mammalia;artiodactyla;bovidae;tragelaphus;scriptus": {
         "allow": {
             "AGO": [],
             "BEN": [],
@@ -473592,7 +473592,7 @@
             "ZMB": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tragelaphus;spekii": {
+    "mammalia;artiodactyla;bovidae;tragelaphus;spekii": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -473619,7 +473619,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;bovidae;tragelaphus;strepsiceros": {
+    "mammalia;artiodactyla;bovidae;tragelaphus;strepsiceros": {
         "allow": {
             "AGO": [],
             "BWA": [],
@@ -473643,14 +473643,14 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;camelidae;camelus;ferus": {
+    "mammalia;artiodactyla;camelidae;camelus;ferus": {
         "allow": {
             "CHN": [],
             "KEN": [],
             "MNG": []
         }
     },
-    "mammalia;cetartiodactyla;camelidae;lama;guanicoe": {
+    "mammalia;artiodactyla;camelidae;lama;guanicoe": {
         "allow": {
             "ARG": [],
             "BOL": [],
@@ -473662,7 +473662,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;camelidae;vicugna;vicugna": {
+    "mammalia;artiodactyla;camelidae;vicugna;vicugna": {
         "allow": {
             "ARG": [],
             "BOL": [],
@@ -473670,7 +473670,7 @@
             "PER": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;alces;alces": {
+    "mammalia;artiodactyla;cervidae;alces;alces": {
         "allow": {
             "ALA": [],
             "AUT": [],
@@ -473722,7 +473722,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;cervidae;axis;axis": {
+    "mammalia;artiodactyla;cervidae;axis;axis": {
         "allow": {
             "BGD": [],
             "BTN": [],
@@ -473735,17 +473735,17 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;cervidae;axis;calamianensis": {
+    "mammalia;artiodactyla;cervidae;axis;calamianensis": {
         "allow": {
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;axis;kuhlii": {
+    "mammalia;artiodactyla;cervidae;axis;kuhlii": {
         "allow": {
             "IDN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;axis;porcinus": {
+    "mammalia;artiodactyla;cervidae;axis;porcinus": {
         "allow": {
             "BGD": [],
             "BTN": [],
@@ -473758,7 +473758,7 @@
             "THA": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;blastocerus;dichotomus": {
+    "mammalia;artiodactyla;cervidae;blastocerus;dichotomus": {
         "allow": {
             "ARG": [],
             "BOL": [],
@@ -473768,7 +473768,7 @@
             "URY": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;capreolus;capreolus": {
+    "mammalia;artiodactyla;cervidae;capreolus;capreolus": {
         "allow": {
             "ALA": [],
             "ALB": [],
@@ -473824,7 +473824,7 @@
             "USA": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;capreolus;pygargus": {
+    "mammalia;artiodactyla;cervidae;capreolus;pygargus": {
         "allow": {
             "CHN": [],
             "JPN": [],
@@ -473838,12 +473838,12 @@
             "UZB": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;cervus;albirostris": {
+    "mammalia;artiodactyla;cervidae;cervus;albirostris": {
         "allow": {
             "CHN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;cervus;canadensis": {
+    "mammalia;artiodactyla;cervidae;cervus;canadensis": {
         "allow": {
             "BTN": [],
             "CAN": [],
@@ -473879,7 +473879,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;cervidae;cervus;elaphus": {
+    "mammalia;artiodactyla;cervidae;cervus;elaphus": {
         "allow": {
             "AND": [],
             "ARM": [],
@@ -473941,7 +473941,7 @@
             "UZB": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;cervus;hanglu": {
+    "mammalia;artiodactyla;cervidae;cervus;hanglu": {
         "allow": {
             "AFG": [],
             "CHN": [],
@@ -473952,7 +473952,7 @@
             "UZB": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;cervus;nippon": {
+    "mammalia;artiodactyla;cervidae;cervus;nippon": {
         "allow": {
             "CHN": [],
             "IRL": [],
@@ -473970,7 +473970,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;dama;dama": {
+    "mammalia;artiodactyla;cervidae;dama;dama": {
         "allow": {
             "ALB": [],
             "AND": [],
@@ -474016,7 +474016,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;dama;mesopotamica": {
+    "mammalia;artiodactyla;cervidae;dama;mesopotamica": {
         "allow": {
             "IRN": [],
             "IRQ": [],
@@ -474027,19 +474027,19 @@
             "SYR": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;elaphodus;cephalophus": {
+    "mammalia;artiodactyla;cervidae;elaphodus;cephalophus": {
         "allow": {
             "CHN": [],
             "MMR": [],
             "TWN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;elaphurus;davidianus": {
+    "mammalia;artiodactyla;cervidae;elaphurus;davidianus": {
         "allow": {
             "CHN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;hippocamelus;antisensis": {
+    "mammalia;artiodactyla;cervidae;hippocamelus;antisensis": {
         "allow": {
             "ARG": [],
             "BOL": [],
@@ -474047,13 +474047,13 @@
             "PER": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;hippocamelus;bisulcus": {
+    "mammalia;artiodactyla;cervidae;hippocamelus;bisulcus": {
         "allow": {
             "ARG": [],
             "CHL": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;hydropotes;inermis": {
+    "mammalia;artiodactyla;cervidae;hydropotes;inermis": {
         "allow": {
             "CHN": [],
             "GBR": [],
@@ -474061,7 +474061,7 @@
             "PRK": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;americana": {
+    "mammalia;artiodactyla;cervidae;mazama;americana": {
         "allow": {
             "ARG": [],
             "BOL": [],
@@ -474078,24 +474078,24 @@
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;bororo": {
+    "mammalia;artiodactyla;cervidae;mazama;bororo": {
         "allow": {
             "BRA": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;bricenii": {
+    "mammalia;artiodactyla;cervidae;mazama;bricenii": {
         "allow": {
             "COL": [],
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;chunyi": {
+    "mammalia;artiodactyla;cervidae;mazama;chunyi": {
         "allow": {
             "BOL": [],
             "PER": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;gouazoubira": {
+    "mammalia;artiodactyla;cervidae;mazama;gouazoubira": {
         "allow": {
             "ARG": [],
             "BOL": [],
@@ -474106,14 +474106,14 @@
             "URY": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;nana": {
+    "mammalia;artiodactyla;cervidae;mazama;nana": {
         "allow": {
             "ARG": [],
             "BRA": [],
             "PRY": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;nemorivaga": {
+    "mammalia;artiodactyla;cervidae;mazama;nemorivaga": {
         "allow": {
             "BOL": [],
             "BRA": [],
@@ -474127,14 +474127,14 @@
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;pandora": {
+    "mammalia;artiodactyla;cervidae;mazama;pandora": {
         "allow": {
             "BLZ": [],
             "GTM": [],
             "MEX": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;rufina": {
+    "mammalia;artiodactyla;cervidae;mazama;rufina": {
         "allow": {
             "COL": [],
             "ECU": [],
@@ -474142,7 +474142,7 @@
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;mazama;temama": {
+    "mammalia;artiodactyla;cervidae;mazama;temama": {
         "allow": {
             "BLZ": [],
             "COL": [],
@@ -474155,32 +474155,32 @@
             "SLV": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;atherodes": {
+    "mammalia;artiodactyla;cervidae;muntiacus;atherodes": {
         "allow": {
             "BRN": [],
             "IDN": [],
             "MYS": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;crinifrons": {
+    "mammalia;artiodactyla;cervidae;muntiacus;crinifrons": {
         "allow": {
             "CHN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;feae": {
+    "mammalia;artiodactyla;cervidae;muntiacus;feae": {
         "allow": {
             "MMR": [],
             "THA": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;gongshanensis": {
+    "mammalia;artiodactyla;cervidae;muntiacus;gongshanensis": {
         "allow": {
             "CHN": [],
             "IND": [],
             "MMR": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;montanus": {
+    "mammalia;artiodactyla;cervidae;muntiacus;montanus": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -474433,7 +474433,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;muntjak": {
+    "mammalia;artiodactyla;cervidae;muntiacus;muntjak": {
         "allow": {
             "BGD": [],
             "BRN": [],
@@ -474456,20 +474456,20 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;puhoatensis": {
+    "mammalia;artiodactyla;cervidae;muntiacus;puhoatensis": {
         "allow": {
             "LAO": [],
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;putaoensis": {
+    "mammalia;artiodactyla;cervidae;muntiacus;putaoensis": {
         "allow": {
             "CHN": [],
             "IND": [],
             "MMR": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;reevesi": {
+    "mammalia;artiodactyla;cervidae;muntiacus;reevesi": {
         "allow": {
             "CHN": [],
             "GBR": [],
@@ -474479,14 +474479,14 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;rooseveltorum": {
+    "mammalia;artiodactyla;cervidae;muntiacus;rooseveltorum": {
         "allow": {
             "CHN": [],
             "LAO": [],
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;rooseveltorum/truongsonensis": {
+    "mammalia;artiodactyla;cervidae;muntiacus;rooseveltorum/truongsonensis": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -474739,7 +474739,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;truongsonensis": {
+    "mammalia;artiodactyla;cervidae;muntiacus;truongsonensis": {
         "allow": {
             "CHN": [],
             "KHM": [],
@@ -474748,7 +474748,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;vaginalis": {
+    "mammalia;artiodactyla;cervidae;muntiacus;vaginalis": {
         "allow": {
             "BGD": [],
             "BTN": [],
@@ -474766,14 +474766,14 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;muntiacus;vuquangensis": {
+    "mammalia;artiodactyla;cervidae;muntiacus;vuquangensis": {
         "allow": {
             "KHM": [],
             "LAO": [],
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;odocoileus;hemionus": {
+    "mammalia;artiodactyla;cervidae;odocoileus;hemionus": {
         "allow": {
             "AUT": [],
             "CAN": [],
@@ -474802,7 +474802,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;cervidae;odocoileus;virginianus": {
+    "mammalia;artiodactyla;cervidae;odocoileus;virginianus": {
         "allow": {
             "ABW": [],
             "BES": [],
@@ -474879,7 +474879,7 @@
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;ozotoceros;bezoarticus": {
+    "mammalia;artiodactyla;cervidae;ozotoceros;bezoarticus": {
         "allow": {
             "ARG": [],
             "BOL": [],
@@ -474888,20 +474888,20 @@
             "URY": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;pudu;mephistophiles": {
+    "mammalia;artiodactyla;cervidae;pudu;mephistophiles": {
         "allow": {
             "COL": [],
             "ECU": [],
             "PER": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;pudu;puda": {
+    "mammalia;artiodactyla;cervidae;pudu;puda": {
         "allow": {
             "ARG": [],
             "CHL": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;rangifer;tarandus": {
+    "mammalia;artiodactyla;cervidae;rangifer;tarandus": {
         "allow": {
             "CAN": [],
             "CHN": [],
@@ -474923,7 +474923,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;cervidae;rucervus;duvaucelii": {
+    "mammalia;artiodactyla;cervidae;rucervus;duvaucelii": {
         "allow": {
             "BTN": [],
             "CHN": [],
@@ -474931,7 +474931,7 @@
             "NPL": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;rucervus;eldii": {
+    "mammalia;artiodactyla;cervidae;rucervus;eldii": {
         "allow": {
             "CHN": [],
             "IND": [],
@@ -474942,7 +474942,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;rucervus;schomburgki": {
+    "mammalia;artiodactyla;cervidae;rucervus;schomburgki": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -475195,17 +475195,17 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;rusa;alfredi": {
+    "mammalia;artiodactyla;cervidae;rusa;alfredi": {
         "allow": {
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;rusa;marianna": {
+    "mammalia;artiodactyla;cervidae;rusa;marianna": {
         "allow": {
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;cervidae;rusa;unicolor": {
+    "mammalia;artiodactyla;cervidae;rusa;unicolor": {
         "allow": {
             "AUS": [],
             "BGD": [],
@@ -475229,7 +475229,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;cephalorhynchus;commersonii": {
+    "mammalia;artiodactyla;delphinidae;cephalorhynchus;commersonii": {
         "allow": {
             "ARG": [],
             "ATA": [],
@@ -475241,25 +475241,25 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;cephalorhynchus;eutropia": {
+    "mammalia;artiodactyla;delphinidae;cephalorhynchus;eutropia": {
         "allow": {
             "ARG": [],
             "CHL": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;cephalorhynchus;heavisidii": {
+    "mammalia;artiodactyla;delphinidae;cephalorhynchus;heavisidii": {
         "allow": {
             "AGO": [],
             "NAM": [],
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;cephalorhynchus;hectori": {
+    "mammalia;artiodactyla;delphinidae;cephalorhynchus;hectori": {
         "allow": {
             "NZL": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;delphinus;capensis": {
+    "mammalia;artiodactyla;delphinidae;delphinus;capensis": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -475367,7 +475367,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;delphinus;delphis": {
+    "mammalia;artiodactyla;delphinidae;delphinus;delphis": {
         "allow": {
             "AGO": [],
             "ALB": [],
@@ -475483,7 +475483,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;feresa;attenuata": {
+    "mammalia;artiodactyla;delphinidae;feresa;attenuata": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -475635,7 +475635,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;globicephala;macrorhynchus": {
+    "mammalia;artiodactyla;delphinidae;globicephala;macrorhynchus": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -475834,7 +475834,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;globicephala;melas": {
+    "mammalia;artiodactyla;delphinidae;globicephala;melas": {
         "allow": {
             "ARG": [],
             "ATA": [],
@@ -475895,7 +475895,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;grampus;griseus": {
+    "mammalia;artiodactyla;delphinidae;grampus;griseus": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -476092,7 +476092,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;lagenodelphis;hosei": {
+    "mammalia;artiodactyla;delphinidae;lagenodelphis;hosei": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -476250,7 +476250,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;lagenorhynchus;acutus": {
+    "mammalia;artiodactyla;delphinidae;lagenorhynchus;acutus": {
         "allow": {
             "BEL": [],
             "CAN": [],
@@ -476283,7 +476283,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;lagenorhynchus;albirostris": {
+    "mammalia;artiodactyla;delphinidae;lagenorhynchus;albirostris": {
         "allow": {
             "BEL": [],
             "CAN": [],
@@ -476313,14 +476313,14 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;lagenorhynchus;australis": {
+    "mammalia;artiodactyla;delphinidae;lagenorhynchus;australis": {
         "allow": {
             "ARG": [],
             "CHL": [],
             "FLK": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;lagenorhynchus;cruciger": {
+    "mammalia;artiodactyla;delphinidae;lagenorhynchus;cruciger": {
         "allow": {
             "ARG": [],
             "ATF": [],
@@ -476337,7 +476337,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;lagenorhynchus;obliquidens": {
+    "mammalia;artiodactyla;delphinidae;lagenorhynchus;obliquidens": {
         "allow": {
             "CAN": [],
             "CHN": [],
@@ -476354,7 +476354,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;lagenorhynchus;obscurus": {
+    "mammalia;artiodactyla;delphinidae;lagenorhynchus;obscurus": {
         "allow": {
             "ARG": [],
             "AUS": [],
@@ -476368,7 +476368,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;lissodelphis;borealis": {
+    "mammalia;artiodactyla;delphinidae;lissodelphis;borealis": {
         "allow": {
             "JPN": [],
             "MEX": [],
@@ -476380,7 +476380,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;lissodelphis;peronii": {
+    "mammalia;artiodactyla;delphinidae;lissodelphis;peronii": {
         "allow": {
             "ARG": [],
             "ATA": [],
@@ -476406,7 +476406,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;orcaella;brevirostris": {
+    "mammalia;artiodactyla;delphinidae;orcaella;brevirostris": {
         "allow": {
             "BGD": [],
             "BRN": [],
@@ -476422,14 +476422,14 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;orcaella;heinsohni": {
+    "mammalia;artiodactyla;delphinidae;orcaella;heinsohni": {
         "allow": {
             "AUS": [],
             "IDN": [],
             "PNG": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;orcinus;orca": {
+    "mammalia;artiodactyla;delphinidae;orcinus;orca": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -476651,7 +476651,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;peponocephala;electra": {
+    "mammalia;artiodactyla;delphinidae;peponocephala;electra": {
         "allow": {
             "ABW": [],
             "AIA": [],
@@ -476798,7 +476798,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;pseudorca;crassidens": {
+    "mammalia;artiodactyla;delphinidae;pseudorca;crassidens": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -477034,7 +477034,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;sotalia;fluviatilis": {
+    "mammalia;artiodactyla;delphinidae;sotalia;fluviatilis": {
         "allow": {
             "BRA": [],
             "COL": [],
@@ -477046,7 +477046,7 @@
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;sotalia;guianensis": {
+    "mammalia;artiodactyla;delphinidae;sotalia;guianensis": {
         "allow": {
             "ABW": [],
             "BES": [],
@@ -477064,7 +477064,7 @@
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;sousa;chinensis": {
+    "mammalia;artiodactyla;delphinidae;sousa;chinensis": {
         "allow": {
             "ARE": [],
             "AUS": [],
@@ -477113,7 +477113,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;sousa;plumbea": {
+    "mammalia;artiodactyla;delphinidae;sousa;plumbea": {
         "allow": {
             "ARE": [],
             "BHR": [],
@@ -477136,14 +477136,14 @@
             "YEM": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;sousa;sahulensis": {
+    "mammalia;artiodactyla;delphinidae;sousa;sahulensis": {
         "allow": {
             "AUS": [],
             "IDN": [],
             "PNG": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;sousa;teuszii": {
+    "mammalia;artiodactyla;delphinidae;sousa;teuszii": {
         "allow": {
             "AGO": [],
             "BEN": [],
@@ -477169,7 +477169,7 @@
             "TGO": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;stenella;attenuata": {
+    "mammalia;artiodactyla;delphinidae;stenella;attenuata": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -477370,7 +477370,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;stenella;clymene": {
+    "mammalia;artiodactyla;delphinidae;stenella;clymene": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -477465,7 +477465,7 @@
             "VIR": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;stenella;coeruleoalba": {
+    "mammalia;artiodactyla;delphinidae;stenella;coeruleoalba": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -477704,7 +477704,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;stenella;frontalis": {
+    "mammalia;artiodactyla;delphinidae;stenella;frontalis": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -477800,7 +477800,7 @@
             "VIR": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;stenella;longirostris": {
+    "mammalia;artiodactyla;delphinidae;stenella;longirostris": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -477969,7 +477969,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;steno;bredanensis": {
+    "mammalia;artiodactyla;delphinidae;steno;bredanensis": {
         "allow": {
             "ABW": [],
             "AIA": [],
@@ -478116,7 +478116,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;tursiops;aduncus": {
+    "mammalia;artiodactyla;delphinidae;tursiops;aduncus": {
         "allow": {
             "ARE": [],
             "ATF": [],
@@ -478164,7 +478164,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;delphinidae;tursiops;truncatus": {
+    "mammalia;artiodactyla;delphinidae;tursiops;truncatus": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -478413,7 +478413,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;eschrichtiidae;eschrichtius;robustus": {
+    "mammalia;artiodactyla;eschrichtiidae;eschrichtius;robustus": {
         "allow": {
             "CAN": [],
             "CHN": [],
@@ -478434,7 +478434,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;giraffidae;giraffa;camelopardalis": {
+    "mammalia;artiodactyla;giraffidae;giraffa;camelopardalis": {
         "allow": {
             "AGO": [],
             "BEN": [],
@@ -478462,12 +478462,12 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;giraffidae;okapia;johnstoni": {
+    "mammalia;artiodactyla;giraffidae;okapia;johnstoni": {
         "allow": {
             "COD": []
         }
     },
-    "mammalia;cetartiodactyla;hippopotamidae;choeropsis;liberiensis": {
+    "mammalia;artiodactyla;hippopotamidae;choeropsis;liberiensis": {
         "allow": {
             "CIV": [],
             "GIN": [],
@@ -478475,7 +478475,7 @@
             "SLE": []
         }
     },
-    "mammalia;cetartiodactyla;hippopotamidae;hippopotamus;amphibius": {
+    "mammalia;artiodactyla;hippopotamidae;hippopotamus;amphibius": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -478517,260 +478517,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;hippopotamidae;hippopotamus;lemerlei": {
-        "allow": {
-            "ABW": [],
-            "AFG": [],
-            "AGO": [],
-            "AIA": [],
-            "ALA": [],
-            "ALB": [],
-            "AND": [],
-            "ARE": [],
-            "ARG": [],
-            "ARM": [],
-            "ASM": [],
-            "ATA": [],
-            "ATF": [],
-            "ATG": [],
-            "AUS": [],
-            "AUT": [],
-            "AZE": [],
-            "BDI": [],
-            "BEL": [],
-            "BEN": [],
-            "BES": [],
-            "BFA": [],
-            "BGD": [],
-            "BGR": [],
-            "BHR": [],
-            "BHS": [],
-            "BIH": [],
-            "BLM": [],
-            "BLR": [],
-            "BLZ": [],
-            "BMU": [],
-            "BOL": [],
-            "BRA": [],
-            "BRB": [],
-            "BRN": [],
-            "BTN": [],
-            "BVT": [],
-            "BWA": [],
-            "CAF": [],
-            "CAN": [],
-            "CCK": [],
-            "CHE": [],
-            "CHL": [],
-            "CHN": [],
-            "CIV": [],
-            "CMR": [],
-            "COD": [],
-            "COG": [],
-            "COK": [],
-            "COL": [],
-            "COM": [],
-            "CPV": [],
-            "CRI": [],
-            "CUB": [],
-            "CUW": [],
-            "CXR": [],
-            "CYM": [],
-            "CYP": [],
-            "CZE": [],
-            "DEU": [],
-            "DJI": [],
-            "DMA": [],
-            "DNK": [],
-            "DOM": [],
-            "DZA": [],
-            "ECU": [],
-            "EGY": [],
-            "ERI": [],
-            "ESH": [],
-            "ESP": [],
-            "EST": [],
-            "ETH": [],
-            "FIN": [],
-            "FJI": [],
-            "FLK": [],
-            "FRA": [],
-            "FRO": [],
-            "FSM": [],
-            "GAB": [],
-            "GBR": [],
-            "GEO": [],
-            "GGY": [],
-            "GHA": [],
-            "GIB": [],
-            "GIN": [],
-            "GLP": [],
-            "GMB": [],
-            "GNB": [],
-            "GNQ": [],
-            "GRC": [],
-            "GRD": [],
-            "GRL": [],
-            "GTM": [],
-            "GUF": [],
-            "GUM": [],
-            "GUY": [],
-            "HKG": [],
-            "HMD": [],
-            "HND": [],
-            "HRV": [],
-            "HTI": [],
-            "HUN": [],
-            "IDN": [],
-            "IMN": [],
-            "IND": [],
-            "IOT": [],
-            "IRL": [],
-            "IRN": [],
-            "IRQ": [],
-            "ISL": [],
-            "ISR": [],
-            "ITA": [],
-            "JAM": [],
-            "JEY": [],
-            "JOR": [],
-            "JPN": [],
-            "KAZ": [],
-            "KEN": [],
-            "KGZ": [],
-            "KHM": [],
-            "KIR": [],
-            "KNA": [],
-            "KOR": [],
-            "KWT": [],
-            "LAO": [],
-            "LBN": [],
-            "LBR": [],
-            "LBY": [],
-            "LCA": [],
-            "LIE": [],
-            "LKA": [],
-            "LSO": [],
-            "LTU": [],
-            "LUX": [],
-            "LVA": [],
-            "MAC": [],
-            "MAF": [],
-            "MAR": [],
-            "MCO": [],
-            "MDA": [],
-            "MDG": [],
-            "MDV": [],
-            "MEX": [],
-            "MHL": [],
-            "MKD": [],
-            "MLI": [],
-            "MLT": [],
-            "MMR": [],
-            "MNE": [],
-            "MNG": [],
-            "MNP": [],
-            "MOZ": [],
-            "MRT": [],
-            "MSR": [],
-            "MTQ": [],
-            "MUS": [],
-            "MWI": [],
-            "MYS": [],
-            "MYT": [],
-            "NAM": [],
-            "NCL": [],
-            "NER": [],
-            "NFK": [],
-            "NGA": [],
-            "NIC": [],
-            "NIU": [],
-            "NLD": [],
-            "NOR": [],
-            "NPL": [],
-            "NRU": [],
-            "NZL": [],
-            "OMN": [],
-            "PAK": [],
-            "PAN": [],
-            "PCN": [],
-            "PER": [],
-            "PHL": [],
-            "PLW": [],
-            "PNG": [],
-            "POL": [],
-            "PRI": [],
-            "PRK": [],
-            "PRT": [],
-            "PRY": [],
-            "PSE": [],
-            "PYF": [],
-            "QAT": [],
-            "REU": [],
-            "ROU": [],
-            "RUS": [],
-            "RWA": [],
-            "SAU": [],
-            "SDN": [],
-            "SEN": [],
-            "SGP": [],
-            "SGS": [],
-            "SHN": [],
-            "SJM": [],
-            "SLB": [],
-            "SLE": [],
-            "SLV": [],
-            "SMR": [],
-            "SOM": [],
-            "SPM": [],
-            "SRB": [],
-            "SSD": [],
-            "STP": [],
-            "SUR": [],
-            "SVK": [],
-            "SVN": [],
-            "SWE": [],
-            "SWZ": [],
-            "SXM": [],
-            "SYC": [],
-            "SYR": [],
-            "TCA": [],
-            "TCD": [],
-            "TGO": [],
-            "THA": [],
-            "TJK": [],
-            "TKL": [],
-            "TKM": [],
-            "TLS": [],
-            "TON": [],
-            "TTO": [],
-            "TUN": [],
-            "TUR": [],
-            "TUV": [],
-            "TWN": [],
-            "TZA": [],
-            "UGA": [],
-            "UKR": [],
-            "UMI": [],
-            "URY": [],
-            "USA": [],
-            "UZB": [],
-            "VAT": [],
-            "VCT": [],
-            "VEN": [],
-            "VGB": [],
-            "VIR": [],
-            "VNM": [],
-            "VUT": [],
-            "WLF": [],
-            "WSM": [],
-            "YEM": [],
-            "ZAF": [],
-            "ZMB": [],
-            "ZWE": []
-        }
-    },
-    "mammalia;cetartiodactyla;hippopotamidae;hippopotamus;madagascariensis": {
+    "mammalia;artiodactyla;hippopotamidae;hippopotamus;lemerlei": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -479023,7 +478770,260 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;iniidae;inia;geoffrensis": {
+    "mammalia;artiodactyla;hippopotamidae;hippopotamus;madagascariensis": {
+        "allow": {
+            "ABW": [],
+            "AFG": [],
+            "AGO": [],
+            "AIA": [],
+            "ALA": [],
+            "ALB": [],
+            "AND": [],
+            "ARE": [],
+            "ARG": [],
+            "ARM": [],
+            "ASM": [],
+            "ATA": [],
+            "ATF": [],
+            "ATG": [],
+            "AUS": [],
+            "AUT": [],
+            "AZE": [],
+            "BDI": [],
+            "BEL": [],
+            "BEN": [],
+            "BES": [],
+            "BFA": [],
+            "BGD": [],
+            "BGR": [],
+            "BHR": [],
+            "BHS": [],
+            "BIH": [],
+            "BLM": [],
+            "BLR": [],
+            "BLZ": [],
+            "BMU": [],
+            "BOL": [],
+            "BRA": [],
+            "BRB": [],
+            "BRN": [],
+            "BTN": [],
+            "BVT": [],
+            "BWA": [],
+            "CAF": [],
+            "CAN": [],
+            "CCK": [],
+            "CHE": [],
+            "CHL": [],
+            "CHN": [],
+            "CIV": [],
+            "CMR": [],
+            "COD": [],
+            "COG": [],
+            "COK": [],
+            "COL": [],
+            "COM": [],
+            "CPV": [],
+            "CRI": [],
+            "CUB": [],
+            "CUW": [],
+            "CXR": [],
+            "CYM": [],
+            "CYP": [],
+            "CZE": [],
+            "DEU": [],
+            "DJI": [],
+            "DMA": [],
+            "DNK": [],
+            "DOM": [],
+            "DZA": [],
+            "ECU": [],
+            "EGY": [],
+            "ERI": [],
+            "ESH": [],
+            "ESP": [],
+            "EST": [],
+            "ETH": [],
+            "FIN": [],
+            "FJI": [],
+            "FLK": [],
+            "FRA": [],
+            "FRO": [],
+            "FSM": [],
+            "GAB": [],
+            "GBR": [],
+            "GEO": [],
+            "GGY": [],
+            "GHA": [],
+            "GIB": [],
+            "GIN": [],
+            "GLP": [],
+            "GMB": [],
+            "GNB": [],
+            "GNQ": [],
+            "GRC": [],
+            "GRD": [],
+            "GRL": [],
+            "GTM": [],
+            "GUF": [],
+            "GUM": [],
+            "GUY": [],
+            "HKG": [],
+            "HMD": [],
+            "HND": [],
+            "HRV": [],
+            "HTI": [],
+            "HUN": [],
+            "IDN": [],
+            "IMN": [],
+            "IND": [],
+            "IOT": [],
+            "IRL": [],
+            "IRN": [],
+            "IRQ": [],
+            "ISL": [],
+            "ISR": [],
+            "ITA": [],
+            "JAM": [],
+            "JEY": [],
+            "JOR": [],
+            "JPN": [],
+            "KAZ": [],
+            "KEN": [],
+            "KGZ": [],
+            "KHM": [],
+            "KIR": [],
+            "KNA": [],
+            "KOR": [],
+            "KWT": [],
+            "LAO": [],
+            "LBN": [],
+            "LBR": [],
+            "LBY": [],
+            "LCA": [],
+            "LIE": [],
+            "LKA": [],
+            "LSO": [],
+            "LTU": [],
+            "LUX": [],
+            "LVA": [],
+            "MAC": [],
+            "MAF": [],
+            "MAR": [],
+            "MCO": [],
+            "MDA": [],
+            "MDG": [],
+            "MDV": [],
+            "MEX": [],
+            "MHL": [],
+            "MKD": [],
+            "MLI": [],
+            "MLT": [],
+            "MMR": [],
+            "MNE": [],
+            "MNG": [],
+            "MNP": [],
+            "MOZ": [],
+            "MRT": [],
+            "MSR": [],
+            "MTQ": [],
+            "MUS": [],
+            "MWI": [],
+            "MYS": [],
+            "MYT": [],
+            "NAM": [],
+            "NCL": [],
+            "NER": [],
+            "NFK": [],
+            "NGA": [],
+            "NIC": [],
+            "NIU": [],
+            "NLD": [],
+            "NOR": [],
+            "NPL": [],
+            "NRU": [],
+            "NZL": [],
+            "OMN": [],
+            "PAK": [],
+            "PAN": [],
+            "PCN": [],
+            "PER": [],
+            "PHL": [],
+            "PLW": [],
+            "PNG": [],
+            "POL": [],
+            "PRI": [],
+            "PRK": [],
+            "PRT": [],
+            "PRY": [],
+            "PSE": [],
+            "PYF": [],
+            "QAT": [],
+            "REU": [],
+            "ROU": [],
+            "RUS": [],
+            "RWA": [],
+            "SAU": [],
+            "SDN": [],
+            "SEN": [],
+            "SGP": [],
+            "SGS": [],
+            "SHN": [],
+            "SJM": [],
+            "SLB": [],
+            "SLE": [],
+            "SLV": [],
+            "SMR": [],
+            "SOM": [],
+            "SPM": [],
+            "SRB": [],
+            "SSD": [],
+            "STP": [],
+            "SUR": [],
+            "SVK": [],
+            "SVN": [],
+            "SWE": [],
+            "SWZ": [],
+            "SXM": [],
+            "SYC": [],
+            "SYR": [],
+            "TCA": [],
+            "TCD": [],
+            "TGO": [],
+            "THA": [],
+            "TJK": [],
+            "TKL": [],
+            "TKM": [],
+            "TLS": [],
+            "TON": [],
+            "TTO": [],
+            "TUN": [],
+            "TUR": [],
+            "TUV": [],
+            "TWN": [],
+            "TZA": [],
+            "UGA": [],
+            "UKR": [],
+            "UMI": [],
+            "URY": [],
+            "USA": [],
+            "UZB": [],
+            "VAT": [],
+            "VCT": [],
+            "VEN": [],
+            "VGB": [],
+            "VIR": [],
+            "VNM": [],
+            "VUT": [],
+            "WLF": [],
+            "WSM": [],
+            "YEM": [],
+            "ZAF": [],
+            "ZMB": [],
+            "ZWE": []
+        }
+    },
+    "mammalia;artiodactyla;iniidae;inia;geoffrensis": {
         "allow": {
             "BOL": [],
             "BRA": [],
@@ -479038,12 +479038,12 @@
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;lipotidae;lipotes;vexillifer": {
+    "mammalia;artiodactyla;lipotidae;lipotes;vexillifer": {
         "allow": {
             "CHN": []
         }
     },
-    "mammalia;cetartiodactyla;monodontidae;delphinapterus;leucas": {
+    "mammalia;artiodactyla;monodontidae;delphinapterus;leucas": {
         "allow": {
             "CAN": [],
             "FIN": [],
@@ -479056,7 +479056,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;monodontidae;monodon;monoceros": {
+    "mammalia;artiodactyla;monodontidae;monodon;monoceros": {
         "allow": {
             "CAN": [],
             "GRL": [],
@@ -479069,12 +479069,12 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;moschidae;moschus;anhuiensis": {
+    "mammalia;artiodactyla;moschidae;moschus;anhuiensis": {
         "allow": {
             "CHN": []
         }
     },
-    "mammalia;cetartiodactyla;moschidae;moschus;berezovskii": {
+    "mammalia;artiodactyla;moschidae;moschus;berezovskii": {
         "allow": {
             "CHN": [],
             "IND": [],
@@ -479082,7 +479082,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;moschidae;moschus;chrysogaster": {
+    "mammalia;artiodactyla;moschidae;moschus;chrysogaster": {
         "allow": {
             "BTN": [],
             "CHN": [],
@@ -479091,14 +479091,14 @@
             "NPL": []
         }
     },
-    "mammalia;cetartiodactyla;moschidae;moschus;cupreus": {
+    "mammalia;artiodactyla;moschidae;moschus;cupreus": {
         "allow": {
             "AFG": [],
             "IND": [],
             "PAK": []
         }
     },
-    "mammalia;cetartiodactyla;moschidae;moschus;fuscus": {
+    "mammalia;artiodactyla;moschidae;moschus;fuscus": {
         "allow": {
             "BTN": [],
             "CHN": [],
@@ -479107,7 +479107,7 @@
             "NPL": []
         }
     },
-    "mammalia;cetartiodactyla;moschidae;moschus;leucogaster": {
+    "mammalia;artiodactyla;moschidae;moschus;leucogaster": {
         "allow": {
             "BTN": [],
             "CHN": [],
@@ -479115,7 +479115,7 @@
             "NPL": []
         }
     },
-    "mammalia;cetartiodactyla;moschidae;moschus;moschiferus": {
+    "mammalia;artiodactyla;moschidae;moschus;moschiferus": {
         "allow": {
             "CHN": [],
             "KAZ": [],
@@ -479125,7 +479125,7 @@
             "RUS": []
         }
     },
-    "mammalia;cetartiodactyla;neobalaenidae;caperea;marginata": {
+    "mammalia;artiodactyla;neobalaenidae;caperea;marginata": {
         "allow": {
             "ARG": [],
             "ATF": [],
@@ -479139,7 +479139,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;phocoenidae;neophocaena;asiaeorientalis": {
+    "mammalia;artiodactyla;phocoenidae;neophocaena;asiaeorientalis": {
         "allow": {
             "CHN": [],
             "JPN": [],
@@ -479148,7 +479148,7 @@
             "TWN": []
         }
     },
-    "mammalia;cetartiodactyla;phocoenidae;neophocaena;phocaenoides": {
+    "mammalia;artiodactyla;phocoenidae;neophocaena;phocaenoides": {
         "allow": {
             "AFG": [],
             "ARE": [],
@@ -479181,7 +479181,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;phocoenidae;phocoena;dioptrica": {
+    "mammalia;artiodactyla;phocoenidae;phocoena;dioptrica": {
         "allow": {
             "ARG": [],
             "ATA": [],
@@ -479197,7 +479197,7 @@
             "URY": []
         }
     },
-    "mammalia;cetartiodactyla;phocoenidae;phocoena;phocoena": {
+    "mammalia;artiodactyla;phocoenidae;phocoena;phocoena": {
         "allow": {
             "ALA": [],
             "ARM": [],
@@ -479263,12 +479263,12 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;phocoenidae;phocoena;sinus": {
+    "mammalia;artiodactyla;phocoenidae;phocoena;sinus": {
         "allow": {
             "MEX": []
         }
     },
-    "mammalia;cetartiodactyla;phocoenidae;phocoena;spinipinnis": {
+    "mammalia;artiodactyla;phocoenidae;phocoena;spinipinnis": {
         "allow": {
             "ARG": [],
             "BOL": [],
@@ -479279,7 +479279,7 @@
             "URY": []
         }
     },
-    "mammalia;cetartiodactyla;phocoenidae;phocoenoides;dalli": {
+    "mammalia;artiodactyla;phocoenidae;phocoenoides;dalli": {
         "allow": {
             "CAN": [],
             "CHN": [],
@@ -479296,7 +479296,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;physeteridae;kogia;breviceps": {
+    "mammalia;artiodactyla;physeteridae;kogia;breviceps": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -479470,7 +479470,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;physeteridae;kogia;sima": {
+    "mammalia;artiodactyla;physeteridae;kogia;sima": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -479671,7 +479671,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;physeteridae;physeter;macrocephalus": {
+    "mammalia;artiodactyla;physeteridae;physeter;macrocephalus": {
         "allow": {
             "ABW": [],
             "AGO": [],
@@ -479850,7 +479850,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;platanistidae;platanista;gangetica": {
+    "mammalia;artiodactyla;platanistidae;platanista;gangetica": {
         "allow": {
             "BGD": [],
             "BTN": [],
@@ -479860,29 +479860,29 @@
             "PAK": []
         }
     },
-    "mammalia;cetartiodactyla;pontoporiidae;pontoporia;blainvillei": {
+    "mammalia;artiodactyla;pontoporiidae;pontoporia;blainvillei": {
         "allow": {
             "ARG": [],
             "BRA": [],
             "URY": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;babyrousa;babyrussa": {
+    "mammalia;artiodactyla;suidae;babyrousa;babyrussa": {
         "allow": {
             "IDN": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;babyrousa;celebensis": {
+    "mammalia;artiodactyla;suidae;babyrousa;celebensis": {
         "allow": {
             "IDN": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;babyrousa;togeanensis": {
+    "mammalia;artiodactyla;suidae;babyrousa;togeanensis": {
         "allow": {
             "IDN": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;hylochoerus;meinertzhageni": {
+    "mammalia;artiodactyla;suidae;hylochoerus;meinertzhageni": {
         "allow": {
             "BDI": [],
             "CAF": [],
@@ -479904,7 +479904,7 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;phacochoerus;aethiopicus": {
+    "mammalia;artiodactyla;suidae;phacochoerus;aethiopicus": {
         "allow": {
             "DJI": [],
             "ETH": [],
@@ -479913,7 +479913,7 @@
             "TZA": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;phacochoerus;africanus": {
+    "mammalia;artiodactyla;suidae;phacochoerus;africanus": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -479955,12 +479955,12 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;porcula;salvania": {
+    "mammalia;artiodactyla;suidae;porcula;salvania": {
         "allow": {
             "IND": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;potamochoerus;larvatus": {
+    "mammalia;artiodactyla;suidae;potamochoerus;larvatus": {
         "allow": {
             "AGO": [],
             "BDI": [],
@@ -479986,7 +479986,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;potamochoerus;porcus": {
+    "mammalia;artiodactyla;suidae;potamochoerus;porcus": {
         "allow": {
             "AGO": [],
             "BEN": [],
@@ -480011,12 +480011,12 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;sus;ahoenobarbus": {
+    "mammalia;artiodactyla;suidae;sus;ahoenobarbus": {
         "allow": {
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;sus;barbatus": {
+    "mammalia;artiodactyla;suidae;sus;barbatus": {
         "allow": {
             "BRN": [],
             "IDN": [],
@@ -480024,7 +480024,7 @@
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;sus;bucculentus": {
+    "mammalia;artiodactyla;suidae;sus;bucculentus": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -480277,27 +480277,27 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;sus;cebifrons": {
+    "mammalia;artiodactyla;suidae;sus;cebifrons": {
         "allow": {
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;sus;celebensis": {
+    "mammalia;artiodactyla;suidae;sus;celebensis": {
         "allow": {
             "IDN": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;sus;oliveri": {
+    "mammalia;artiodactyla;suidae;sus;oliveri": {
         "allow": {
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;sus;philippensis": {
+    "mammalia;artiodactyla;suidae;sus;philippensis": {
         "allow": {
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;sus;scrofa": {
+    "mammalia;artiodactyla;suidae;sus;scrofa": {
         "allow": {
             "AFG": [],
             "ALA": [],
@@ -480423,19 +480423,19 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;suidae;sus;verrucosus": {
+    "mammalia;artiodactyla;suidae;sus;verrucosus": {
         "allow": {
             "IDN": []
         }
     },
-    "mammalia;cetartiodactyla;tayassuidae;catagonus;wagneri": {
+    "mammalia;artiodactyla;tayassuidae;catagonus;wagneri": {
         "allow": {
             "ARG": [],
             "BOL": [],
             "PRY": []
         }
     },
-    "mammalia;cetartiodactyla;tayassuidae;pecari;tajacu": {
+    "mammalia;artiodactyla;tayassuidae;pecari;tajacu": {
         "allow": {
             "ARG": [],
             "BLZ": [],
@@ -480464,7 +480464,7 @@
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;tayassuidae;tayassu;pecari": {
+    "mammalia;artiodactyla;tayassuidae;tayassu;pecari": {
         "allow": {
             "ARG": [],
             "BLZ": [],
@@ -480486,7 +480486,7 @@
             "VEN": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;hyemoschus;aquaticus": {
+    "mammalia;artiodactyla;tragulidae;hyemoschus;aquaticus": {
         "allow": {
             "AGO": [],
             "CAF": [],
@@ -480505,29 +480505,29 @@
             "UGA": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;moschiola;indica": {
+    "mammalia;artiodactyla;tragulidae;moschiola;indica": {
         "allow": {
             "IND": [],
             "NPL": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;moschiola;kathygre": {
+    "mammalia;artiodactyla;tragulidae;moschiola;kathygre": {
         "allow": {
             "LKA": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;moschiola;meminna": {
+    "mammalia;artiodactyla;tragulidae;moschiola;meminna": {
         "allow": {
             "LKA": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;tragulus;javanicus": {
+    "mammalia;artiodactyla;tragulidae;tragulus;javanicus": {
         "allow": {
             "IDN": [],
             "LAO": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;tragulus;kanchil": {
+    "mammalia;artiodactyla;tragulidae;tragulus;kanchil": {
         "allow": {
             "BRN": [],
             "CHN": [],
@@ -480542,7 +480542,7 @@
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;tragulus;napu": {
+    "mammalia;artiodactyla;tragulidae;tragulus;napu": {
         "allow": {
             "BRN": [],
             "IDN": [],
@@ -480552,24 +480552,24 @@
             "THA": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;tragulus;nigricans": {
+    "mammalia;artiodactyla;tragulidae;tragulus;nigricans": {
         "allow": {
             "PHL": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;tragulus;versicolor": {
+    "mammalia;artiodactyla;tragulidae;tragulus;versicolor": {
         "allow": {
             "VNM": []
         }
     },
-    "mammalia;cetartiodactyla;tragulidae;tragulus;williamsoni": {
+    "mammalia;artiodactyla;tragulidae;tragulus;williamsoni": {
         "allow": {
             "CHN": [],
             "LAO": [],
             "THA": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;berardius;arnuxii": {
+    "mammalia;artiodactyla;ziphiidae;berardius;arnuxii": {
         "allow": {
             "ARG": [],
             "ATA": [],
@@ -480587,7 +480587,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;berardius;bairdii": {
+    "mammalia;artiodactyla;ziphiidae;berardius;bairdii": {
         "allow": {
             "CAN": [],
             "CHN": [],
@@ -480605,7 +480605,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;hyperoodon;ampullatus": {
+    "mammalia;artiodactyla;ziphiidae;hyperoodon;ampullatus": {
         "allow": {
             "BEL": [],
             "CAN": [],
@@ -480642,7 +480642,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;hyperoodon;planifrons": {
+    "mammalia;artiodactyla;ziphiidae;hyperoodon;planifrons": {
         "allow": {
             "ARG": [],
             "ATA": [],
@@ -480663,7 +480663,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;indopacetus;pacificus": {
+    "mammalia;artiodactyla;ziphiidae;indopacetus;pacificus": {
         "allow": {
             "ARG": [],
             "ASM": [],
@@ -480746,7 +480746,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;bidens": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;bidens": {
         "allow": {
             "BEL": [],
             "CAN": [],
@@ -480776,7 +480776,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;bowdoini": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;bowdoini": {
         "allow": {
             "ARG": [],
             "ATF": [],
@@ -480789,7 +480789,7 @@
             "SHN": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;carlhubbsi": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;carlhubbsi": {
         "allow": {
             "CAN": [],
             "JPN": [],
@@ -480802,7 +480802,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;densirostris": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;densirostris": {
         "allow": {
             "ABW": [],
             "AFG": [],
@@ -481012,7 +481012,7 @@
             "ZWE": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;europaeus": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;europaeus": {
         "allow": {
             "ABW": [],
             "AIA": [],
@@ -481095,7 +481095,7 @@
             "VIR": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;ginkgodens": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;ginkgodens": {
         "allow": {
             "ASM": [],
             "AUS": [],
@@ -481160,7 +481160,7 @@
             "WSM": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;grayi": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;grayi": {
         "allow": {
             "ARG": [],
             "ATA": [],
@@ -481181,7 +481181,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;hectori": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;hectori": {
         "allow": {
             "ARG": [],
             "ATF": [],
@@ -481195,7 +481195,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;layardii": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;layardii": {
         "allow": {
             "ARG": [],
             "ATA": [],
@@ -481214,7 +481214,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;mirus": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;mirus": {
         "allow": {
             "AUS": [],
             "BMU": [],
@@ -481256,7 +481256,7 @@
             "ZAF": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;perrini": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;perrini": {
         "allow": {
             "MEX": [],
             "USA": [
@@ -481264,7 +481264,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;peruvianus": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;peruvianus": {
         "allow": {
             "ARG": [],
             "BOL": [],
@@ -481285,7 +481285,7 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;stejnegeri": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;stejnegeri": {
         "allow": {
             "CAN": [],
             "CHN": [],
@@ -481301,14 +481301,14 @@
             ]
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;mesoplodon;traversii": {
+    "mammalia;artiodactyla;ziphiidae;mesoplodon;traversii": {
         "allow": {
             "ARG": [],
             "CHL": [],
             "NZL": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;tasmacetus;shepherdi": {
+    "mammalia;artiodactyla;ziphiidae;tasmacetus;shepherdi": {
         "allow": {
             "ARG": [],
             "ATF": [],
@@ -481322,7 +481322,7 @@
             "URY": []
         }
     },
-    "mammalia;cetartiodactyla;ziphiidae;ziphius;cavirostris": {
+    "mammalia;artiodactyla;ziphiidae;ziphius;cavirostris": {
         "allow": {
             "ABW": [],
             "AFG": [],

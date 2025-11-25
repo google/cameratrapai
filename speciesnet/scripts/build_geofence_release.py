@@ -68,8 +68,12 @@ Additional conventions:
   may later get blocked
 
 """
+import os
 import copy
 import json
+import tempfile
+import requests
+
 from pathlib import Path
 from typing import Union
 from typing import Optional
@@ -108,6 +112,12 @@ _OUTPUT = flags.DEFINE_string(
 # Handy type alias.
 StrPath = Union[str, Path]
 
+# Constants used for downloading the Wildlife Insights taxonomy when we need to generate
+# taxonomy_release.txt.
+wildlife_insights_page_size = 30000
+wildlife_insights_taxonomy_url = \
+    'https://api.wildlifeinsights.org/api/v1/taxonomy/taxonomies-all?fields=class,order,family,genus,species,authority,taxonomyType,uniqueIdentifier,commonNameEnglish&page[size]={}'.format(
+    wildlife_insights_page_size)
 
 def _taxon_allowed_in_region(
     label: str, country: str, admin1_region: Optional[str], geofence_map: dict
@@ -532,7 +542,7 @@ def _read_label_list(labels_path: StrPath) -> set[str]:
         labels_path: text file containing labels in seven-token format.
 
     Returns:
-        Set of labels.
+        Set of five-token labels.
     """
 
     with open(labels_path, mode="r", encoding="utf-8") as fp:
@@ -547,6 +557,154 @@ def _read_label_list(labels_path: StrPath) -> set[str]:
                 labels.add(new_label)
 
     return labels
+
+
+def download_wildlife_insights_taxonomy(output_path: Optional[StrPath],
+                                        overwrite: bool=False) -> StrPath:
+    """Download the Wildlife Insights taxonomy file from the taxonomy
+    API to a local .json file.
+
+    Args:
+        output_path:
+            Path to write the taxonomy to; defaults to a file in system temp space.
+        overwrite:
+            Overwrite the taxonomy file if it exists.
+
+    Returns:
+        Path where the taxonomy file was downloaded (or already existed).
+    """
+
+    if not output_path:
+        temp_dir = tempfile.gettempdir()
+        wi_temp_path = os.path.join(temp_dir,'speciesnet')
+        os.makedirs(wi_temp_path,exist_ok=True)
+        output_path = os.path.join(wi_temp_path,'wi_taxonomy.json')
+
+    if os.path.isfile(output_path) and (not overwrite):
+        print(f'Bypassing download of existing file {output_path}')
+        return output_path
+
+    response = requests.get(wildlife_insights_taxonomy_url, stream=True, timeout=600)
+    response.raise_for_status()
+    with open(output_path, mode="wb") as fp:
+        for chunk in response.iter_content(chunk_size=8192):
+            fp.write(chunk)
+
+    with open(output_path, mode="r", encoding="utf-8") as fp:
+        wildlife_insights_taxonomy = json.load(fp)
+
+    # We haven't implemented paging, make sure that's not an issue
+    if wildlife_insights_taxonomy['meta']['totalItems'] > wildlife_insights_page_size:
+        raise NotImplementedError('Paging not implemented yet for WI taxonomy download')
+
+    return output_path
+
+
+def generate_release_taxonomy_from_label_list(labels_path: StrPath,
+                                              output_path: StrPath):
+    """Generates taxonomy_release.txt (the list of taxa that might
+    be produced by the ensemble) from the labels.txt file (the list of
+    model classes).  The taxonomy list is just the set of categories in
+    the labels file, plus their parent taxa, which have to be retrieved
+    from the public WI taxonomy.
+
+    Args:
+        labels_path: text file containing labels in seven-token format.
+        output_path: the release taxonomy file, containing labels in seven-token
+            format.
+    """
+
+    # Download the WI taxonomy
+    taxonomy_path = download_wildlife_insights_taxonomy(output_path=None)
+
+    with open(taxonomy_path, mode='r', encoding='utf-8') as fp:
+        wi_taxonomy = json.load(fp)
+
+    # wi_taxononmy['data'] is a list of items that look like:
+    """
+        {'id': 2000003,
+        'class': 'Mammalia',
+        'order': 'Rodentia',
+        'family': 'Abrocomidae',
+        'genus': 'Abrocoma',
+        'species': 'bennettii',
+        'authority': 'Waterhouse, 1837',
+        'commonNameEnglish': "Bennett's Chinchilla Rat",
+        'taxonomyType': 'biological',
+        'uniqueIdentifier': '7a6c93a5-bdf7-4182-82f9-7a67d23f7fe1'}
+    """
+
+    # Map five-token label strings to entities in the WI taxonomy
+    label_to_taxon = {}
+
+    # item = wi_taxonomy['data'][0]
+    for item in wi_taxonomy['data']:
+        fields = []
+        levels = ['class','order','family','genus','species']
+        for level in levels:
+            if item[level] is None:
+                fields.append('')
+            else:
+                fields.append(item[level].lower().strip())
+        if len(fields[0]) == 0:
+            print(f'Skipping non-animal taxon {item['commonNameEnglish']}')
+            continue
+        taxon_string = ';'.join(fields)
+        if taxon_string in label_to_taxon:
+            old_item = label_to_taxon[taxon_string]
+            # The field "udpatedAt" is a datetime string, e.g.
+            # "2025-11-07T22:12:45.929Z".  Between "item" and
+            # "old_item", set label_to_taxon[taxon_string]
+            # to the one with the more recent value for "updatedAt".
+            if item['updatedAt'] > old_item['updatedAt']:
+                print('Warning: replacing {} with {} for {}'.format(
+                    old_item['commonNameEnglish'],
+                    item['commonNameEnglish'],
+                    taxon_string))
+                label_to_taxon[taxon_string] = item
+        else:
+            label_to_taxon[taxon_string] = item
+
+    # Read the labels file
+    with open(labels_path,mode="r",encoding="utf-8") as fp:
+        lines = [line.strip() for line in fp.readlines()]
+
+    #%%
+
+    # Map the parents of every taxon in the labels file into the WI taxonomy
+
+    taxon_strings_in_labels_file = set()
+    for label in lines:
+        tokens = label.split(';')
+        assert len(tokens) == 7
+        taxon_string = ';'.join(tokens[1:6])
+        taxon_strings_in_labels_file.add(taxon_string)
+
+    # These are the seven-token strings we'll add from the WI taxonomy
+    parent_identifier_strings = set()
+
+    for taxon_string in taxon_strings_in_labels_file:
+        parent_taxa = _generate_parent_taxon_strings(taxon_string)
+        for parent_taxon in parent_taxa:
+            # If this parent taxon is not already independently represented
+            # in the labels file...
+            if parent_taxon not in taxon_strings_in_labels_file:
+                taxon_info = label_to_taxon[parent_taxon]
+                guid = taxon_info['uniqueIdentifier']
+                if taxon_info['commonNameEnglish'] is not None:
+                    common = taxon_info['commonNameEnglish'].lower().strip()
+                else:
+                    common = ''
+                identifier_string = guid + ';' + taxon_string + ';' + common
+                parent_identifier_strings.add(identifier_string)
+
+    print('Adding {} new parent identifier strings'.format(
+        len(parent_identifier_strings)))
+
+    #%%
+
+
+    # 1f689929-883d-4dae-958c-3d57ab5b6c16;;;;;;animal
 
 
 def trim_to_supported_labels(
