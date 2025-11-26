@@ -14,6 +14,9 @@
 
 """Script to build the geofence release from geofence base with extra manual fixes.
 
+This module also includes tools for building taxonomy_release.txt from the labels
+file (e.g. always_crop_99710272_22x8_v12_epoch_00148.labels.txt).
+
 A geofencing .json file defines a "global geofencing dict".
 
 Keys in a global geofencing dict are five-token SpeciesNet taxonomy strings,
@@ -71,6 +74,7 @@ Additional conventions:
 import os
 import copy
 import json
+import uuid
 import tempfile
 import requests
 
@@ -81,6 +85,7 @@ from typing import Optional
 from absl import app
 from absl import flags
 from absl import logging
+from tqdm import tqdm
 import pandas as pd
 
 from speciesnet.geofence_utils import should_geofence_animal_classification
@@ -113,11 +118,18 @@ _OUTPUT = flags.DEFINE_string(
 StrPath = Union[str, Path]
 
 # Constants used for downloading the Wildlife Insights taxonomy when we need to generate
-# taxonomy_release.txt.
+# taxonomy_release.txt (which requires GUIDs for parent taxa of the taxa that appear
+# in the labels file).
 wildlife_insights_page_size = 30000
 wildlife_insights_taxonomy_url = \
     'https://api.wildlifeinsights.org/api/v1/taxonomy/taxonomies-all?fields=class,order,family,genus,species,authority,taxonomyType,uniqueIdentifier,commonNameEnglish&page[size]={}'.format(
     wildlife_insights_page_size)
+
+# We read parent taxa of the SpeciesNet categories from the Wildlife Insights taxonomy.
+# This is a live taxonomy, so we allow a few hard-coded replacements to help match
+# taxonomic entities that are in transition.
+taxonomic_replacements = {}
+taxonomic_replacements['cetartiodactyla'] = 'artiodactyla'
 
 def _taxon_allowed_in_region(
     label: str, country: str, admin1_region: Optional[str], geofence_map: dict
@@ -614,6 +626,8 @@ def generate_release_taxonomy_from_label_list(labels_path: StrPath,
             format.
     """
 
+    #%%
+
     # Download the WI taxonomy
     taxonomy_path = download_wildlife_insights_taxonomy(output_path=None)
 
@@ -633,11 +647,9 @@ def generate_release_taxonomy_from_label_list(labels_path: StrPath,
         'taxonomyType': 'biological',
         'uniqueIdentifier': '7a6c93a5-bdf7-4182-82f9-7a67d23f7fe1'}
     """
-
     # Map five-token label strings to entities in the WI taxonomy
     label_to_taxon = {}
 
-    # item = wi_taxonomy['data'][0]
     for item in wi_taxonomy['data']:
         fields = []
         levels = ['class','order','family','genus','species']
@@ -645,11 +657,15 @@ def generate_release_taxonomy_from_label_list(labels_path: StrPath,
             if item[level] is None:
                 fields.append('')
             else:
-                fields.append(item[level].lower().strip())
+                s = item[level].lower().strip()
+                if s in taxonomic_replacements:
+                    s = taxonomic_replacements[s]
+                fields.append(s)
         if len(fields[0]) == 0:
             print(f'Skipping non-animal taxon {item['commonNameEnglish']}')
             continue
         taxon_string = ';'.join(fields)
+
         if taxon_string in label_to_taxon:
             old_item = label_to_taxon[taxon_string]
             # The field "udpatedAt" is a datetime string, e.g.
@@ -669,8 +685,6 @@ def generate_release_taxonomy_from_label_list(labels_path: StrPath,
     with open(labels_path,mode="r",encoding="utf-8") as fp:
         lines = [line.strip() for line in fp.readlines()]
 
-    #%%
-
     # Map the parents of every taxon in the labels file into the WI taxonomy
 
     taxon_strings_in_labels_file = set()
@@ -683,19 +697,29 @@ def generate_release_taxonomy_from_label_list(labels_path: StrPath,
     # These are the seven-token strings we'll add from the WI taxonomy
     parent_identifier_strings = set()
 
-    for taxon_string in taxon_strings_in_labels_file:
+    for taxon_string in tqdm(taxon_strings_in_labels_file):
         parent_taxa = _generate_parent_taxon_strings(taxon_string)
-        for parent_taxon in parent_taxa:
+        for parent_taxon_string in parent_taxa:
             # If this parent taxon is not already independently represented
             # in the labels file...
-            if parent_taxon not in taxon_strings_in_labels_file:
-                taxon_info = label_to_taxon[parent_taxon]
+            if parent_taxon_string not in taxon_strings_in_labels_file:
+                # A small number of taxa in the Wildlife Insights taxonomy are
+                # "missing", in the sense that x's children are present, but x is
+                # not.
+                if parent_taxon_string not in label_to_taxon:
+                    print(f'Warning: expected taxon {parent_taxon_string} not in WI taxonomy')
+                    guid = str(uuid.uuid4())
+                    taxon_info = {}
+                    taxon_info['uniqueIdentifier'] = guid
+                    taxon_info['commonNameEnglish'] = ''
+                else:
+                    taxon_info = label_to_taxon[parent_taxon_string]
                 guid = taxon_info['uniqueIdentifier']
                 if taxon_info['commonNameEnglish'] is not None:
                     common = taxon_info['commonNameEnglish'].lower().strip()
                 else:
                     common = ''
-                identifier_string = guid + ';' + taxon_string + ';' + common
+                identifier_string = guid + ';' + parent_taxon_string + ';' + common
                 parent_identifier_strings.add(identifier_string)
 
     print('Adding {} new parent identifier strings'.format(
@@ -703,7 +727,13 @@ def generate_release_taxonomy_from_label_list(labels_path: StrPath,
 
     #%%
 
+    # Make sure that five-token strings are uniqe
+    five_token_taxon_to_seven_token_taxon = {}
+    for seven_token_taxon in ...
 
+    #%%
+    # Fix hard-coded classes where multiple GUIDs correspond to the same
+    # taxonomic entity, but we prefer one for clarity.
     # 1f689929-883d-4dae-958c-3d57ab5b6c16;;;;;;animal
 
 
