@@ -466,7 +466,7 @@ cc281e22-fc61-46df-8b58-a5879de1db39;mammalia;carnivora;herpestidae;bdeogale;nig
 5167d778-9f06-4641-9ed1-87fe48b528ba;aves;passeriformes;acrocephalidae;arundinax;aedon;thick-billed warbler
 b57debc1-dff2-48d3-a400-f2b5021e71b0;mammalia;carnivora;procyonidae;procyon;lotor;northern raccoon
 63c8d085-9113-4b8c-afa8-7986f93752ac;aves;procellariiformes;hydrobatidae;hydrobates;pelagicus;european storm-petrel
-a27d3983-76a1-4d2d-b080-18747cd77dcb;mammalia;artiodactyla;;;;even-toed ungulate
+a27d3983-76a1-4d2d-b080-18747cd77dcb;mammalia;artiodactyla;;;;artiodactyla order
 82f3ac57-5555-47b7-bae1-1690c3fb2fbf;mammalia;cingulata;chlamyphoridae;;;chlamyphoridae family
 78406034-cab0-4208-b324-31c2e8de60cd;aves;columbiformes;columbidae;streptopelia;decaocto;collared dove
 1ae5230b-5168-4491-ad4e-19583eb21b52;mammalia;artiodactyla;bovidae;tragelaphus;scriptus;bushbuck
@@ -1223,7 +1223,7 @@ d0f3398b-aa49-4c2a-94f8-414502e8170d;mammalia;didelphimorphia;didelphidae;philan
 fc9bcf48-83b9-48db-8646-063440d6427b;mammalia;lagomorpha;leporidae;pronolagus;randensis;jameson's red rock hare
 af2aa9f9-68e6-49dc-8394-c3702ff54c7f;aves;cuculiformes;cuculidae;cuculus;rochii;madagascar cuckoo
 56687d14-5a22-4e2e-b23e-feb82a68f59a;mammalia;rodentia;pedetidae;pedetes;capensis;spring hare
-15ecc823-cbf1-4ada-bc5d-fc5a69cf1574;aves;passeriformes;muscicapidae;copsychus;malabaricus;
+15ecc823-cbf1-4ada-bc5d-fc5a69cf1574;aves;passeriformes;muscicapidae;copsychus;malabaricus;white-rumped shama
 7e53dcb3-d6ca-4684-bd6d-11aa6a8a79b7;reptilia;squamata;teiidae;;;teiidae family
 2e2e018d-1fd4-48a3-97bc-625461c10057;mammalia;rodentia;sciuridae;neotamias;amoenus;yellow-pine chipmunk
 a47c85ae-3531-4bea-a136-4ac14792f0ef;aves;passeriformes;pellorneidae;trichastoma;malaccense;short-tailed babbler
