@@ -323,7 +323,7 @@ def load_geofence_base(path: StrPath) -> dict[str, dict]:
 
 
 def fix_geofence_base(
-    geofence_base: dict[str, dict], fixes_path: StrPath
+    geofence_base: dict[str, dict], fixes_path: StrPath, taxonomy_path: StrPath
 ) -> dict[str, dict]:
     """Applies the changes specified in a geofence fixes .csv file
     to the base global geofencing dict, returning an updated global geofencing
@@ -335,6 +335,9 @@ def fix_geofence_base(
         fixes_path:
             Filename of the .csv file defining modifications to the geofencing
             dict.
+        taxonomy_path:
+            Filename of the .txt file containing valid taxonomy entries
+            (typically taxonomy_release.txt).
 
     Returns:
         An updated global geofencing dict.
@@ -342,9 +345,13 @@ def fix_geofence_base(
 
     geofence = copy.deepcopy(geofence_base)
 
+    # Read the list of valid taxa
+    valid_five_token_taxa = set(validate_release_taxonomy(taxonomy_path))
+
     fixes = pd.read_csv(fixes_path, keep_default_na=False, comment="#")
     for idx, fix in fixes.iterrows():
         label = fix["species"].lower()
+        assert label in valid_five_token_taxa, f"Invalid taxon in fixes file: {label}"
         label_parts = label.split(";")
         if len(label_parts) != 5:
             raise ValueError("Fixes should always use five-token taxon strings")
@@ -637,6 +644,12 @@ def validate_release_taxonomy(taxonomy_path: StrPath):
     * All lines are well-formatted seven-token taxonomy strings
     * Only expected duplicated taxa exist
     * Only expected non-taxonomic strings exist
+
+    Args:
+        taxonomy_path: .csv file to alidate, typically taxonomy_releaase.txt
+
+    Returns:
+        list of valid five-token taxon strings
     """
 
     with open(taxonomy_path, "r", encoding="utf-8") as f:
@@ -662,6 +675,9 @@ def validate_release_taxonomy(taxonomy_path: StrPath):
         # If this is a duplicate, make sure it's expected
         if five_token_taxon_string in five_token_taxa:
             assert five_token_taxon_string in known_duplicate_five_token_strings
+        five_token_taxa.add(five_token_taxon_string)
+
+    return sorted(list(five_token_taxa))
 
 
 def generate_release_taxonomy_from_label_list(

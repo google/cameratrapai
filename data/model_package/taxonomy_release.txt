@@ -3,15 +3,15 @@ f1856211-cfb7-4a5b-9158-c0f72fd09ee6;;;;;;blank
 e2895ed5-780b-48f6-8a11-9e27cb594511;;;;;;vehicle
 23a6f03b-b3d0-471b-a67d-88f10cb64e59;amphibia;;;;;amphibian
 96632fbc-d0d0-4880-9df7-f747f6f5ec11;amphibia;anura;;;;frogs
-b46721f2-dc30-4819-84ef-a00d50039932;amphibia;anura;bufonidae;;;
-520574c8-4e67-4283-8e97-faf9f851efd7;amphibia;anura;bufonidae;rhinella;;
+32ae7b08-5ba5-4f70-aa0c-6e8e1aeec57a;amphibia;anura;bufonidae;;;
+4c3dccba-1341-4c5f-ae50-f7ee623ea9d3;amphibia;anura;bufonidae;rhinella;;
 04eda76f-c0e7-4e9e-85c3-5b1542db2915;amphibia;anura;bufonidae;rhinella;marina;cane toad
 5351aa59-81ba-4c9f-b453-f7a2830ae892;amphibia;anura;ranidae;;;true frogs
 17b8145a-a164-4059-a68b-47b8b7438428;amphibia;anura;ranidae;rana;;rana species
 4b2afbe1-1f24-4ee6-9f2e-3fe5f5845412;arachnida;;;;;arachnids
 4f3bab8f-e476-4a66-958d-e325cefd2752;arachnida;araneae;;;;spider
-82681eeb-ec65-4d30-b283-8da2ef8f8078;arachnida;araneae;theraphosidae;;;
-f6071af4-e373-46a6-89cb-864e79fc793d;arachnida;araneae;theraphosidae;aphonopelma;;
+e5dda992-093f-4e72-945a-4085841b19f8;arachnida;araneae;theraphosidae;;;
+ea9bc2e8-5f42-4416-8e93-17a978200b36;arachnida;araneae;theraphosidae;aphonopelma;;
 fab91417-5421-4aeb-9252-ae96f1890021;arachnida;araneae;theraphosidae;aphonopelma;paloma;paloma dwarf
 b1352069-a39c-4a84-a949-60044271c0c1;aves;;;;;bird
 bee0b5fb-7fa8-4242-87fd-18bf30007a4d;aves;accipitriformes;;;;accipitriformes order
@@ -1234,7 +1234,7 @@ ba17b36e-69d6-487b-a50a-a99adc93346d;aves;passeriformes;muscicapidae;alethe;cast
 7718f679-eb65-4be5-8245-a5b26b588164;aves;passeriformes;muscicapidae;cinclidium;frontale;blue-fronted robin
 784b57fe-8092-42ed-96ff-9ae93815240e;aves;passeriformes;muscicapidae;copsychus;;copsychus species
 1a5a33d0-f7b8-40b5-a19e-c2c905a11728;aves;passeriformes;muscicapidae;copsychus;albospecularis;merle dyal malgache
-15ecc823-cbf1-4ada-bc5d-fc5a69cf1574;aves;passeriformes;muscicapidae;copsychus;malabaricus;white-rumped shama
+aa8579dc-5b25-4347-b1ac-31668aede87b;aves;passeriformes;muscicapidae;copsychus;malabaricus;white-rumped shama
 42e0edc2-eeff-4ed9-8841-adc10ab70df7;aves;passeriformes;muscicapidae;copsychus;saularis;oriental magpie-robin
 2e9be24e-20a1-472f-890b-a4f00cf72604;aves;passeriformes;muscicapidae;cossypha;;cossypha species
 bf67d4d9-85ae-46c6-ad99-479d18c0692c;aves;passeriformes;muscicapidae;cossypha;niveicapilla;snowy-crowned robin-chat
@@ -2380,7 +2380,7 @@ f1ce44f4-b313-4843-a8bd-e7dc8fe99206;mammalia;carnivora;herpestidae;ichneumia;;i
 959d9eaf-e359-41c5-a9e5-220667e52a9b;mammalia;carnivora;herpestidae;mungos;mungo;banded mongoose
 86dc57e4-af53-4640-afce-b0030e0cd617;mammalia;carnivora;herpestidae;suricata;;suricata species
 8ff5f9db-dbd5-4ad3-a834-22ade546c36b;mammalia;carnivora;herpestidae;suricata;suricatta;meerkat
-a31b22b6-7896-451a-bd0b-2597751f554c;mammalia;carnivora;herpestidae;urva;;
+afa551fb-7856-459c-871d-4e3f9bd334b5;mammalia;carnivora;herpestidae;urva;;
 747bf4a3-5a55-4b03-8c6b-1f84c3d8064e;mammalia;carnivora;herpestidae;urva;auropunctata;small indian mongoose
 372497c3-8d96-41af-b755-1d7f3feb2ee4;mammalia;carnivora;herpestidae;urva;javanica;javan mongoose
 f55c75ce-01c6-4de0-bcd6-dbd32f92fc6a;mammalia;carnivora;hyaenidae;;;hyaenidae family
@@ -2457,7 +2457,7 @@ e5ed4d6b-3003-46c0-8f4b-aad8425382ed;mammalia;carnivora;mustelidae;mustela;sibir
 ae6c0300-a36a-4d1c-a375-a1f0b904ec8e;mammalia;carnivora;mustelidae;mustela;strigidorsa;stripe-backed weasel
 e268b71b-3c19-46f8-b411-eead2d6a88d6;mammalia;carnivora;mustelidae;neovison;;neovison species
 7c82313a-008c-41c3-84ac-171e5796bd4a;mammalia;carnivora;mustelidae;neovison;vison;american mink
-56e8ca2f-5230-4f81-94ac-495410822507;mammalia;carnivora;mustelidae;pekania;;
+81724439-591f-4e61-976f-5bca1fd3b3cb;mammalia;carnivora;mustelidae;pekania;;
 ae7d1bde-3d29-41fc-a52f-5c6e087143df;mammalia;carnivora;mustelidae;pekania;pennanti;fisher
 f88bb349-e574-4d3f-9502-ac7d87980115;mammalia;carnivora;mustelidae;poecilogale;;poecilogale species
 ecb2620e-7de8-4561-a71a-09afa2f03eb9;mammalia;carnivora;mustelidae;poecilogale;albinucha;african striped weasel
@@ -2654,7 +2654,7 @@ b867c6b1-6391-42a2-87d9-094de260a70a;mammalia;diprotodontia;macropodidae;macropu
 9b7dc1b3-01cf-4750-bf61-2653608e713b;mammalia;diprotodontia;macropodidae;macropus;parryi;whiptail wallaby
 86e0636d-c57a-46e6-951c-8e25b503a1df;mammalia;diprotodontia;macropodidae;macropus;robustus;common wallaroo
 e3f05a43-86b5-4736-bbf3-4f62e797302f;mammalia;diprotodontia;macropodidae;macropus;rufogriseus;red-necked wallaby
-ee8a621c-210c-4c28-b038-cb8bbb70de9c;mammalia;diprotodontia;macropodidae;osphranter;;
+2a4a8960-d9d6-416c-a144-1ddc414308b2;mammalia;diprotodontia;macropodidae;osphranter;;
 edd1ca1c-aa03-4321-86fa-edc0fbbd50c7;mammalia;diprotodontia;macropodidae;osphranter;rufus;red kangaroo
 ed2dba64-70ba-4e40-b8f0-c1952c62a6a1;mammalia;diprotodontia;macropodidae;petrogale;;petrogale species
 825e43b6-fd13-40d0-a16a-69a8cb134583;mammalia;diprotodontia;macropodidae;petrogale;penicillata;brush-tailed rock wallaby
@@ -2867,7 +2867,7 @@ ca1750d3-0c6c-4b9a-a455-4b811ec4b272;mammalia;primates;atelidae;lagothrix;poeppi
 dd075acb-f2c8-478d-bbf4-8274ef81e22d;mammalia;primates;callitrichidae;;;callitrichidae family
 4e96e52d-486a-4839-9180-24ce625c602e;mammalia;primates;callitrichidae;callithrix;;callithrix species
 7cf4c87c-d076-4e6b-a87d-85cfd5e73b03;mammalia;primates;callitrichidae;callithrix;jacchus;common marmoset
-1c077265-4b66-467e-a33f-78a00517be5e;mammalia;primates;callitrichidae;leontocebus;;
+f6ab17de-a68a-44c3-9172-867161f60fb0;mammalia;primates;callitrichidae;leontocebus;;
 d5120db5-2a59-45d7-a3ee-bc6d06b00b57;mammalia;primates;callitrichidae;leontocebus;fuscicollis;saddleback tamarin
 b01ed77b-822d-4f82-8685-79f9d87c3433;mammalia;primates;callitrichidae;mico;;mico species
 37353d72-98f1-404d-ba6a-7cbf8c2d25c7;mammalia;primates;callitrichidae;mico;melanurus;black-tailed marmoset
@@ -2983,7 +2983,7 @@ ac4b195d-b48e-456d-aacb-02a9b5823243;mammalia;primates;hominidae;;;hominidae fam
 6fcfa976-d335-4ad2-8aa7-d22be6411068;mammalia;primates;hominidae;gorilla;;gorilla species
 982c7064-3baa-40a2-bf88-917cbab80b6b;mammalia;primates;hominidae;gorilla;beringei;eastern gorilla
 d3739ec9-6c1a-4e77-8640-175cde6bf021;mammalia;primates;hominidae;gorilla;gorilla;western gorilla
-9f873854-5b12-41bf-98c1-7e86884ae44d;mammalia;primates;hominidae;homo;;
+d126f0ec-82dd-46f0-b76a-5985ff6bbc9b;mammalia;primates;hominidae;homo;;
 990ae9dd-7a59-4344-afcb-1b7b21368000;mammalia;primates;hominidae;homo;sapiens;human
 813da807-eeb6-4b47-9705-c95905c52122;mammalia;primates;hominidae;pan;;pan species
 5ff4999d-7a3c-4ad8-bf3e-3664fd25a71f;mammalia;primates;hominidae;pan;troglodytes;chimpanzee
@@ -3296,7 +3296,7 @@ a17a9c95-9301-4c9c-884a-cbfc11fa743b;mammalia;rodentia;sciuridae;funisciurus;pyr
 26364870-549e-42e6-80e8-52bcba12bfe0;mammalia;rodentia;sciuridae;glaucomys;;glaucomys species
 9cb9136f-84fc-4fca-b8da-52401e3981d9;mammalia;rodentia;sciuridae;glaucomys;sabrinus;carolina flying squirrel
 764a8bff-2ae5-4d5c-81d3-eb550732940f;mammalia;rodentia;sciuridae;glaucomys;volans;mexican flying squirrel
-c2168bc4-d58f-4ab7-b62c-d0cfd35b1817;mammalia;rodentia;sciuridae;guerlinguetus;;
+b4deaf3a-b769-4223-9d69-e86810964be1;mammalia;rodentia;sciuridae;guerlinguetus;;
 230c8c2d-4758-42c6-ac85-36a722f04977;mammalia;rodentia;sciuridae;guerlinguetus;brasiliensis;brazilian squirrel
 54dc0c9e-ed93-4a9b-9a5c-6a1c3037dba1;mammalia;rodentia;sciuridae;heliosciurus;;heliosciurus species
 d319ff8c-2178-4d59-968e-fad82b44efda;mammalia;rodentia;sciuridae;heliosciurus;rufobrachium;red-legged sun squirrel
@@ -3434,28 +3434,28 @@ fced62b8-0f79-414a-b6c2-1e0c9d038b2e;mammalia;tubulidentata;;;;tubulidentata ord
 408daddb-c2ab-497c-b794-6eb281cc3e3a;mammalia;tubulidentata;orycteropodidae;orycteropus;;orycteropus species
 7a5a9437-883c-4a5b-b7f9-1d90ec457f46;mammalia;tubulidentata;orycteropodidae;orycteropus;afer;aardvark
 739a105e-d883-4ff8-9282-7ec44018e6a0;reptilia;;;;;reptile
-0013a90e-1afc-40dc-9df2-a5b489cffd97;reptilia;crocodilia;;;;
-26543de2-65ef-42d5-bf4d-c253c4559040;reptilia;crocodilia;alligatoridae;;;
+e23a72de-aad5-4ee1-8c07-2080c4b63d33;reptilia;crocodilia;;;;
+82ecc3a4-9aff-4f1c-98c3-7f64053a1b32;reptilia;crocodilia;alligatoridae;;;
 08bec04b-25cd-41ef-a562-43398470d35e;reptilia;crocodilia;alligatoridae;caiman;;caiman
-47b573e4-2fd0-4d3b-8b61-92d5c9a828f0;reptilia;crocodylia;;;;
-24579aac-ab61-46e2-876c-369dc1fba2cc;reptilia;crocodylia;alligatoridae;;;
-7cb56032-ebe9-4c31-bd8c-11861053f1ef;reptilia;crocodylia;alligatoridae;alligator;;
+65b88a4b-356e-4ec0-a422-e0161a1378b4;reptilia;crocodylia;;;;
+b690ab3a-dd0d-40fa-b9ab-68604a4a83c3;reptilia;crocodylia;alligatoridae;;;
+7ed969ab-c8a1-49a6-ad18-16073b11f2c1;reptilia;crocodylia;alligatoridae;alligator;;
 7311a758-ade1-4c76-96e8-b8d05ee80d1f;reptilia;crocodylia;alligatoridae;alligator;mississippiensis;american alligator
-dad875ec-3211-47ef-ae17-569136b9b28a;reptilia;crocodylia;alligatoridae;caiman;;
+fefb6ef2-221c-4931-8c77-fc3edca6b65c;reptilia;crocodylia;alligatoridae;caiman;;
 abaa8edc-1106-4d7f-bb15-99891add68cb;reptilia;crocodylia;alligatoridae;caiman;crocodilus;spectacled caiman
 a3f61dce-b1a8-4cc1-8c87-ee46dcffd027;reptilia;crocodylia;alligatoridae;paleosuchus;;alligator species
-4976836e-0c9b-44e9-9b7c-806c4602c76f;reptilia;crocodylia;crocodylidae;;;
-db4f897d-a538-4543-948d-42fbf0b36d52;reptilia;crocodylia;crocodylidae;crocodylus;;
+076b4ab5-0836-47e6-a6ff-80b61a01cd3c;reptilia;crocodylia;crocodylidae;;;
+c05cd40c-591f-4a97-a9ae-cd998e49435c;reptilia;crocodylia;crocodylidae;crocodylus;;
 a5fc7382-e913-48c8-bcc2-e4b78ec44209;reptilia;crocodylia;crocodylidae;crocodylus;niloticus;crocodile
 0af344ad-6657-42c4-85d8-03fd2106a22a;reptilia;squamata;;;;lizards and snakes
 b3a3aaf6-dd72-4fdc-95ca-bcb282bca698;reptilia;squamata;agamidae;;;agamidae family
-173bea91-8a71-4bda-a2f3-f3a0542aa2b5;reptilia;squamata;agamidae;ctenophorous;;
+89f8b101-6646-4185-a235-ac1c9b285137;reptilia;squamata;agamidae;ctenophorous;;
 a5121a63-c9d0-4849-8db7-e7d8bbf4e581;reptilia;squamata;agamidae;ctenophorous;isolepsis;military sand-dragon
 7129558f-f6e7-4ba1-ae8a-0e6a7282e0e7;reptilia;squamata;agamidae;ctenophorus;;ctenophorus genus
 32020556-014a-437c-a23f-bf62e4d0437d;reptilia;squamata;agamidae;ctenophorus;caudicinctus;ring-tailed dragon
-566660ff-3b31-4300-82f6-d114724a7a79;reptilia;squamata;agamidae;lophognathus;;
+9e00ca02-542b-46e3-b698-a1908520a952;reptilia;squamata;agamidae;lophognathus;;
 25ebb9d5-e2ef-4ae0-90d5-b4f9d8d629e1;reptilia;squamata;agamidae;lophognathus;longirostris;long-snouted lashtail
-32cf717f-a349-40e9-8f51-33e651a0b027;reptilia;squamata;agamidae;pogona;;
+c4c3e82d-58a6-421c-b666-bcd7c775cc6c;reptilia;squamata;agamidae;pogona;;
 7109b4dc-5cb7-4022-8cd9-c5f4bb40ddc0;reptilia;squamata;agamidae;pogona;minor;western bearded dragon
 b96bfe58-08cb-4d16-88cb-ce0b40d7e895;reptilia;squamata;agamidae;pogona;vitticeps;central bearded dragon
 6e68ca7d-f5c6-410b-8fea-b4583ed32bb4;reptilia;squamata;colubridae;;;colubridae family
@@ -3463,54 +3463,54 @@ b96bfe58-08cb-4d16-88cb-ce0b40d7e895;reptilia;squamata;agamidae;pogona;vitticeps
 f255895c-5284-40b6-928f-14b5711941bd;reptilia;squamata;colubridae;coluber;constrictor;eastern racer
 7da57774-5448-420f-83e7-b611e0f9e2ae;reptilia;squamata;colubridae;pituophis;;pituophis species
 5530da0c-f031-4392-b86e-bd1af72de752;reptilia;squamata;colubridae;pituophis;catenifer catenifer;pacific gophersnake
-3cd2b3ec-f8ca-4d14-9438-cbcd7310c83f;reptilia;squamata;dactyloidae;;;
-29e783b6-cf39-40a7-bcab-b5958099a6c9;reptilia;squamata;dactyloidae;anolis;;
+cfa5a828-7b56-4161-b7fd-ae7f323afdd7;reptilia;squamata;dactyloidae;;;
+f2769e1b-fef2-455a-bcdd-acbc1aea9836;reptilia;squamata;dactyloidae;anolis;;
 0d85f409-e783-4ab3-9726-2a3f0a1349f5;reptilia;squamata;dactyloidae;anolis;carolinensis;green anole
 361e6ba6-a9d6-4220-a276-2d2af66f9fa9;reptilia;squamata;dactyloidae;anolis;sagrei;cuban brown anole
-7627eab2-482a-45f9-b663-960c02382c4e;reptilia;squamata;elapidae;;;
-b98ac7af-1d85-462a-80ff-00dbbd5a7df6;reptilia;squamata;elapidae;pseudechis;;
+61c44165-35e6-478c-88b6-8730ac719015;reptilia;squamata;elapidae;;;
+f4a3b4ac-4844-480a-9a8b-0fe90cac6b1b;reptilia;squamata;elapidae;pseudechis;;
 0575fa47-99c2-4b13-beee-a932dcb704a3;reptilia;squamata;elapidae;pseudechis;australis;king brown snake
 94c4abe2-73bb-487b-91ef-5dae91905a84;reptilia;squamata;elapidae;pseudechis;guttatus;blue-bellied black snake
 a138523e-ddf5-402a-bc10-f1b71d1fca19;reptilia;squamata;elapidae;pseudechis;porphyriacus;red-bellied black snake
-f1417766-5191-48fa-9095-2ca616467edc;reptilia;squamata;helodermatidae;;;
+4052df42-a918-4d9a-a3eb-0eeae1c7047f;reptilia;squamata;helodermatidae;;;
 e959ad64-68e3-4a4c-a091-f965405827d6;reptilia;squamata;helodermatidae;heloderma;;heloderma species
 ea7e5297-8c71-4c93-a55b-27b1fe8f49de;reptilia;squamata;helodermatidae;heloderma;suspectum;gila monster
-f43b9677-fc4b-4c62-8140-15283d8eab8d;reptilia;squamata;iguania;;;
-528bd15d-c484-4508-8035-4c864a2f607a;reptilia;squamata;iguania;intellagama;;
+54952a9a-51ea-48ae-9d98-f8cdd90602b1;reptilia;squamata;iguania;;;
+79c099b3-ca83-4dcd-803d-7b06a0b8846b;reptilia;squamata;iguania;intellagama;;
 efb829cf-4a82-47bb-9e5d-ceabe3b2f608;reptilia;squamata;iguania;intellagama;lesueurii;eastern water dragon
-1cc9af2b-5051-44b7-b40d-3c4c7ee19f9e;reptilia;squamata;iguanidae;;;
+cad65f0b-ba02-4e80-81a7-0e159698825c;reptilia;squamata;iguanidae;;;
 3c3f9fa5-d0c7-4bea-b108-40cd1ab66d0c;reptilia;squamata;iguanidae;iguana;;iguana species
 265cec39-e155-4897-9e7f-06f62fc22af1;reptilia;squamata;iguanidae;iguana;iguana;common green iguana
-4d40e5e2-ae96-4266-950e-f05a72b0be35;reptilia;squamata;iguanidae;sauromalus;;
+0e1ac781-2267-467a-85a8-83bf8cbdab9e;reptilia;squamata;iguanidae;sauromalus;;
 1e2d6891-9ee9-4a6a-aa5e-b6cad1642cba;reptilia;squamata;iguanidae;sauromalus;ater;common chuckwalla
-35f4c484-3d9e-45b9-97bd-1ef46def53b6;reptilia;squamata;natricidae;;;
-84bb7bd6-0a84-4414-8560-dda2ad0dc1a6;reptilia;squamata;natricidae;thamnophis;;
+d056dc12-6b68-415b-b5a1-e3652e8f9eea;reptilia;squamata;natricidae;;;
+8cc15e88-826e-42c0-888b-9743c8cbeefc;reptilia;squamata;natricidae;thamnophis;;
 60eb9e56-9b25-4adf-9d95-59ca3dadfec6;reptilia;squamata;natricidae;thamnophis;proximus;western ribbonsnake
 15bd29aa-9dbe-4203-a204-9a924a624b29;reptilia;squamata;phrynosomatidae;;;sceloporus/uta species
 d46dc76d-382e-4b58-8ecb-d0d10b079ad4;reptilia;squamata;phrynosomatidae;sceloporus;;sceloporus species
 fa03d72f-ebbb-46cc-a84c-b34409df1bbd;reptilia;squamata;phrynosomatidae;sceloporus;occidentalis;western fence lizard
-d066f06d-9fe2-4cb0-8a7a-544b3a4ac7a4;reptilia;squamata;pythonidae;;;
-c8800aab-9820-44f9-9c5f-70257f40b87b;reptilia;squamata;pythonidae;antaresia;;
+16c3b3ed-04f6-473e-b212-7e37935a7671;reptilia;squamata;pythonidae;;;
+7679e6f7-8b6f-4a96-a758-7cb9fd400b35;reptilia;squamata;pythonidae;antaresia;;
 b79b5d82-187b-4743-9ea7-0b6b627e3036;reptilia;squamata;pythonidae;antaresia;stimsoni;stimson's python
 6a737c13-1869-4e4e-9edb-2bfd9b78e5d1;reptilia;squamata;scincidae;;;scincidae family
-f0a9516b-114b-4554-8e67-f43ac4378770;reptilia;squamata;scincidae;bellatorias;;
+4d297aea-83f5-4e07-9afc-035e0b1a3fd4;reptilia;squamata;scincidae;bellatorias;;
 66b8db71-6791-4528-a677-5caa3ebbc68e;reptilia;squamata;scincidae;bellatorias;major;land mullet
 a471be83-c332-40bc-a514-2e6300a68c9c;reptilia;squamata;scincidae;ctenotus;;ctenotus genus
 f68bf176-1371-4ed9-a2c7-f1df01093775;reptilia;squamata;scincidae;ctenotus;inornatus;bar-shouldered ctenotus
 06b8329e-d3cc-4ae7-990c-2cbe4152894c;reptilia;squamata;scincidae;ctenotus;pantherinus;leopard ctenotus
-c6e91172-1152-4ad3-850c-4d05f7a264d2;reptilia;squamata;scincidae;egernia;;
+98f2b73b-d0bf-4e05-a017-bcc173f80c6d;reptilia;squamata;scincidae;egernia;;
 93e5f443-4403-4cd0-8836-a89e43e28d79;reptilia;squamata;scincidae;egernia;cunninghami;cunningham's skink
 64d1e255-7d08-4297-b56f-f049bddb3dde;reptilia;squamata;scincidae;plestiodon;;plestiodon species
-4f2d0c84-04cf-4dcc-ad69-e82e4b0eda93;reptilia;squamata;scincidae;tiliqua;;
+15832770-bfcf-4137-b9b5-8494f4ba6ef9;reptilia;squamata;scincidae;tiliqua;;
 0897017c-129f-4eb0-8348-050151e7c45f;reptilia;squamata;scincidae;tiliqua;scincoides;eastern blue-tongued lizard
 7e53dcb3-d6ca-4684-bd6d-11aa6a8a79b7;reptilia;squamata;teiidae;;;teiidae family
-8076434e-6e3c-49cb-bac3-225da36f1f41;reptilia;squamata;teiidae;holcosus;;
+74a2205a-dd67-4d8b-931e-21daefe69ef4;reptilia;squamata;teiidae;holcosus;;
 55e4e0ff-458e-4acd-bcb5-62fb39ffa1cf;reptilia;squamata;teiidae;holcosus;festivus;middle american ameiva
-3a384cce-0580-422c-8b3e-998c7d161eb2;reptilia;squamata;teiidae;salvator;;
+29946929-cb2a-4784-89d8-71c8994fd850;reptilia;squamata;teiidae;salvator;;
 14cf8991-a2c0-4ceb-9ba1-78017c41d4ac;reptilia;squamata;teiidae;salvator;merianae;argentine black and white tegu
 3964d472-8443-46f4-9628-92ac1eed0c55;reptilia;squamata;teiidae;tupinambis;;tupinambis species
 3bbd196e-e3a2-4024-a6dc-f20153c9428f;reptilia;squamata;teiidae;tupinambis;teguixin;black tegu
-b830d6ef-b7f3-4156-846c-243ae5485129;reptilia;squamata;varanidae;;;
+09ffe63b-cef7-4bb9-8f45-fd3a880eff4b;reptilia;squamata;varanidae;;;
 7701dc40-d39a-4e62-9531-477bf41c56d1;reptilia;squamata;varanidae;varanus;;monitor species
 8e11fa41-67ed-40c0-824d-362069505de6;reptilia;squamata;varanidae;varanus;giganteus;perentie
 13bcc46f-169a-4960-b10c-1a57ce84ea55;reptilia;squamata;varanidae;varanus;gouldii;sand monitor
@@ -3520,19 +3520,19 @@ d46884a9-17d3-428d-a546-c916f5029d4d;reptilia;squamata;varanidae;varanus;panopte
 bf821325-fbf8-4b48-a437-4c238ad07f90;reptilia;squamata;varanidae;varanus;salvator;common water monitor
 96a61999-e7b0-4442-8a6b-9c2ea3a38d98;reptilia;squamata;varanidae;varanus;varius;lace monitor
 4adcb4cf-9ed3-4596-9f56-931ed644007e;reptilia;testudines;;;;turtle order
-6638a982-1424-4b30-b6ae-4ebfeb653fcc;reptilia;testudines;chelidae;;;
-98682da5-2181-403b-993b-08df248b3db9;reptilia;testudines;chelidae;chelodina;;
+315eea1b-bddd-4d70-b032-be3acacec87d;reptilia;testudines;chelidae;;;
+2457e445-b303-46e4-882e-09c81ec5cd42;reptilia;testudines;chelidae;chelodina;;
 422fde79-7306-453b-9afc-5f74c7405c90;reptilia;testudines;chelidae;chelodina;longicollis;eastern snake-necked turtle
 edf86316-c76f-42a4-9767-c5fe92939e4e;reptilia;testudines;emydidae;;;emydidae family
 7a54c1e7-2a0b-4f9e-b554-4defbb3937cf;reptilia;testudines;emydidae;actinemys;;actinemys species
 446887df-3477-4f4a-a434-852f96ba48d9;reptilia;testudines;emydidae;actinemys;marmorata;western pond turtle
-02c1af44-09a3-4cce-9416-c11c736e512a;reptilia;testudines;emydidae;terrapene;;
+1076fd8a-f450-463b-b388-2e42669b695d;reptilia;testudines;emydidae;terrapene;;
 e8e3b12d-eeaf-4ba0-8b5a-3f455c32b910;reptilia;testudines;emydidae;terrapene;triunguis;three-toed box turtle
 5ba8987f-b1fa-45f9-b64a-8ed826f0abc4;reptilia;testudines;testudinidae;;;tortoise family
 160668d9-5a91-4604-9faa-68e7533bbe3a;reptilia;testudines;testudinidae;chelonoidis;;giant land tortoise species
 2a29c629-ff91-481c-80b2-efd0afc69b60;reptilia;testudines;testudinidae;chelonoidis;denticulatus;yellow-footed tortoise
-9fe69fd4-5944-40dc-b7b6-d6209732d1d1;reptilia;testudines;testudinidae;gopherus;;
+584ed94b-460c-4698-8d5b-32ab7b4458d0;reptilia;testudines;testudinidae;gopherus;;
 830419bc-bbb2-401e-a2d6-699624709986;reptilia;testudines;testudinidae;gopherus;berlandieri;berlandier's tortoise
 24db939e-690e-4dcf-a110-3e90392f3f23;reptilia;testudines;testudinidae;gopherus;polyphemus;gopher tortoise
-e492ff8e-787a-4a2c-b663-72df30799056;reptilia;testudines;testudinidae;stigmochelys;;
+a19d99e6-26e0-4152-8e2a-dce3c786f1d7;reptilia;testudines;testudinidae;stigmochelys;;
 8a90c138-7a9a-47cf-ba62-6b6948662fe2;reptilia;testudines;testudinidae;stigmochelys;pardalis;leopard tortoise
