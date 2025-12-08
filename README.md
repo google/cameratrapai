@@ -189,8 +189,8 @@ Depending on how you plan to run SpeciesNet, you may want to install additional 
 
 There are two variants of the SpeciesNet classifier, which lend themselves to different ensemble strategies:
 
-- [v4.0.2a](model_cards/v4.0.1a) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
-- [v4.0.2b](model_cards/v4.0.1b): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
+- [v4.0.2a](model_cards/v4.0.1a.md) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
+- [v4.0.2b](model_cards/v4.0.1b.md): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
 
 Both links point to the model cards for the 4.0.1 models; model cards were not updated for the 4.0.2 release, which only included changes to geofencing rules and minor taxonomy updates.
 
