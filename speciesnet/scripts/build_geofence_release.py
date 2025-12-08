@@ -102,8 +102,12 @@ _FIXES = flags.DEFINE_string(
 _TRIM = flags.DEFINE_string(
     "trim",
     "data/model_package/always_crop_99710272_22x8_v12_epoch_00148.labels.txt",
-    "Path to the labels supported by the model (TXT). Used to trim the geofence "
-    "release.",
+    "Path to the labels supported by the model (TXT).",
+)
+_TAXONOMY = flags.DEFINE_string(
+    "taxonomy",
+    "data/model_package/taxonomy_release.txt",
+    "Path to the full taxonomy file (model categories and parents) (TXT).",
 )
 _OUTPUT = flags.DEFINE_string(
     "output",
@@ -966,9 +970,17 @@ def main(argv: list[str]) -> None:
     geofence_base = load_geofence_base(_BASE.value)
     validate_geofence(geofence_base)
 
-    geofence_release = fix_geofence_base(geofence_base, _FIXES.value)
-    geofence_release = propagate_rules(geofence_release, _TRIM.value)
-    geofence_release = trim_to_supported_labels(geofence_release, _TRIM.value)
+    geofence_release = fix_geofence_base(
+        geofence_base=geofence_base,
+        fixes_path=_FIXES.value,
+        taxonomy_path=_TAXONOMY.value,
+    )
+    geofence_release = propagate_rules(
+        geofence=geofence_release, labels_path=_TRIM.value
+    )
+    geofence_release = trim_to_supported_labels(
+        geofence=geofence_release, labels_path=_TRIM.value
+    )
 
     validate_geofence(geofence_release)
 
