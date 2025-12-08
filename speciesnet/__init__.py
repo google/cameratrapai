@@ -29,8 +29,6 @@ DEFAULT_MODEL = "kaggle:google/speciesnet/pyTorch/v4.0.2a/1"
 # this does not indicate that only these models will work with
 # the speciesnet package.
 SUPPORTED_MODELS = [
-    "kaggle:google/speciesnet/pyTorch/v4.0.1a",
-    "kaggle:google/speciesnet/pyTorch/v4.0.1b",
     "kaggle:google/speciesnet/pyTorch/v4.0.2a/1",
     "kaggle:google/speciesnet/pyTorch/v4.0.2b/1",
 ]

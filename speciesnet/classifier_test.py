@@ -318,10 +318,7 @@ class TestClassifier:
 
     def test_classifications(self, predicted_vs_expected) -> None:
         classifications, label = predicted_vs_expected
-        try:
-            assert classifications["classes"][0] == label
-        except AssertionError:
-            assert classifications["classes"][0] == label.replace("artio", "cetartio")
+        assert classifications["classes"][0] == label
         assert classifications["scores"] == sorted(
             classifications["scores"], reverse=True
         )
