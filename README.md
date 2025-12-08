@@ -139,8 +139,8 @@ Note that in this example, we have specified the country code only for the ensem
 The `run_model.py` script recommended above will download model weights automatically.  If you want to use the SpeciesNet model weights outside of our script, or if you plan to be offline when you first run the script, you can download model weights directly from Kaggle.  Running our ensemble also requires [MegaDetector](https://github.com/agentmorris/MegaDetector), so in this list of links, we also include a direct link to the MegaDetector model weights.
 
 - [SpeciesNet page on Kaggle](https://www.kaggle.com/models/google/speciesnet)
-- [Direct link to version 4.0.1a weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.1a/1/download) (the crop classifier)
-- [Direct link to version 4.0.1b weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.1b/1/download) (the whole-image classifier)
+- [Direct link to version 4.0.2a weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.2a/1/download) (the crop classifier)
+- [Direct link to version 4.0.2b weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.2b/1/download) (the whole-image classifier)
 - [Direct link to MegaDetector weights](https://github.com/agentmorris/MegaDetector/releases/download/v5.0/md_v5a.0.0.pt)
 
 ## Contacting us
@@ -189,18 +189,20 @@ Depending on how you plan to run SpeciesNet, you may want to install additional 
 
 There are two variants of the SpeciesNet classifier, which lend themselves to different ensemble strategies:
 
-- [v4.0.1a](model_cards/v4.0.1a) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
-- [v4.0.1b](model_cards/v4.0.1b): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
+- [v4.0.2a](model_cards/v4.0.1a) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
+- [v4.0.2b](model_cards/v4.0.1b): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
 
-run_model.py defaults to v4.0.1a, but you can specify one model or the other using the --model option, for example:
+Both links point to the model cards for the 4.0.1 models; model cards were not updated for the 4.0.2 release, which only included changes to geofencing rules and minor taxonomy updates.
 
-- `--model kaggle:google/speciesnet/pyTorch/v4.0.1a`
-- `--model kaggle:google/speciesnet/pyTorch/v4.0.1b`
+run_model.py defaults to v4.0.2a, but you can specify one model or the other using the --model option, for example:
+
+- `--model kaggle:google/speciesnet/pyTorch/v4.0.2a/1`
+- `--model kaggle:google/speciesnet/pyTorch/v4.0.2b/1`
 
 If you are a DIY type and you plan to run the models outside of our ensemble, a couple of notes:
 
-- The crop classifier (v4.0.1a) expects images to be cropped tightly to animals, then resized to 480x480px.
-- The whole-image classifier (v4.0.1b) expects images to have been cropped vertically to remove some pixels from the top and bottom, then resized to 480x480px.
+- The crop classifier (v4.0.2a) expects images to be cropped tightly to animals, then resized to 480x480px.
+- The whole-image classifier (v4.0.2b) expects images to have been cropped vertically to remove some pixels from the top and bottom, then resized to 480x480px.
 
 See [classifier.py](https://github.com/google/cameratrapai/blob/master/speciesnet/classifier.py) to see how preprocessing is implemented for both classifiers.
 
