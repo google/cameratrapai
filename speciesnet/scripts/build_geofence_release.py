@@ -36,7 +36,7 @@ codes other than "USA".
 
 Examples:
 
-This taxon would be allowed in RUS, SGP, THA, TWAN, and VNM.  In the USA,
+This taxon would be allowed in RUS, SGP, THA, TWN, and VNM.  In the USA,
 it would be allowed in AK but blocked in all other states.  It would be
 blocked in all other countries.
 
@@ -122,8 +122,10 @@ StrPath = Union[str, Path]
 # taxonomy_release.txt (which requires GUIDs for parent taxa of the taxa that appear
 # in the labels file).
 wildlife_insights_page_size = 30000
-wildlife_insights_taxonomy_url = "https://api.wildlifeinsights.org/api/v1/taxonomy/taxonomies-all?fields=class,order,family,genus,species,authority,taxonomyType,uniqueIdentifier,commonNameEnglish&page[size]={}".format(
-    wildlife_insights_page_size
+wildlife_insights_taxonomy_url = (
+    "https://api.wildlifeinsights.org/api/v1/taxonomy/taxonomies-all?"
+    "fields=class,order,family,genus,species,authority,taxonomyType,uniqueIdentifier,"
+    f"commonNameEnglish&page[size]={wildlife_insights_page_size}"
 )
 
 # These are the only non-taxonomic strings we expect to see in the labels file and/or
@@ -171,7 +173,7 @@ def _taxon_allowed_in_region(
 
 
 def _validate_taxon_string(taxon: str) -> bool:
-    """Validates a five-token taxon string.  Errors in invalid
+    """Validates a five-token taxon string.  Errors if invalid
     taxa, else returns True."""
 
     tokens = taxon.split(";")
