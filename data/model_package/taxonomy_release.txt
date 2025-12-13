@@ -2983,7 +2983,7 @@ ac4b195d-b48e-456d-aacb-02a9b5823243;mammalia;primates;hominidae;;;hominidae fam
 6fcfa976-d335-4ad2-8aa7-d22be6411068;mammalia;primates;hominidae;gorilla;;gorilla species
 982c7064-3baa-40a2-bf88-917cbab80b6b;mammalia;primates;hominidae;gorilla;beringei;eastern gorilla
 d3739ec9-6c1a-4e77-8640-175cde6bf021;mammalia;primates;hominidae;gorilla;gorilla;western gorilla
-d126f0ec-82dd-46f0-b76a-5985ff6bbc9b;mammalia;primates;hominidae;homo;;
+d126f0ec-82dd-46f0-b76a-5985ff6bbc9b;mammalia;primates;hominidae;homo;;human
 990ae9dd-7a59-4344-afcb-1b7b21368000;mammalia;primates;hominidae;homo;sapiens;human
 813da807-eeb6-4b47-9705-c95905c52122;mammalia;primates;hominidae;pan;;pan species
 5ff4999d-7a3c-4ad8-bf3e-3664fd25a71f;mammalia;primates;hominidae;pan;troglodytes;chimpanzee
