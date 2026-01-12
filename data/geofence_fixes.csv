@@ -1315,3 +1315,7 @@ mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,WY
 mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,DC
 # Block Eurasian red squirrels in the US
 mammalia;rodentia;sciuridae;sciurus;vulgaris,block,USA,
+# The Southern screamer is found in South America; there as an explicit allow rule for CA for which I can't find a basis
+aves;anseriformes;anhimidae;chauna;torquata;block,USA,
+# There is also an explicit allow rule for the genus (for USA) for which I can't find a basis
+aves;anseriformes;anhimidae;chauna;;block,USA,
