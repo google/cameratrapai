@@ -1315,3 +1315,5 @@ mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,WY
 mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,DC
 # Block Eurasian red squirrels in the US
 mammalia;rodentia;sciuridae;sciurus;vulgaris,block,USA,
+# Allow Eastern gray squirrels in California
+mammalia;rodentia;sciuridae;sciurus;carolinensis,allow,USA,CA
