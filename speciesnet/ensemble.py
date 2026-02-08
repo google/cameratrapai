@@ -39,6 +39,32 @@ PredictionSourceType = str
 PredictionType = tuple[PredictionLabelType, PredictionScoreType, PredictionSourceType]
 
 
+def _load_taxonomy_from_file(taxonomy_file):
+    """Loads the taxonomy .txt file into a dict."""
+
+    def _taxa_from_label(label: str) -> str:
+        return ";".join(label.split(";")[1:6])
+
+    # Create taxonomy map.
+    with open(taxonomy_file, mode="r", encoding="utf-8") as fp:
+        labels = [line.strip() for line in fp.readlines()]
+        taxonomy_map = {_taxa_from_label(label): label for label in labels}
+
+        for label in [
+            Classification.BLANK,
+            Classification.VEHICLE,
+            Classification.UNKNOWN,
+        ]:
+            taxa = _taxa_from_label(label)
+            if taxa in taxonomy_map:
+                del taxonomy_map[taxa]
+
+        for label in [Classification.HUMAN, Classification.ANIMAL]:
+            taxa = _taxa_from_label(label)
+            taxonomy_map[taxa] = label
+    return taxonomy_map
+
+
 class SpeciesNetEnsemble:
     """Ensemble component of SpeciesNet."""
 
@@ -76,27 +102,7 @@ class SpeciesNetEnsemble:
     def load_taxonomy(self):
         """Loads the taxonomy from the model info."""
 
-        def _taxa_from_label(label: str) -> str:
-            return ";".join(label.split(";")[1:6])
-
-        # Create taxonomy map.
-        with open(self.model_info.taxonomy, mode="r", encoding="utf-8") as fp:
-            labels = [line.strip() for line in fp.readlines()]
-            taxonomy_map = {_taxa_from_label(label): label for label in labels}
-
-            for label in [
-                Classification.BLANK,
-                Classification.VEHICLE,
-                Classification.UNKNOWN,
-            ]:
-                taxa = _taxa_from_label(label)
-                if taxa in taxonomy_map:
-                    del taxonomy_map[taxa]
-
-            for label in [Classification.HUMAN, Classification.ANIMAL]:
-                taxa = _taxa_from_label(label)
-                taxonomy_map[taxa] = label
-        return taxonomy_map
+        return _load_taxonomy_from_file(self.model_info.taxonomy)
 
     def load_geofence(self):
         """Loads the geofence map from the model info."""

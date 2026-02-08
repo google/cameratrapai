@@ -481,8 +481,7 @@ class TestLoadPartialPredictions:
     def invalid_predictions_json(self, tmp_path) -> Generator[Path, None, None]:
         filepath = tmp_path / "invalid_predictions.json"
         with open(filepath, mode="w", encoding="utf-8") as fp:
-            fp.write(
-                """{
+            fp.write("""{
                     "predictions": [
                         {
                             "filepath": "a.jpg",
@@ -492,8 +491,7 @@ class TestLoadPartialPredictions:
                             }
                         }
                     ]
-                }"""
-            )
+                }""")
         yield filepath
         filepath.unlink()
 

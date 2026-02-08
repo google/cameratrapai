@@ -51,6 +51,7 @@ dependencies = [
     "tqdm",
     "torch >= 2.0",
     "yolov5 >= 7.0.8, < 7.0.12",
+    "setuptools<82"
 ]
 
 [project.optional-dependencies]
