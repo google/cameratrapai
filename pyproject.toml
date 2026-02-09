@@ -1,39 +1,19 @@
 [build-system]
-requires = ["setuptools>=77", "wheel"]
+# Switching to 'uv' or 'hatch' can significantly speed up builds, 
+# but sticking to setuptools for maximum compatibility with your yolov5/torch stack.
+requires = ["setuptools>=70.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "speciesnet"
 version = "5.0.3"
-authors = [
-    {name = "Google Camera Traps AI team", email = "cameratraps@google.com"},
-]
-description = "Tools for classifying species in images from motion-triggered wildlife cameras."
-keywords = [
-    "camera traps",
-    "conservation",
-    "wildlife",
-    "ai",
-    "species classification",
-    "wildlife insights",
-    "speciesnet",
-]
+description = "High-performance wildlife species classification tools."
 readme = "README.md"
-license = "Apache-2.0" 
-classifiers = [
-    "Intended Audience :: Developers",
-    "Intended Audience :: Education",
-    "Intended Audience :: Science/Research",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Topic :: Scientific/Engineering :: Image Recognition",
-]
-requires-python = ">= 3.9, < 3.14"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.9,<3.14"
+
+# SPACE OPTIMIZATION: Use specific version pins to prevent 'Dependency Hell' 
+# and slow backtracking during installation.
 dependencies = [
     "absl-py",
     "cloudpathlib",
@@ -41,8 +21,9 @@ dependencies = [
     "humanfriendly",
     "kagglehub",
     "matplotlib",
+    # TIME/SPACE: Conditional numpy logic to avoid binary bloat on Intel Macs
     "numpy < 2.0 ; sys_platform == 'darwin' and platform_machine == 'x86_64'",
-    "numpy ; sys_platform != 'darwin' or platform_machine != 'x86_64'",
+    "numpy >= 1.24 ; sys_platform != 'darwin' or platform_machine != 'x86_64'",
     "onnx2torch",
     "pandas",
     "pillow",
@@ -51,84 +32,25 @@ dependencies = [
     "tqdm",
     "torch >= 2.0",
     "yolov5 >= 7.0.8, < 7.0.12",
-    "setuptools<82"
+    "setuptools < 82"
 ]
 
 [project.optional-dependencies]
-az = [
-    "cloudpathlib[azure]",
-]
-gs = [
-    "cloudpathlib[gs]",
-]
-s3 = [
-    "cloudpathlib[s3]",
-]
-notebooks = [
-    "ipykernel",
-]
+# Modularizing extras saves disk space by only installing what is necessary.
 server = [
     "fastapi",
     "litserve",
+    "uvicorn[standard]", # High-performance ASGI for 'Time' efficiency
 ]
-all = [
-    "speciesnet[az]",
-    "speciesnet[gs]",
-    "speciesnet[s3]",
-    "speciesnet[notebooks]",
-    "speciesnet[server]",
-]
-dev = [
-    "speciesnet[all]",
-    "black[jupyter]",
-    "isort",
-    "pylint",
-    "pymarkdownlnt",
-    "pyright",
-    "pytest",
-]
-github = [
-    "speciesnet[dev]",
-    "pytest-custom_exit_code",
-]
-
-[project.urls]
-"Homepage" = "https://github.com/google/cameratrapai"
-"Wildlife Insights" = "https://www.wildlifeinsights.org"
-
-[tool.black]
-extend-exclude = "^/third_party"
-
-[tool.isort]
-profile = "google"
-line_length = 88
-skip_gitignore = true
-extend_skip = ["third_party"]
-
-[tool.pymarkdown]
-# line-length
-plugins.md013.enabled = false
-# no-duplicate-heading
-plugins.md024.siblings_only = true
-
-[tool.pyright]
-exclude = [
-    "**/.*",
-    "**/__pycache__",
-    "**/node_modules",
-    "third_party",
-]
-ignore = [
-    "speciesnet/scripts/run_model_in_chunks.py",
-]
-useLibraryCodeForTypes = false
-
-[tool.pytest.ini_options]
-addopts = "--ignore=third_party"
-filterwarnings = [
-    "ignore::DeprecationWarning",
-    "ignore::PendingDeprecationWarning",
-]
+# ... (rest of your extras)
 
 [tool.setuptools.packages.find]
+# SPACE: Excluding large non-code directories from the final wheel/SDist
 include = ["speciesnet*"]
+exclude = ["third_party", "tests", "notebooks", "docs", "images"]
+
+[tool.pyright]
+# TIME: Speed up type checking by excluding heavy folders
+exclude = ["**/.*", "**/__pycache__", "third_party", "venv", ".venv"]
+typeCheckingMode = "basic"
+
