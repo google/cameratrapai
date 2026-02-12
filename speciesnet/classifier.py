@@ -175,7 +175,7 @@ class SpeciesNetClassifier:
 
         img_tensor = F.convert_image_dtype(img_tensor, torch.uint8)
         img_tensor = img_tensor.permute([1, 2, 0])  # CHW to HWC.
-        return PreprocessedImage(img_tensor.numpy(), img.width, img.height)
+        return PreprocessedImage(img_tensor.cpu().numpy(), img.width, img.height)
 
     def predict(
         self, filepath: str, img: Optional[PreprocessedImage]
