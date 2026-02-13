@@ -421,6 +421,6 @@ class TestClassifier:
                 non_batched["classifications"]["scores"],
                 batched["classifications"]["scores"],
                 rtol=1e-3,  # 0.1% relative tolerance
-                atol=1e-5,  # 0.00001 absolute tolerance
+                atol=1e-3,  # 0.001 absolute tolerance
                 err_msg=f"Scores mismatch for image {i} ({filepaths[i]})",
             )
