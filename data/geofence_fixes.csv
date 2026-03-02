@@ -1331,3 +1331,5 @@ mammalia;rodentia;sciuridae;sciurus;niger,allow,USA,OR
 mammalia;rodentia;sciuridae;sciurus;niger,allow,USA,ID
 mammalia;rodentia;sciuridae;sciurus;niger,allow,USA,MT
 mammalia;rodentia;sciuridae;sciurus;niger,allow,USA,WA
+# Block all bears in the UK
+mammalia;carnivora;ursidae;;,block,GBR,
