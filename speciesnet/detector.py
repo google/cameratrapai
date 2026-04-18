@@ -50,7 +50,7 @@ class SpeciesNetDetector:
     STRIDE = 64
     DETECTION_THRESHOLD = 0.01
 
-    def __init__(self, model_name: str) -> None:
+    def __init__(self, model_name: str, size_threshold: float = 0.0, human_conf_threshold: float = 0.3, max_objects: int = 1) -> None:
         """Loads the detector resources.
 
         Code adapted from: https://github.com/agentmorris/MegaDetector
@@ -67,6 +67,9 @@ class SpeciesNetDetector:
         start_time = time.time()
 
         self.model_info = ModelInfo(model_name)
+        self.size_threshold = size_threshold
+        self.human_conf_threshold = human_conf_threshold
+        self.max_objects = max_objects
 
         # Select the best device available.
         if torch.cuda.is_available():
@@ -231,8 +234,22 @@ class SpeciesNetDetector:
                 }
             )
 
-        # Sort detections by confidence score.
-        detections = sorted(detections, key=lambda det: det["conf"], reverse=True)
+        # Filter and sort detections
+        filtered_detections = []
+        for det in detections:
+            is_human = (det.get("category") == "2" or det.get("label") == "human")
+            if is_human and det["conf"] >= self.human_conf_threshold:
+                filtered_detections.append(det)
+                continue
+            
+            bbox = det["bbox"]
+            area = bbox[2] * bbox[3]
+            if area >= self.size_threshold:
+                filtered_detections.append(det)
+                
+        # Sort detections by relative area size (width * height) descending
+        filtered_detections.sort(key=lambda det: det["bbox"][2] * det["bbox"][3], reverse=True)
+        detections = filtered_detections[:self.max_objects]
 
         return {
             "filepath": filepath,

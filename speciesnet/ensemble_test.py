@@ -321,46 +321,49 @@ class TestEnsemble:
                     "classes": ["X", "Y", "Z"],
                     "scores": [0.5, 0.3, 0.2],
                 },
+                "prediction": "X",
+                "prediction_score": 0.5,
+                "prediction_source": "mock",
                 "model_version": expected_model_version,
             },
             {
                 "filepath": "d.jpg",
                 "failures": ["GEOLOCATION"],
-                "classifications": {
-                    "classes": ["R", "S", "T"],
-                    "scores": [0.7, 0.2, 0.1],
-                },
                 "detections": [
                     {
                         "category": "2",
                         "label": "human",
                         "conf": 0.7,
                         "bbox": [0.1, 0.2, 0.3, 0.4],
+                        "prediction": "human",
+                        "prediction_score": 0.7,
+                        "prediction_source": "detector",
+                        "classifications": {
+                            "classes": ["R", "S", "T"],
+                            "scores": [0.7, 0.2, 0.1],
+                        },
                     }
                 ],
-                "prediction": "R",
-                "prediction_score": 0.7,
-                "prediction_source": "mock",
                 "model_version": expected_model_version,
             },
             {
                 "filepath": "e.jpg",
                 "country": "COUNTRY_E",
-                "classifications": {
-                    "classes": ["K", "L", "M"],
-                    "scores": [0.9, 0.1, 0.0],
-                },
                 "detections": [
                     {
                         "category": "2",
                         "label": "human",
                         "conf": 0.7,
                         "bbox": [0.1, 0.2, 0.3, 0.4],
+                        "prediction": "human",
+                        "prediction_score": 0.7,
+                        "prediction_source": "detector",
+                        "classifications": {
+                            "classes": ["K", "L", "M"],
+                            "scores": [0.9, 0.1, 0.0],
+                        },
                     }
                 ],
-                "prediction": "K",
-                "prediction_score": 0.9,
-                "prediction_source": "mock",
                 "model_version": expected_model_version,
             },
             {

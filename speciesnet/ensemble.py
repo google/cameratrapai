@@ -25,7 +25,7 @@ from typing import Any, Callable
 from absl import logging
 from humanfriendly import format_timespan
 
-from speciesnet.constants import Classification
+from speciesnet.constants import Classification, Detection
 from speciesnet.constants import Failure
 from speciesnet.ensemble_prediction_combiner import combine_predictions_for_single_item
 from speciesnet.geofence_utils import geofence_animal_classification
@@ -73,6 +73,7 @@ class SpeciesNetEnsemble:
         model_name: str,
         geofence: bool = True,
         prediction_combiner: Callable = combine_predictions_for_single_item,
+        human_conf_threshold: float = 0.3,
     ) -> None:
         """Loads the ensemble resources.
 
@@ -92,6 +93,7 @@ class SpeciesNetEnsemble:
         self.taxonomy_map = self.load_taxonomy()
         self.geofence_map = self.load_geofence()
         self.prediction_combiner = prediction_combiner
+        self.human_conf_threshold = human_conf_threshold
 
         end_time = time.time()
         logging.info(
@@ -188,26 +190,65 @@ class SpeciesNetEnsemble:
             }
             result = {key: value for key, value in result.items() if value is not None}
 
-            # Most importantly, ensemble everything into a single prediction.
-            if classifications is not None and detections is not None:
-                prediction, score, source = self.prediction_combiner(
-                    classifications=classifications,
-                    detections=detections,
-                    country=geolocation.get("country"),
-                    admin1_region=geolocation.get("admin1_region"),
-                    taxonomy_map=self.taxonomy_map,
-                    geofence_map=self.geofence_map,
-                    enable_geofence=self.enable_geofence,
-                    geofence_fn=geofence_animal_classification,
-                    roll_up_fn=roll_up_labels_to_first_matching_level,
-                )
-                result["prediction"] = (
-                    prediction.value
-                    if isinstance(prediction, Classification)
-                    else prediction
-                )
-                result["prediction_score"] = score
-                result["prediction_source"] = source
+            # Ensemble each detection with its corresponding classification, or top-level if no detections.
+            if classifications is not None and detections:
+                if "classifications" in result:
+                    del result["classifications"]
+                new_detections = []
+                for i, det in enumerate(detections):
+                    cls_result = classifications[i] if i < len(classifications) else None
+                    if cls_result:
+                        is_human = (det.get("category") == "2" or det.get("label") == Detection.HUMAN)
+                        if is_human and det.get("conf", 0) >= self.human_conf_threshold:
+                            det["prediction"] = Classification.HUMAN.value
+                            det["prediction_score"] = det.get("conf")
+                            det["prediction_source"] = "detector"
+                            det["classifications"] = cls_result
+                        else:
+                            prediction, score, source = self.prediction_combiner(
+                                classifications=cls_result,
+                                detections=[det],
+                                country=geolocation.get("country"),
+                                admin1_region=geolocation.get("admin1_region"),
+                                taxonomy_map=self.taxonomy_map,
+                                geofence_map=self.geofence_map,
+                                enable_geofence=self.enable_geofence,
+                                geofence_fn=geofence_animal_classification,
+                                roll_up_fn=roll_up_labels_to_first_matching_level,
+                            )
+                            det["prediction"] = (
+                                prediction.value
+                                if isinstance(prediction, Classification)
+                                else prediction
+                            )
+                            det["prediction_score"] = score
+                            det["prediction_source"] = source
+                            det["classifications"] = cls_result
+                        
+                    new_detections.append(det)
+                
+                result["detections"] = new_detections
+            elif classifications is not None:
+                cls_result = classifications[0] if isinstance(classifications, list) and len(classifications) > 0 else classifications
+                if cls_result and isinstance(cls_result, dict):
+                    prediction, score, source = self.prediction_combiner(
+                        classifications=cls_result,
+                        detections=detections or [],
+                        country=geolocation.get("country"),
+                        admin1_region=geolocation.get("admin1_region"),
+                        taxonomy_map=self.taxonomy_map,
+                        geofence_map=self.geofence_map,
+                        enable_geofence=self.enable_geofence,
+                        geofence_fn=geofence_animal_classification,
+                        roll_up_fn=roll_up_labels_to_first_matching_level,
+                    )
+                    result["prediction"] = (
+                        prediction.value
+                        if isinstance(prediction, Classification)
+                        else prediction
+                    )
+                    result["prediction_score"] = score
+                    result["prediction_source"] = source
 
             # Finally, report the model version.
             result["model_version"] = self.model_info.version

@@ -53,7 +53,7 @@ from speciesnet.utils import save_predictions
 StrPath = Union[str, Path]
 DetectorInput = tuple[str, Optional[PreprocessedImage]]
 BBoxOutput = tuple[str, list[BBox]]
-ClassifierInput = tuple[str, Optional[PreprocessedImage]]
+ClassifierInput = tuple[str, Optional[list[PreprocessedImage]]]
 
 # Register SpeciesNet model components with the SyncManager to be able to safely share
 # them between processes.
@@ -563,6 +563,9 @@ class SpeciesNet:
         target_species_txt: Optional[str] = None,
         combine_predictions_fn: Callable = combine_predictions_for_single_item,
         multiprocessing: bool = False,
+        size_threshold: float = 0.0,
+        human_conf_threshold: float = 0.3,
+        max_objects: int = 1,
     ) -> None:
         """Initializes the SpeciesNet model with specified settings.
 
@@ -593,12 +596,18 @@ class SpeciesNet:
                     model_name, target_species_txt=target_species_txt
                 )
             if components in ["all", "detector"]:
-                self.detector = self.manager.Detector(model_name)  # type: ignore
+                self.detector = self.manager.Detector(  # type: ignore
+                    model_name,
+                    size_threshold=size_threshold,
+                    human_conf_threshold=human_conf_threshold,
+                    max_objects=max_objects
+                )
             if components in ["all", "ensemble"]:
                 self.ensemble = self.manager.Ensemble(  # type: ignore
                     model_name,
                     geofence=geofence,
                     prediction_combiner=combine_predictions_fn,
+                    human_conf_threshold=human_conf_threshold,
                 )
         else:
             self.manager = None
@@ -607,12 +616,18 @@ class SpeciesNet:
                     model_name, target_species_txt=target_species_txt
                 )
             if components in ["all", "detector"]:
-                self.detector = SpeciesNetDetector(model_name)
+                self.detector = SpeciesNetDetector(
+                    model_name,
+                    size_threshold=size_threshold,
+                    human_conf_threshold=human_conf_threshold,
+                    max_objects=max_objects
+                )
             if components in ["all", "ensemble"]:
                 self.ensemble = SpeciesNetEnsemble(
                     model_name,
                     geofence=geofence,
                     prediction_combiner=combine_predictions_fn,
+                    human_conf_threshold=human_conf_threshold,
                 )
 
     def __del__(self) -> None:

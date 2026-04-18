@@ -147,6 +147,21 @@ _IGNORE_EXISTING_PREDICTIONS = flags.DEFINE_bool(
     "instances. --ignore_existing_predictions bypasses loading partial results, "
     "--noignore_existing_predictions (default) resumes from existing predictions.",
 )
+_SIZE_THRESHOLD = flags.DEFINE_float(
+    "size_threshold",
+    0.0,
+    "Minimum relative area (width * height) of a bounding box. Objects smaller than this will be ignored.",
+)
+_HUMAN_CONF_THRESHOLD = flags.DEFINE_float(
+    "human_conf_threshold",
+    0.3,
+    "Minimum detector confidence threshold to keep humans, bypassing the size_threshold constraint.",
+)
+_MAX_OBJECTS = flags.DEFINE_integer(
+    "max_objects",
+    1,
+    "Maximum number of objects per image to process and classify (sorted by size).",
+)
 
 
 def guess_predictions_source(
@@ -174,6 +189,11 @@ def guess_predictions_source(
             found_classifications = True
         if "detections" in prediction:
             found_detections = True
+            for det in prediction["detections"]:
+                if "classifications" in det:
+                    found_classifications = True
+                if "prediction" in det:
+                    found_ensemble_results = True
         if "prediction" in prediction:
             found_ensemble_results = True
         if found_classifications and found_detections and not found_ensemble_results:
@@ -404,6 +424,9 @@ def main(argv: list[str]) -> None:
         # routine. And also, implement that routine! :-)
         # combine_predictions_fn=custom_combine_predictions_fn,
         multiprocessing=(run_mode == "multi_process"),
+        size_threshold=_SIZE_THRESHOLD.value,
+        human_conf_threshold=_HUMAN_CONF_THRESHOLD.value,
+        max_objects=_MAX_OBJECTS.value,
     )
     if hasattr(model, "classifier") and not hasattr(model, "detector"):
         if (
