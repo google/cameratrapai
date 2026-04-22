@@ -238,8 +238,9 @@ class SpeciesNetDetector:
         filtered_detections = []
         for det in detections:
             is_human = (det.get("category") == "2" or det.get("label") == "human")
-            if is_human and det["conf"] >= self.human_conf_threshold:
-                filtered_detections.append(det)
+            if is_human:
+                if det["conf"] >= self.human_conf_threshold:
+                    filtered_detections.append(det)
                 continue
             
             bbox = det["bbox"]
