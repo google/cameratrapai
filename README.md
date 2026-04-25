@@ -6,22 +6,21 @@ An ensemble of AI models for classifying wildlife in camera trap images.
 
 - [Overview](#overview)
 - [Running SpeciesNet](#running-speciesnet)
+  - [Do I have to do all this command-line stuff?](#do-i-have-to-do-all-this-command-line-stuff)
   - [Setting up your Python environment](#setting-up-your-python-environment)
-  - [Running the models](#running-the-models)
+  - [Installing the SpeciesNet Python package](#installing-the-speciesnet-python-package)
+  - [Running SpeciesNet](#running-speciesnet)
+  - [Running SpeciesNet on multiple detections per image (or on videos)](#running-speciesnet-on-multiple-detections-per-image-or-on-videos)
   - [Using GPUs](#using-gpus)
-  - [Running each component separately](#running-each-component-separately)
 - [Downloading SpeciesNet model weights directly](#downloading-speciesnet-model-weights-directly)
 - [Contacting us](#contacting-us)
 - [Citing SpeciesNet](#citing-speciesnet)
 - [Supported models](#supported-models)
-- [Input format](#input-format)
-- [Output format](#output-format)
+- [Output format](#output-format-from-run_model)
 - [Visualizing SpeciesNet output](#visualizing-speciesnet-output)
 - [Ensemble decision-making](#ensemble-decision-making)
-- [Alternative installation variants](#alternative-installation-variants)
-- [Contributing code](#contributing-code)
+- [Advanced topics](#advanced-topics)
 - [Animal picture](#animal-picture)
-- [Build status](#build-status)
 
 ## Overview
 
@@ -40,6 +39,12 @@ The full details of the models and the ensemble process are discussed in this re
 Gadot T, Istrate Ș, Kim H, Morris D, Beery S, Birch T, Ahumada J. [To crop or not to crop: Comparing whole-image and cropped classification on a large dataset of camera trap images](https://doi.org/10.1049/cvi2.12318). IET Computer Vision. 2024 Dec;18(8):1193-208.
 
 ## Running SpeciesNet
+
+### Do I have to do all this command line stuff?
+
+No, you don't have to run anything at the command line to use SpeciesNet: there are a number of tools that help you run SpeciesNet on your computer or on cloud-based systems.  Details are beyond the scope of this README, but cloud-based systems that support SpeciesNet include [Wildlife Insights](https://www.wildlifeinsights.org/) and [Animl](https://animl.camera/). [AddaxAI](https://addaxdatascience.com/addaxai/) is a popular graphical tool for running SpeciesNet on your computer.
+
+This README, though, is about running SpeciesNet at the command line, so, on to instructions...
 
 ### Setting up your Python environment
 
@@ -63,9 +68,9 @@ To confirm that the package has been installed, you can run:
 
 You should see help text related to the main script you'll use to run SpeciesNet.
 
-### Running the models
+### Running SpeciesNet
 
-The easiest way to run the ensemble is via the "run_model" script, like this:
+The easiest way to run SpeciesNet is via the "run_model" script, like this:
 
 > ```python -m speciesnet.scripts.run_model --folders "c:\your\image\folder" --predictions_json "c:\your\output\file.json"```
 
@@ -87,6 +92,30 @@ If your images are from the USA, you can also specify a state name using the two
 
 `--admin1_region CA`
 
+### Running SpeciesNet on multiple detections per image (or on videos)
+
+The `run_model` script described above uses [MegaDetector](https://github.com/agentmorris/MegaDetector) to find animals in each image, then runs the SpeciesNet classifier on <i>just the highest-confidence detection in each image</i>.  The goal of this script is to propose the single species that is most likely to be present in each image, and in most cases, processing every object detected in the image through the classifier would be slower, without changing the proposed species.
+
+This is a problem, however, when you frequently have multi-species images, or images with both humans and domestic animals.  If this is a concern for your scenario, instead of using `run_model`, we recommend using [run_md_and_speciesnet](https://megadetector.readthedocs.io/en/latest/detection.html#run_md_and_speciesnet---CLI-interface), from the [MegaDetector Python package](https://megadetector.readthedocs.io/).  This looks like the following:
+
+```bash
+pip install megadetector
+pip install speciesnet
+python -m megadetector.detection.run_md_and_speciesnet
+```
+
+For example:
+
+```bash
+python -m megadetector.detection.run_md_and_speciesnet "c:\your\image\folder" "c:\your\output\file.json" --country USA --state CA
+```
+
+Output from this script will be in the [MegaDetector output format](https://lila.science/megadetector-output-format).  This format is supported by other tools for reviewing camera trap images, like [Timelapse](https://timelapse.ucalgary.ca/).
+
+This script also supports video (`run_model` supports only still images).
+
+We know it's a little confusing that there are two separate scripts right now; we will merge them soon.
+
 ### Using GPUs
 
 If you don't have an NVIDIA GPU, you can ignore this section.
@@ -107,7 +136,7 @@ You can also directly check whether SpeciesNet can see your GPU by running:
 
 `python -m speciesnet.scripts.gpu_test`
 
-99% of the time, after you install SpeciesNet on Linux, it will correctly see your GPU right away.  On Windows, you will likely need to take at least one more step:
+99% of the time, after you install SpeciesNet on Linux, it will correctly see your GPU right away.  On Windows, you will likely need to take one more step:
 
 1. Install the GPU version of PyTorch, by activating your speciesnet Python environment (e.g. by running "conda activate speciesnet"), then running:
 
@@ -115,28 +144,9 @@ You can also directly check whether SpeciesNet can see your GPU by running:
    
 2. If the GPU doesn't work immediately after that step, update your [GPU driver](https://www.nvidia.com/en-us/geforce/drivers/), then reboot.  Really, don't skip the reboot part, most problems related to GPU access can be fixed by upgrading your driver and rebooting.
 
-
-### Running each component separately
-
-Rather than running everything at once, you may want to run the detection, classification, and ensemble steps separately.  You can do that like this:
-
-- Run the detector:
-
-  > ```python -m speciesnet.scripts.run_model --detector_only --folders "c:\your\image\folder" --predictions_json "c:\your_detector_output_file.json"```
-  
-- Run the classifier, passing the file that you just created, which contains detection results:  
-
-  > ```python -m speciesnet.scripts.run_model --classifier_only --folders "c:\your\image\folder" --predictions_json "c:\your_clasifier_output_file.json" --detections_json "c:\your_detector_output_file.json"```
-  
-- Run the ensemble step, passing both the files that you just created, which contain the detection and classification results:  
-
-  > ```python -m speciesnet.scripts.run_model --ensemble_only --folders "c:\your\image\folder" --predictions_json "c:\your_ensemble_output_file.json" --detections_json "c:\your_detector_output_file.json" --classifications_json "c:\your_clasifier_output_file.json" --country CAN```  
-  
-Note that in this example, we have specified the country code only for the ensemble step; the geofencing is part of the ensemble component, so the country code is only relevant for this step.
-
 ## Downloading SpeciesNet model weights directly
 
-The `run_model.py` script recommended above will download model weights automatically.  If you want to use the SpeciesNet model weights outside of our script, or if you plan to be offline when you first run the script, you can download model weights directly from Kaggle.  Running our ensemble also requires [MegaDetector](https://github.com/agentmorris/MegaDetector), so in this list of links, we also include a direct link to the MegaDetector model weights.
+Both scripts described above (`run_model` and `run_md_and_speciesnet`) will download model weights automatically.  If you want to use the SpeciesNet model weights outside of our script, or if you plan to be offline when you first run the script, you can download model weights directly from Kaggle.  Running our ensemble also requires [MegaDetector](https://github.com/agentmorris/MegaDetector), so in this list of links, we also include a direct link to the MegaDetector model weights.
 
 - [SpeciesNet page on Kaggle](https://www.kaggle.com/models/google/speciesnet)
 - [Direct link to version 4.0.2a weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.2a/1/download) (the crop classifier)
@@ -146,6 +156,8 @@ The `run_model.py` script recommended above will download model weights automati
 ## Contacting us
 
 If you have issues or questions, either [file an issue](https://github.com/google/cameratrapai/issues) or email us at [cameratraps@google.com](mailto:cameratraps@google.com).
+
+We love hearing from users, so please reach out if you try SpeciesNet, whether you find it to be amazing or a total catastrophe.
 
 ## Citing SpeciesNet
 
@@ -161,83 +173,13 @@ If you use this model, please cite:
 }
 ```
 
-## Alternative installation variants
-
-Depending on how you plan to run SpeciesNet, you may want to install additional dependencies:
-
-- Minimal requirements:
-
-  `pip install speciesnet`
-
-- Minimal + notebook requirements:
-
-  `pip install speciesnet[notebooks]`
-
-- Minimal + server requirements:
-
-  `pip install speciesnet[server]`
-
-- Minimal + cloud requirements (`az` / `gs` / `s3`), e.g.:
-
-  `pip install speciesnet[gs]`
-
-- Any combination of the above requirements, e.g.:
-
-  `pip install speciesnet[notebooks,server]`
-
-## Supported models
-
-There are two variants of the SpeciesNet classifier, which lend themselves to different ensemble strategies:
-
-- [v4.0.2a](model_cards/v4.0.1a.md) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
-- [v4.0.2b](model_cards/v4.0.1b.md): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
-
-Both links point to the model cards for the 4.0.1 models; model cards were not updated for the 4.0.2 release, which only included changes to geofencing rules and minor taxonomy updates.
-
-run_model.py defaults to v4.0.2a, but you can specify one model or the other using the --model option, for example:
-
-- `--model kaggle:google/speciesnet/pyTorch/v4.0.2a/1`
-- `--model kaggle:google/speciesnet/pyTorch/v4.0.2b/1`
-
-If you are a DIY type and you plan to run the models outside of our ensemble, a couple of notes:
-
-- The crop classifier (v4.0.2a) expects images to be cropped tightly to animals, then resized to 480x480px.
-- The whole-image classifier (v4.0.2b) expects images to have been cropped vertically to remove some pixels from the top and bottom, then resized to 480x480px.
-
-See [classifier.py](https://github.com/google/cameratrapai/blob/master/speciesnet/classifier.py) to see how preprocessing is implemented for both classifiers.
-
-## Input format
-
-In the above examples, we demonstrate calling `run_model.py` using the `--folders` option to point to your images, and optionally using the `--country` options to tell the ensemble what country your images came from.  `run_model.py` can also load a list of images from a .json file in the following format; this is particularly useful if you want to specify different countries/states for different subsets of your images.
-
-When you call the model, you can either prepare your requests to match this format or, in some cases, other supported formats will be converted to this automatically.
-
-```text
-{
-    "instances": [
-        {
-            "filepath": str  => Image filepath
-            "country": str (optional)  => 3-letter country code (ISO 3166-1 Alpha-3) for the location where the image was taken
-            "admin1_region": str (optional)  => First-level administrative division (in ISO 3166-2 format) within the country above
-            "latitude": float (optional)  => Latitude where the image was taken
-            "longitude": float (optional)  => Longitude where the image was taken
-        },
-        ...  => A request can contain multiple instances in the format above.
-    ]
-}
-```
-
-admin1_region is currently only supported in the US, where valid values for admin1_region are two-letter state codes.
-
-Latitude and longitude are only used to determine admin1_region, so if you are specifying a state code, you don't need to specify latitude and longitude.
-
-## Output format
+## Output format from run_model
 
 `run_model.py` produces output in .json format, containing an array called "predictions", with one element per image.  We provide a script to convert this format to the format used by [MegaDetector](https://github.com/agentmorris/MegaDetector), which can be imported into [Timelapse](https://timelapse.ucalgary.ca/), see [speciesnet_to_md.py](speciesnet/scripts/speciesnet_to_md.py).
 
-Each element always contains  field called "filepath"; the exact content of those elements will vary depending on which elements of the ensemble you ran.
+Each element always contains  field called "filepath"; the exact content of those elements will vary depending on which elements of the ensemble you ran.  If you didn't go out of your way to do something unusual, you ran the entire ensemble (i.e., both the detector and the classifier), so the "full ensemble" output format applies.  Output formats for other scenarios are described in the [advanced topics documentation](advances_topics.md).
 
-### Full ensemble
+### Full ensemble output format
 
 In the full ensemble output, the "classifications" field contains raw classifier output, before geofencing is applied.  So even if you specify a country code, you may see taxa in the "classifications" field that are not found in the country you specified.  The "prediction" field is the result of integrating the classification, detection, and geofencing information; if you specify a country code, the "prediction" field should only contain taxa that are found in the country you specified.
 
@@ -276,66 +218,21 @@ In the full ensemble output, the "classifications" field contains raw classifier
 }
 ```
 
-### Classifier-only inference
-
-```text
-{
-    "predictions": [
-        {
-            "filepath": str  => Image filepath.
-            "failures": list[str] (optional)  => List of internal components that failed during prediction (in this case, only "CLASSIFIER" can be in that list). If absent, the prediction was successful.
-            "classifications": {  => dict (optional)  => Top-5 classifications. Included only if "CLASSIFIER" if not part of the "failures" field.
-                "classes": list[str]  => List of top-5 classes predicted by the classifier, matching the decreasing order of their scores below.
-                "scores": list[float]  => List of scores corresponding to top-5 classes predicted by the classifier, in decreasing order.
-                "target_classes": list[str] (optional)  => List of target classes, only present if target classes are passed as arguments.
-                "target_logits": list[float] (optional)  => Raw confidence scores (logits) of the target classes, only present if target classes are passed as arguments.
-            }
-        },
-        ...  => A response will contain one prediction for each instance in the request.
-    ]
-}
-```
-
-### Detector-only inference
-
-```text
-{
-    "predictions": [
-        {
-            "filepath": str  => Image filepath.
-            "failures": list[str] (optional)  => List of internal components that failed during prediction (in this case, only "DETECTOR" can be in that list). If absent, the prediction was successful.
-            "detections": [  => list (optional)  => List of detections with confidence scores > 0.01, in decreasing order of their scores. Included only if "DETECTOR" if not part of the "failures" field.
-                {
-                    "category": str  => Detection class "1" (= animal), "2" (= human) or "3" (= vehicle) from MegaDetector's raw output.
-                    "label": str  => Detection class "animal", "human" or "vehicle", matching the "category" field above. Added for readability purposes.
-                    "conf": float  => Confidence score of the current detection.
-                    "bbox": list[float]  => Bounding box coordinates, in (xmin, ymin, width, height) format, of the current detection. Coordinates are normalized to the [0.0, 1.0] range, relative to the image dimensions.
-                },
-                ...  => A prediction can contain zero or multiple detections.
-            ]
-        },
-        ...  => A response will contain one prediction for each instance in the request.
-    ]
-}
-```
-
 ## Visualizing SpeciesNet output
 
-As per above, many users will work with SpeciesNet results in open-source tools like [Timelapse](https://timelapse.ucalgary.ca/), which support the file format used by [MegaDetector](https://github.com/agentmorris/MegaDetector) (the format is described [here](https://lila.science/megadetector-output-format)).  Consequently, we provide a [speciesnet_to_md](speciesnet/scripts/speciesnet_to_md.py) script to convert from the SpeciesNet output format to this format.
+As per above, many users will work with SpeciesNet results in open-source tools like [Timelapse](https://timelapse.ucalgary.ca/), which support the file format used by [MegaDetector](https://github.com/agentmorris/MegaDetector) (the format is described [here](https://lila.science/megadetector-output-format)).  If you used `run_md_and_speciesnet` to run SpeciesNet, you already have output in this format.  If you used `run_model`, we provide a [speciesnet_to_md](speciesnet/scripts/speciesnet_to_md.py) script to convert to this format.  Tools like Timelapse are a good way to visualize and interact with your SpeciesNet results.
 
-However, if you want to use the command line or Python code to visualize SpeciesNet results, we recommend using the visualization tools provided in the [megadetector-utils Python package](https://pypi.org/project/megadetector-utils/).  For example, if you just ran SpeciesNet on some images like this:
+If you want to use the command line or Python code to visualize SpeciesNet results, we recommend using the visualization tools provided in the [megadetector-utils Python package](https://pypi.org/project/megadetector-utils/).  For example, if you just ran either of these commands:
 
-```bash
-IMAGE_DIR=/path/to/your/images
-python -m speciesnet.scripts.run_model --folders ${IMAGE_DIR} --predictions_json ${IMAGE_DIR}/speciesnet-results.json
-```
+`python -m speciesnet.scripts.run_model --folders "c:\your\image\folder" --predictions_json "c:\your\output\file.json"`
+
+`python -m megadetector.detection.run_md_and_speciesnet "c:\your\image\folder" "c:\your\output\file.json"`
 
 You can use the [visualize_detector_output](https://megadetector.readthedocs.io/en/latest/visualization.html#visualize_detector_output---CLI-interface) script from the megadetector-utils package, like this:
 
 ```bash
-PREVIEW_DIR=/wherever/you/want/the/output
 pip install megadetector-utils
-python -m megadetector.visualization.visualize_detector_output ${IMAGE_DIR}/speciesnet-results.json ${PREVIEW_DIR}
+python -m megadetector.visualization.visualize_detector_output "c:\your\output\file.json" "c:\folder\where\you\want\visualized\output"
 ```
 
 That will produce a folder of images with SpeciesNet results visualized on each image.  A typical use of this script would also use the --sample argument (to render a random subset of images, if what you want is to quickly grok how SpeciesNet did on a large dataset), and often the --html_output_file argument, to wrap the results in an HTML page that makes it quick to scroll through them.  Putting those together will give you pages like these:
@@ -350,10 +247,10 @@ To see all the options, run:
  python -m megadetector.visualization.visualize_detector_output --help
 ```
 
-The other relevant script is [postprocess_batch_results](https://megadetector.readthedocs.io/en/latest/postprocessing.html#postprocess_batch_results---CLI-interface), which also renders sample images, but instead of just putting them in a flat folder, the purpose of this script is to allow you to quickly see samples of detections/non-detections, and to quickly see samples broken out by species.  So, for example, you can do:
+Another relevant script is [postprocess_batch_results](https://megadetector.readthedocs.io/en/latest/postprocessing.html#postprocess_batch_results---CLI-interface), which also renders sample images, but instead of just putting them in a flat folder, the purpose of this script is to allow you to quickly see samples of detections/non-detections, and to quickly see samples broken out by species.  So, for example, you can do:
 
 ```bash
-python -m megadetector.postprocessing.postprocess_batch_results ${IMAGE_DIR}/speciesnet-results.json ${PREVIEW_DIR}
+python -m megadetector.postprocessing.postprocess_batch_results "c:\your\output\file.json" "c:\folder\where\you\want\preview\output"
 ```
 
 ...to get pages like these:
@@ -370,17 +267,18 @@ python -m megadetector.postprocessing.postprocess_batch_results --help
 
 Both of these modules can also be called from Python code instead of from the command line.
 
+
 ## Ensemble decision-making
 
-The SpeciesNet ensemble uses multiple steps to predict a single category for each image, combining the strengths of the detector and the classifier.
+As discussed above, `run_model` uses multiple steps to predict a single category for each image, combining the strengths of the detector and the classifier.  The ensembling strategy (i.e., the strategy used to combine the information from the detector and classifier) was primarily optimized for minimizing the human effort required to review collections of images.
 
-The ensembling strategy was primarily optimized for minimizing the human effort required to review collections of images. To do that, the guiding principles are:
+The guiding principles of the ensembling strategy are:
 
 - Help users to quickly filter out unwanted images (e.g., blanks): identify as many blank images as possible while minimizing missed animals, which can be more costly than misclassifying a non-blank image as one of the possible animal classes.
 - Provide high-confidence predictions for frequent classes (e.g., deer).
 - Make predictions on the lowest taxonomic level possible, while balancing precision: if the ensemble is not confident enough all the way to the species level, we would rather return a prediction we are confident about in a higher taxonomic level (e.g., family, or sometimes even "animal"), instead of risking an incorrect prediction on the species level.
 
-Here is a breakdown of the different steps:
+Here is a breakdown of the steps:
 
 1. **Input processing:** Raw images are preprocessed and passed to both the object detector (MegaDetector) and the image classifier. The type of preprocessing will depend on the selected model. For "always crop" models, images are first processed by the object detector and then cropped based on the detection bounding box before being fed to the classifier. For "full image" models, images are preprocessed independently for both models.
 
@@ -402,59 +300,17 @@ Here is a breakdown of the different steps:
 
 10. **Prediction source:** At each step of the prediction workflow, a `prediction_source` is stored. This will be included in the final results to help diagnose which parts of the overall SpeciesNet ensemble were actually used.
 
-## Contributing code
+The "geofencing" and "label rollup" steps are also used when running `run_md_and_speciesnet`; the other steps don't apply in this scenario, since the goal of `run_md_and_speciesnet` is to classify each detection, rather than to classify the whole image.
 
-If you're interested in contributing to our repo, rather than installing via pip, we recommend cloning the repo, then creating the Python virtual environment for development using the following commands:
+## Advanced topics
 
-```bash
-python -m venv .env
-source .env/bin/activate
-pip install -e .[dev]
-```
+For information about any of the following topics, see the [advanced topics documentation](advanced_topics.md):
 
-We use the following tools for testing and validating code:
-
-- [`pytest`](https://github.com/pytest-dev/pytest/) for running tests:
-
-    ```bash
-    pytest -vv
-    ```
-
-- [`black`](https://github.com/psf/black) for formatting code:
-
-    ```bash
-    black .
-    ```
-
-- [`isort`](https://github.com/PyCQA/isort) for sorting Python imports consistently:
-
-    ```bash
-    isort .
-    ```
-
-- [`pylint`](https://github.com/pylint-dev/pylint) for linting Python code and flag various issues:
-
-    ```bash
-    pylint . --recursive=yes
-    ```
-
-- [`pyright`](https://github.com/microsoft/pyright) for static type checking:
-
-    ```bash
-    pyright
-    ```
-
-- [`pymarkdown`](https://github.com/jackdewinter/pymarkdown) for linting Markdown files:
-
-    ```bash
-    pymarkdown scan **/*.md
-    ```
-
-Handy one-liner to run all of the code formatting/checking steps from above:
-
-`black . && isort . && pylint . --recursive=yes && pyright`
-
-If you submit a PR to contribute your code back to this repo, you will be asked to sign a contributor license agreement; see [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+* Using `run_model` to run individual components of the ensemble
+* Alternative installation variants of the Python package
+* Alternative variants of the SpeciesNet model weights (in particular, the whole-image classifier that does not use a detection stage)
+* Alternative input formats for `run_model`
+* Development conventions/contributing code
 
 ## Animal picture
 
@@ -464,8 +320,3 @@ It would be unfortunate if this whole README about camera trap images didn't sho
 
 Image credit University of Minnesota, from the [Orinoquía Camera Traps](https://lila.science/datasets/orinoquia-camera-traps/) dataset.
 
-## Build status
-
-[![Python tests](https://github.com/google/cameratrapai/actions/workflows/python_tests.yml/badge.svg)](https://github.com/google/cameratrapai/actions/workflows/python_tests.yml)
-[![Python style checks](https://github.com/google/cameratrapai/actions/workflows/python_style_checks.yml/badge.svg)](https://github.com/google/cameratrapai/actions/workflows/python_style_checks.yml)
-[![Markdown style checks](https://github.com/google/cameratrapai/actions/workflows/markdown_style_checks.yml/badge.svg)](https://github.com/google/cameratrapai/actions/workflows/markdown_style_checks.yml)
