@@ -162,6 +162,11 @@ _MAX_OBJECTS = flags.DEFINE_integer(
     1,
     "Maximum number of objects per image to process and classify (sorted by size).",
 )
+_MC_DROPOUT_PASSES = flags.DEFINE_integer(
+    "mc_dropout_passes",
+    1,
+    "Number of Monte Carlo dropout passes for Bayesian inference. Set to 1 to disable.",
+)
 
 
 def guess_predictions_source(
@@ -427,6 +432,7 @@ def main(argv: list[str]) -> None:
         size_threshold=_SIZE_THRESHOLD.value,
         human_conf_threshold=_HUMAN_CONF_THRESHOLD.value,
         max_objects=_MAX_OBJECTS.value,
+        mc_dropout_passes=_MC_DROPOUT_PASSES.value,
     )
     if hasattr(model, "classifier") and not hasattr(model, "detector"):
         if (

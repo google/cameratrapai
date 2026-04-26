@@ -51,6 +51,7 @@ class SpeciesNetClassifier:
         model_name: str,
         target_species_txt: Optional[str] = None,
         device: Optional[str] = None,
+        mc_dropout_passes: int = 1,
     ) -> None:
         """Loads the classifier resources.
 
@@ -86,10 +87,41 @@ class SpeciesNetClassifier:
             self.model_info.classifier, map_location=self.device, weights_only=False
         )
 
+        self.mc_dropout_passes = mc_dropout_passes
+
         # Set the model in inference mode.
         self.model.eval()
         for param in self.model.parameters():
             param.requires_grad = False
+
+        # Enable Dropout layers if using MC Dropout.
+        if self.mc_dropout_passes > 1:
+            for m in self.model.modules():
+                if m.__class__.__name__.startswith('Dropout'):
+                    m.train()
+                    
+            # Hack for GraphModules (exported ONNX models) that have stripped Dropout
+            if hasattr(self.model, 'graph'):
+                import torch.nn.functional as F
+                matmul_node = None
+                for node in self.model.graph.nodes:
+                    if node.target == "SpeciesNet/dense/MatMul":
+                        matmul_node = node
+                        break
+                
+                if matmul_node:
+                    with self.model.graph.inserting_before(matmul_node):
+                        dropout_node = self.model.graph.call_function(
+                            F.dropout, 
+                            args=(matmul_node.args[0],), 
+                            kwargs={'p': 0.2, 'training': True}
+                        )
+                        new_args = list(matmul_node.args)
+                        new_args[0] = dropout_node
+                        matmul_node.args = tuple(new_args)
+                    
+                    self.model.graph.lint()
+                    self.model.recompile()
 
         # Load the labels.
         with open(self.model_info.classifier_labels, mode="r", encoding="utf-8") as fp:
@@ -248,8 +280,22 @@ class SpeciesNetClassifier:
         batch_arr = np.stack(batch_arr, axis=0, dtype=np.float32)
 
         batch_tensor = torch.from_numpy(batch_arr).to(self.device)
-        logits = self.model(batch_tensor).cpu()
-        scores = torch.softmax(logits, dim=-1)
+
+        if getattr(self, "mc_dropout_passes", 1) > 1:
+            all_scores = []
+            all_logits = []
+            for _ in range(self.mc_dropout_passes):
+                pass_logits = self.model(batch_tensor).cpu()
+                all_logits.append(pass_logits)
+                all_scores.append(torch.softmax(pass_logits, dim=-1))
+            
+            # Average the probabilities (after softmax), as per instructions.
+            logits = torch.stack(all_logits).mean(dim=0)
+            scores = torch.stack(all_scores).mean(dim=0)
+        else:
+            logits = self.model(batch_tensor).cpu()
+            scores = torch.softmax(logits, dim=-1)
+
         scores, indices = torch.topk(scores, k=5, dim=-1)
 
         for file_idx, (filepath, bbox_idx, scores_arr, indices_arr) in enumerate(

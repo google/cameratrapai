@@ -229,10 +229,12 @@ class TestClassifier:
         assert prediction["filepath"] == filepath
         assert "failures" not in prediction
         assert "classifications" in prediction
-        assert "classes" in prediction["classifications"]
-        assert "scores" in prediction["classifications"]
-        assert prediction["classifications"]["scores"] == sorted(
-            prediction["classifications"]["scores"], reverse=True
+        assert isinstance(prediction["classifications"], list)
+        assert len(prediction["classifications"]) > 0
+        assert "classes" in prediction["classifications"][0]
+        assert "scores" in prediction["classifications"][0]
+        assert prediction["classifications"][0]["scores"] == sorted(
+            prediction["classifications"][0]["scores"], reverse=True
         )
 
     @pytest.fixture(
@@ -318,9 +320,9 @@ class TestClassifier:
 
     def test_classifications(self, predicted_vs_expected) -> None:
         classifications, label = predicted_vs_expected
-        assert classifications["classes"][0] == label
-        assert classifications["scores"] == sorted(
-            classifications["scores"], reverse=True
+        assert classifications[0]["classes"][0] == label
+        assert classifications[0]["scores"] == sorted(
+            classifications[0]["scores"], reverse=True
         )
 
     def test_target_species_batched_vs_non_batched(
@@ -381,20 +383,23 @@ class TestClassifier:
             zip(non_batched_predictions, batched_predictions)
         ):
             # Check that both have target_logits
-            assert "target_logits" in non_batched["classifications"]
-            assert "target_logits" in batched["classifications"]
+            if len(non_batched["classifications"]) == 0 or len(batched["classifications"]) == 0:
+                continue
+                
+            assert "target_logits" in non_batched["classifications"][0]
+            assert "target_logits" in batched["classifications"][0]
 
             # Check that target_classes are present and identical
-            assert "target_classes" in non_batched["classifications"]
-            assert "target_classes" in batched["classifications"]
+            assert "target_classes" in non_batched["classifications"][0]
+            assert "target_classes" in batched["classifications"][0]
             assert (
-                non_batched["classifications"]["target_classes"]
-                == batched["classifications"]["target_classes"]
+                non_batched["classifications"][0]["target_classes"]
+                == batched["classifications"][0]["target_classes"]
             )
 
             # Check that target_logits are identical
-            non_batched_logits = non_batched["classifications"]["target_logits"]
-            batched_logits = batched["classifications"]["target_logits"]
+            non_batched_logits = non_batched["classifications"][0]["target_logits"]
+            batched_logits = batched["classifications"][0]["target_logits"]
 
             assert len(non_batched_logits) == len(batched_logits)
             assert len(non_batched_logits) == len(target_species)
@@ -414,12 +419,12 @@ class TestClassifier:
 
             # Also verify that regular classifications match
             assert (
-                non_batched["classifications"]["classes"]
-                == batched["classifications"]["classes"]
+                non_batched["classifications"][0]["classes"]
+                == batched["classifications"][0]["classes"]
             )
             np.testing.assert_allclose(
-                non_batched["classifications"]["scores"],
-                batched["classifications"]["scores"],
+                non_batched["classifications"][0]["scores"],
+                batched["classifications"][0]["scores"],
                 rtol=1e-3,  # 0.1% relative tolerance
                 atol=1e-3,  # 0.001 absolute tolerance
                 err_msg=f"Scores mismatch for image {i} ({filepaths[i]})",

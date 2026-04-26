@@ -566,6 +566,7 @@ class SpeciesNet:
         size_threshold: float = 0.0,
         human_conf_threshold: float = 0.3,
         max_objects: int = 1,
+        mc_dropout_passes: int = 1,
     ) -> None:
         """Initializes the SpeciesNet model with specified settings.
 
@@ -593,7 +594,7 @@ class SpeciesNet:
             self.manager.start()  # pylint: disable=consider-using-with
             if components in ["all", "classifier"]:
                 self.classifier = self.manager.Classifier(  # type: ignore
-                    model_name, target_species_txt=target_species_txt
+                    model_name, target_species_txt=target_species_txt, mc_dropout_passes=mc_dropout_passes
                 )
             if components in ["all", "detector"]:
                 self.detector = self.manager.Detector(  # type: ignore
@@ -613,7 +614,7 @@ class SpeciesNet:
             self.manager = None
             if components in ["all", "classifier"]:
                 self.classifier = SpeciesNetClassifier(
-                    model_name, target_species_txt=target_species_txt
+                    model_name, target_species_txt=target_species_txt, mc_dropout_passes=mc_dropout_passes
                 )
             if components in ["all", "detector"]:
                 self.detector = SpeciesNetDetector(

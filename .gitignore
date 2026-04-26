@@ -279,3 +279,14 @@ claude.md
 **/*settings.json
 **/*settings.local.json
 
+#################################
+### Local test / experiment files
+#################################
+/experiments/
+*_results.json
+compare.py
+check_dropout.py
+model_arch.txt
+/artifacts/
+/scratch/
+
