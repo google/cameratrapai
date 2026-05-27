@@ -79,8 +79,83 @@ def is_list_sorted(L, reverse=False):
         return all(L[i] <= L[i + 1] for i in range(len(L) - 1))
 
 
+def get_common_name_from_prediction_string(s):
+    """
+    Extract the common name from the seven-token prediction string [s], or generate
+    a reasonable one (e.g. "vulpes genus").  Prediction strings look like:
+
+    '90d950db-2106-4bd9-a4c1-777604c3eada;mammalia;rodentia;;;;rodent'
+
+    Args:
+        s (str): the string for which we should extract a common name
+
+    Returns:
+        str: the extracted common name
+    """
+
+    s = s.strip()
+    tokens = s.split(";")
+    assert len(tokens) == 7, "Invalid prediction string: {}".format(s)
+    tokens = [token.strip() for token in tokens]
+
+    common_name = None
+
+    i_token = 6
+
+    while i_token >= 0:
+
+        token = tokens[i_token]
+
+        if len(token) > 0:
+
+            # Non-empty common name
+            if i_token == 6:
+                common_name = token
+            # Non-empty species name
+            elif i_token == 5:
+                # If a species name is present, a genus name should always be present
+                if len(tokens[4]) == 0:
+                    print("Warning: invalid genus/species combination {}".format(s))
+                    common_name = tokens[5]
+                else:
+                    # Create binomial name
+                    common_name = tokens[4] + " " + tokens[5]
+            # Non-empty genus name
+            elif i_token == 4:
+                # Not a typo, this is a convention, genus-level names end with "species"
+                common_name = tokens[4] + " species"
+            # Non-empty family name
+            elif i_token == 3:
+                common_name = tokens[3] + " family"
+            # Non-empty order name
+            elif i_token == 2:
+                common_name = tokens[2] + " order"
+            # Non-empty class name
+            elif i_token == 1:
+                common_name = tokens[1] + " class"
+            # Non-empty ID
+            elif i_token == 0:
+                common_name = tokens[0] + " category"
+            break
+
+        # ...if this token is non-empty
+
+        i_token -= 1
+
+    # ...for each token
+
+    if common_name is None:
+        assert s == ";;;;;;"
+        common_name = "empty_prediction_string"
+
+    return common_name
+
+
 def generate_md_results_from_predictions_json(
-    predictions_json_file, md_results_file, base_folder=None
+    predictions_json_file,
+    md_results_file,
+    base_folder=None,
+    convert_homo_species_to_human=True,
 ):
     """
     Generate an MD-formatted .json file from a predictions.json file.  Typically,
@@ -96,6 +171,9 @@ def generate_md_results_from_predictions_json(
         predictions_json_file (str): path to a predictions.json file
         md_results_file (str): path to which we should write an MD-formatted .json file
         base_folder (str, optional): leading string to remove from each path in the predictions.json file
+        convert_homo_species_to_human (bool, optional): the ensemble often rolls human
+            predictions up to "homo species", which isn't wrong, but looks odd.  This forces
+            these back to "homo sapiens".
     """
 
     # Read predictions file
@@ -131,6 +209,8 @@ def generate_md_results_from_predictions_json(
         if base_folder is not None:
             if fn.startswith(base_folder):
                 fn = fn.replace(base_folder, "", 1)
+            elif fn.startswith(base_folder + "/"):
+                fn = fn.replace(base_folder + "/", "", 1)
 
         im_out["file"] = fn
 
@@ -181,6 +261,11 @@ def generate_md_results_from_predictions_json(
             if "prediction" in im_in:
 
                 class_to_assign = im_in["prediction"]
+                if convert_homo_species_to_human and (
+                    ("hominidae;homo" in class_to_assign)
+                    or ("homo species") in class_to_assign
+                ):
+                    class_to_assign = human_prediction_string
                 class_confidence = im_in["prediction_score"]
 
             if class_to_assign is not None:
@@ -269,7 +354,9 @@ def generate_md_results_from_predictions_json(
     )
     classification_categories_out = {}
     for category_id in classification_category_descriptions.keys():
-        category_name = classification_category_descriptions[category_id].split(";")[-1]
+        category_name = get_common_name_from_prediction_string(
+            classification_category_descriptions[category_id]
+        )
         classification_categories_out[category_id] = category_name
 
     # Prepare the output dict
@@ -295,7 +382,7 @@ def generate_md_results_from_predictions_json(
     # so deferring this.
     """
     validation_options = ValidateBatchResultsOptions()
-    validation_options.raise_errors = True    
+    validation_options.raise_errors = True
     _ = validate_batch_results(md_results_file, options=validation_options)
     """
 

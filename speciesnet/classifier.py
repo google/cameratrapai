@@ -81,6 +81,7 @@ class SpeciesNetClassifier:
                 self.device = "cpu"
 
         # Load the model.
+        logging.info("Loading model from %s.", self.model_info.classifier)
         self.model = torch.load(
             self.model_info.classifier, map_location=self.device, weights_only=False
         )

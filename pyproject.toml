@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "speciesnet"
-version = "5.0.4"
+version = "5.0.5"
 authors = [
     {name = "Google Camera Traps AI team", email = "cameratraps@google.com"},
 ]
@@ -39,7 +39,10 @@ dependencies = [
     "cloudpathlib",
     "huggingface_hub",
     "humanfriendly",
-    "kagglehub",
+    # Restrict kagglehub version number:
+    #
+    # https://github.com/keras-team/keras-hub/pull/2747
+    "kagglehub!=1.0.1",
     "matplotlib",
     "numpy < 2.0 ; sys_platform == 'darwin' and platform_machine == 'x86_64'",
     "numpy ; sys_platform != 'darwin' or platform_machine != 'x86_64'",
@@ -122,6 +125,7 @@ ignore = [
     "speciesnet/scripts/run_model_in_chunks.py",
 ]
 useLibraryCodeForTypes = false
+reportPrivateImportUsage = "none"
 
 [tool.pytest.ini_options]
 addopts = "--ignore=third_party"
