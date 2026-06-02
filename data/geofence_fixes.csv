@@ -1,10 +1,13 @@
 species,rule,country_code,admin1_region_code
+
 # Black bears have a set of state allow rules, but the list
 # excludes New Jersey.  Add New Jersey.
 mammalia;carnivora;ursidae;ursus;americanus,allow,USA,NJ
+
 # This genus is European deer, block in the US
 mammalia;artiodactyla;cervidae;capreolus;,block,USA,
 mammalia;artiodactyla;cervidae;capreolus;capreolus,block,USA,
+
 # Dingos were incorrectly allowed globally; block outside of Australia
 mammalia;carnivora;canidae;canis;lupus dingo,block,ABW,
 mammalia;carnivora;canidae;canis;lupus dingo,block,AFG,
@@ -250,6 +253,7 @@ mammalia;carnivora;canidae;canis;lupus dingo,block,YEM,
 mammalia;carnivora;canidae;canis;lupus dingo,block,ZAF,
 mammalia;carnivora;canidae;canis;lupus dingo,block,ZMB,
 mammalia;carnivora;canidae;canis;lupus dingo,block,ZWE,
+
 # hippopotamidae was incorrectly allowed globally; block everywhere it doesn't belong
 mammalia;artiodactyla;hippopotamidae;hippopotamus;amphibius,allow,COL,
 mammalia;artiodactyla;hippopotamidae;hippopotamus;,block,ABW,
@@ -671,6 +675,7 @@ mammalia;artiodactyla;hippopotamidae;;,block,VUT,
 mammalia;artiodactyla;hippopotamidae;;,block,WLF,
 mammalia;artiodactyla;hippopotamidae;;,block,WSM,
 mammalia;artiodactyla;hippopotamidae;;,block,YEM,
+
 # pittidae (common name pittas) should be allowed only in Asia, Africa, and Australia, block everywhere else
 aves;passeriformes;pittidae;;,block,ALB,
 aves;passeriformes;pittidae;;,block,AND,
@@ -763,6 +768,7 @@ aves;passeriformes;pittidae;;,block,PRY,
 aves;passeriformes;pittidae;;,block,SUR,
 aves;passeriformes;pittidae;;,block,URY,
 aves;passeriformes;pittidae;;,block,VEN,
+
 # Australian marsupials should be blocked outside of Australasia
 mammalia;diprotodontia;macropodidae;;,block,ABW,
 mammalia;diprotodontia;macropodidae;;,block,AFG,
@@ -1009,6 +1015,7 @@ mammalia;diprotodontia;macropodidae;;,block,YEM,
 mammalia;diprotodontia;macropodidae;;,block,ZAF,
 mammalia;diprotodontia;macropodidae;;,block,ZMB,
 mammalia;diprotodontia;macropodidae;;,block,ZWE,
+
 # Potoroidae only exists in Autralia
 mammalia;diprotodontia;potoroidae;;,block,ABW,
 mammalia;diprotodontia;potoroidae;;,block,AFG,
@@ -1258,9 +1265,11 @@ mammalia;diprotodontia;potoroidae;;,block,YEM,
 mammalia;diprotodontia;potoroidae;;,block,ZAF,
 mammalia;diprotodontia;potoroidae;;,block,ZMB,
 mammalia;diprotodontia;potoroidae;;,block,ZWE,
+
 # Block European badgers in the US
 mammalia;carnivora;mustelidae;meles;meles,block,USA,
 mammalia;carnivora;mustelidae;meles;,block,USA,
+
 # Block Sika deer in the US, except for NJ and DE, where feral populations exist
 mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,AL
 mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,AK
@@ -1313,23 +1322,29 @@ mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,WV
 mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,WI
 mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,WY
 mammalia;artiodactyla;cervidae;cervus;nippon,block,USA,DC
+
 # Block Eurasian red squirrels in the US
 mammalia;rodentia;sciuridae;sciurus;vulgaris,block,USA,
+
 # The Southern screamer is found in South America; there as an explicit allow rule for CA for which I can't find a basis
 aves;anseriformes;anhimidae;chauna;torquata,block,USA,
+
 # There is also an explicit allow rule for the genus (for USA) for which I can't find a basis
 aves;anseriformes;anhimidae;chauna;,block,USA,
+
 # Allow Eastern gray squirrels in states where they have been introduced
 mammalia;rodentia;sciuridae;sciurus;carolinensis,allow,USA,CA
 mammalia;rodentia;sciuridae;sciurus;carolinensis,allow,USA,OR
 mammalia;rodentia;sciuridae;sciurus;carolinensis,allow,USA,ID
 mammalia;rodentia;sciuridae;sciurus;carolinensis,allow,USA,MT
 mammalia;rodentia;sciuridae;sciurus;carolinensis,allow,USA,WA
+
 # Allow Eastern fox squirrels in states where they have been introduced
 mammalia;rodentia;sciuridae;sciurus;niger,allow,USA,CA
 mammalia;rodentia;sciuridae;sciurus;niger,allow,USA,OR
 mammalia;rodentia;sciuridae;sciurus;niger,allow,USA,ID
 mammalia;rodentia;sciuridae;sciurus;niger,allow,USA,MT
 mammalia;rodentia;sciuridae;sciurus;niger,allow,USA,WA
+
 # Block all bears in the UK
 mammalia;carnivora;ursidae;;,block,GBR,
