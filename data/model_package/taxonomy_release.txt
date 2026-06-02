@@ -2502,7 +2502,7 @@ df6e4ef2-8d12-4925-a3f0-2c9fc6ba2b38;mammalia;carnivora;ursidae;melursus;ursinus
 436ddfdd-bc43-44c3-a25d-34671d3430a0;mammalia;carnivora;ursidae;ursus;americanus;american black bear
 330bb1e9-84d6-4e41-afa9-938aee17ea29;mammalia;carnivora;ursidae;ursus;arctos;brown bear
 edcbe8f5-82e6-4af7-bed9-520915c3bbc8;mammalia;carnivora;ursidae;ursus;thibetanus;asiatic black bear
-601cf098-9876-4912-84bb-0926834305e9;mammalia;carnivora;ursidae;ursus;u. arctos;grizzly bear
+601cf098-9876-4912-84bb-0926834305e9;mammalia;carnivora;ursidae;ursus;arctos horribilis;grizzly bear
 de7c35cc-387c-486d-bcf6-36b9feddcff7;mammalia;carnivora;viverridae;;;civet genet family
 c964b73e-578c-43f2-98d5-d7deb8012d3e;mammalia;carnivora;viverridae;arctictis;;arctictis species
 b310c664-bb99-487b-9c54-fb0935165d29;mammalia;carnivora;viverridae;arctictis;binturong;binturong

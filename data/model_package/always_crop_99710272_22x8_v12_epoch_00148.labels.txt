@@ -2324,7 +2324,7 @@ ed449f52-bc93-4502-a035-ed3c19927cf0;aves;accipitriformes;accipitridae;buteogall
 856b8eea-8e28-4f2f-9e1d-edf51b674f76;mammalia;didelphimorphia;didelphidae;didelphis;imperfecta;guianan white-eared opossum
 5b91403b-7361-4bb0-bf42-9a1687a88198;gastropoda;;;;;gastropods
 f06f6a43-35f4-4ced-be01-64641f1c6ae7;mammalia;primates;galagidae;galago;senegalensis;northern lesser galago
-601cf098-9876-4912-84bb-0926834305e9;mammalia;carnivora;ursidae;ursus;u. arctos;grizzly bear
+601cf098-9876-4912-84bb-0926834305e9;mammalia;carnivora;ursidae;ursus;arctos horribilis;grizzly bear
 db2b51d0-3dc4-49ee-af5d-cff0d2632163;aves;galliformes;odontophoridae;odontophorus;balliviani;stripe-faced wood-quail
 5fdeaed4-3fd1-4c3e-929e-a6180bfbe818;aves;passeriformes;macrosphenidae;melocichla;mentalis;moustached grass-warbler
 e46c12d5-9435-4702-a967-8ced5b541d44;aves;passeriformes;muscicapidae;cyornis;lemprieri;palawan blue-flycatcher
