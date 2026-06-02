@@ -512,7 +512,7 @@ c3a047e8-c2df-4d49-babf-b1cd3951fd3c;aves;falconiformes;falconidae;falco;;falco 
 39217044-41ce-4455-86ff-8f94a4f02d44;aves;falconiformes;falconidae;falco;berigora;brown falcon
 6fd94c73-bce7-403f-ba14-e2ca666faa2f;aves;falconiformes;falconidae;falco;femoralis;aplomado falcon
 780c93e6-a2b5-40e4-87f0-1264f8284751;aves;falconiformes;falconidae;falco;mexicanus;prairie falcon
-8c9ba5cf-b98b-4b25-8543-9fcf0e69aed3;aves;falconiformes;falconidae;falco;peregrinus;faucon pèlerin
+8c9ba5cf-b98b-4b25-8543-9fcf0e69aed3;aves;falconiformes;falconidae;falco;peregrinus;peregrine falcon
 1ab198a0-04dc-4407-8370-1a458c0c9f8e;aves;falconiformes;falconidae;falco;sparverius;american kestrel
 6589eed8-7241-40d2-b542-18a6a4e79409;aves;falconiformes;falconidae;falco;tinnunculus;common kestrel
 33729eeb-5126-453c-a4b8-bf6d8018057c;aves;falconiformes;falconidae;micrastur;;micrastur species

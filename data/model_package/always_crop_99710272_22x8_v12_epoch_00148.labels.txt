@@ -709,7 +709,7 @@ b6d042c3-18c0-4f58-a4ca-e15f9f99087c;aves;piciformes;picidae;sphyrapicus;thyroid
 1c693683-9824-4424-840c-e59fb4462187;aves;strigiformes;strigidae;strix;varia;barred owl
 475f95a3-24b3-4988-ad4e-0b8d83bf6df9;mammalia;diprotodontia;burramyidae;cercartetus;;cercartetus species
 207fed4d-e28c-4942-a5f0-b9b3e6b89408;mammalia;primates;cercopithecidae;cercopithecus;hamlyni;owl-faced monkey
-8c9ba5cf-b98b-4b25-8543-9fcf0e69aed3;aves;falconiformes;falconidae;falco;peregrinus;faucon pèlerin
+8c9ba5cf-b98b-4b25-8543-9fcf0e69aed3;aves;falconiformes;falconidae;falco;peregrinus;peregrine falcon
 deaf5677-d5ef-4647-9800-1a2b0c010499;aves;galliformes;phasianidae;coturnix;;quail species
 8fa3d497-ec50-40bd-a61b-b546d7c2ce48;mammalia;primates;pitheciidae;callicebus;;callicebus species
 4ae5668a-073e-4d81-bb89-ac633e9a5537;aves;passeriformes;tyrannidae;sublegatus;obscurior;amazonian scrub-flycatcher
