@@ -68,11 +68,13 @@ Additional conventions:
 * If allow rules exist for a taxon, any country not on the allow-list for that
   taxon is blocked.
 * Block rules "win" over allow rules.  Taxa that are allowed in the base geofence
-  may later get blocked
+  may later get blocked.
 
 """
 
+from collections import defaultdict
 import copy
+import csv
 import json
 import os
 from pathlib import Path
@@ -152,6 +154,16 @@ known_duplicate_five_token_strings.add("aves;pelecaniformes;ardeidae;ardea;alba"
 taxonomic_replacements = {}
 taxonomic_replacements["cetartiodactyla"] = "artiodactyla"
 
+# 50 US state codes (no DC, no US territories).  Used by validate_fixes_file
+# to detect the case where a rule has been enumerated for every state.
+us_state_codes = frozenset({
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+})
+
 
 def _taxon_allowed_in_region(
     label: str, country: str, admin1_region: Optional[str], geofence_map: dict
@@ -215,6 +227,222 @@ def _generate_parent_taxon_strings(s):
             output_string = ";".join(tokens)
             output_strings.append(output_string)
     return output_strings
+
+
+def _is_descendant_taxon(child: str, parent: str) -> bool:
+    """Returns True iff [child] is a strict taxonomic descendant of [parent]
+    in five-token semicolon-delimited taxonomy strings.  Both inputs must
+    already be five-token strings; both must be left-anchored (no empty
+    tokens before a non-empty one), which is enforced elsewhere.
+
+    Equality is NOT a descendant relationship.
+    """
+
+    child_parts = child.split(";")
+    parent_parts = parent.split(";")
+    if len(child_parts) != 5 or len(parent_parts) != 5:
+        return False
+
+    parent_depth = 0
+    for p in parent_parts:
+        if p:
+            parent_depth += 1
+        else:
+            break
+    child_depth = 0
+    for p in child_parts:
+        if p:
+            child_depth += 1
+        else:
+            break
+
+    if child_depth <= parent_depth:
+        return False
+    return child_parts[:parent_depth] == parent_parts[:parent_depth]
+
+
+def validate_fixes_file(
+    fixes_path: StrPath, taxonomy_path: StrPath
+) -> None:
+    """Validates the structural integrity and internal consistency of a
+    geofence fixes CSV before any of its rules are applied to the base
+    geofence.
+
+    This is independent of validating the resulting geofence: this function
+    only looks at the rows in the fixes file.  The following checks are
+    enforced:
+
+      * Every non-comment, non-blank row has exactly four columns.
+      * Each taxon string is a valid five-token string and appears in
+        the release taxonomy.
+      * Each rule type is "allow" or "block".
+      * Country codes are three characters; admin1 codes, when present,
+        are two characters.
+      * No two rows are literally identical.
+      * No row directly conflicts with another -- specifically, no allow
+        row is "covered" by a block row on the same taxon or any ancestor
+        taxon at a wider-or-equal scope in the same country.  (Covered
+        means: block has empty admin1, or its admin1 matches the allow's.)
+      * No (taxon, rule_type, USA) group enumerates all 50 US states;
+        the user should collapse those rows into a single country-wide
+        rule instead.
+
+    Fails with an AssertionError on the first violation found.
+    """
+
+    expected_header = ["species", "rule", "country_code", "admin1_region_code"]
+
+    with open(fixes_path, "r", encoding="utf-8", newline="") as fp:
+        rows = list(csv.reader(fp))
+
+    # Drop blank rows and "#"-comment rows; remember 1-based source line numbers
+    # so error messages can point at the offending line.
+    data_rows: list[tuple[int, list[str]]] = []
+    for line_idx, row in enumerate(rows, start=1):
+        if not row or all(cell == "" for cell in row):
+            continue
+        if row[0].startswith("#"):
+            continue
+        data_rows.append((line_idx, row))
+
+    assert data_rows, f"Fixes CSV `{fixes_path}` contains no data rows"
+
+    header_line, header = data_rows[0]
+    assert header == expected_header, (
+        f"Fixes CSV header at line {header_line} is {header}, expected "
+        f"{expected_header}"
+    )
+
+    valid_five_token_taxa = set(validate_release_taxonomy(taxonomy_path))
+
+    # Validate each data row and collect the rules for cross-row checks.
+    rules: list[tuple[int, str, str, str, str]] = []
+    for line_num, row in data_rows[1:]:
+        assert len(row) == 4, (
+            f"Line {line_num}: row has {len(row)} columns, expected 4"
+        )
+        label = row[0].lower()
+        rule_type = row[1].lower()
+        country = row[2]
+        state = row[3]
+
+        label_parts = label.split(";")
+        assert len(label_parts) == 5, (
+            f"Line {line_num}: taxon `{label}` does not have 5 "
+            f"semicolon-separated tokens"
+        )
+
+        # Catches taxa with empty intermediate tokens (raises ValueError).
+        _validate_taxon_string(label)
+
+        assert label in valid_five_token_taxa, (
+            f"Line {line_num}: taxon `{label}` is not in the taxonomy"
+        )
+
+        assert rule_type in ("allow", "block"), (
+            f"Line {line_num}: rule type `{rule_type}` must be `allow` or `block`"
+        )
+
+        assert len(country) == 3, (
+            f"Line {line_num}: country code `{country}` must be 3 characters"
+        )
+
+        if state:
+            assert len(state) == 2, (
+                f"Line {line_num}: admin1 region code `{state}` must be "
+                f"2 characters"
+            )
+
+        rules.append((line_num, label, rule_type, country, state))
+
+    # No literally identical rules.
+    seen: dict[tuple[str, str, str, str], int] = {}
+    for line_num, label, rule_type, country, state in rules:
+        key = (label, rule_type, country, state)
+        assert key not in seen, (
+            f"Line {line_num}: rule `{label},{rule_type},{country},{state}` "
+            f"is identical to the rule on line {seen[key]}"
+        )
+        seen[key] = line_num
+
+    # Direct conflicts: an allow row is "covered" by a block row whose
+    # taxon is the same or an ancestor in the same country, where the
+    # block's scope is wider-or-equal to the allow's:
+    #   - block admin1 is empty (country-wide), OR
+    #   - block admin1 equals the allow's admin1.
+    blocks = [(l, t, c, s) for l, t, r, c, s in rules if r == "block"]
+    allows = [(l, t, c, s) for l, t, r, c, s in rules if r == "allow"]
+
+    for a_line, a_taxon, a_country, a_state in allows:
+        for b_line, b_taxon, b_country, b_state in blocks:
+            if a_country != b_country:
+                continue
+            if a_taxon != b_taxon and not _is_descendant_taxon(a_taxon, b_taxon):
+                continue
+            if b_state == "" or b_state == a_state:
+                assert False, (
+                    f"Conflicting rules in fixes CSV: allow on line "
+                    f"{a_line} (`{a_taxon},allow,{a_country},{a_state}`) "
+                    f"is covered by block on line {b_line} "
+                    f"(`{b_taxon},block,{b_country},{b_state}`)"
+                )
+
+    # No (taxon, rule_type, USA) group should enumerate all 50 US states.
+    #
+    # This check helps keep geofence_fixes.csv concise: a user who lists
+    # every state explicitly should replace those rows with a single
+    # country-wide rule.  DC and US territories are intentionally NOT
+    # counted toward the 50, so a rule that covers every state but
+    # deliberately omits one of those would still pass.  Consequently
+    # this check prevents some combinations of rules involving DC or
+    # territories: if we ever need to apply a rule to all 50 states
+    # while exempting DC or a specific territory for a single taxon, we
+    # would have to relax this check.  That combination is not currently
+    # expected.
+    by_group: dict[tuple[str, str], set[str]] = defaultdict(set)
+    first_line_in_group: dict[tuple[str, str], int] = {}
+    for line_num, label, rule_type, country, state in rules:
+        if country != "USA" or not state:
+            continue
+        group = (label, rule_type)
+        by_group[group].add(state)
+        first_line_in_group.setdefault(group, line_num)
+
+    for group, states in by_group.items():
+        if us_state_codes.issubset(states):
+            label, rule_type = group
+            example_line = first_line_in_group[group]
+            assert False, (
+                f"Rule `{label},{rule_type},USA,*` is enumerated across all "
+                f"50 US states (starting near line {example_line}); replace "
+                f"those rows with a single country-wide rule: "
+                f"`{label},{rule_type},USA,`"
+            )
+
+    # Warn (don't fail) when the CSV contains both a country-wide row
+    # and one or more state-specific rows for the same (taxon, rule_type,
+    # country).  After the country-wide widening fix, the country-wide
+    # row replaces any state list and subsequent state-specific rows
+    # become no-ops, so the combination is redundant but not incorrect.
+    rows_by_group: dict[tuple[str, str, str], list[tuple[int, str]]] = (
+        defaultdict(list)
+    )
+    for line_num, label, rule_type, country, state in rules:
+        rows_by_group[(label, rule_type, country)].append((line_num, state))
+
+    for (label, rule_type, country), entries in rows_by_group.items():
+        cw_lines = [ln for ln, s in entries if not s]
+        ss_entries = [(ln, s) for ln, s in entries if s]
+        if cw_lines and ss_entries:
+            print(
+                f"WARNING: fixes CSV has a country-wide row "
+                f"`{label},{rule_type},{country},` (line {cw_lines[0]}) "
+                f"and {len(ss_entries)} state-specific row(s) for the "
+                f"same taxon/rule/country (lines "
+                f"{[ln for ln, _ in ss_entries]}, states "
+                f"{[s for _, s in ss_entries]}); the country-wide row "
+                f"supersedes the state-specific ones at apply time"
+            )
 
 
 def validate_geofence(geofence: dict[str, dict]) -> bool:
@@ -350,6 +578,11 @@ def fix_geofence_base(
         An updated global geofencing dict.
     """
 
+    # Confirm the fixes CSV is structurally sound and internally consistent
+    # before we apply any of its rules.  See validate_fixes_file for the
+    # specific checks; failures raise AssertionError.
+    validate_fixes_file(fixes_path, taxonomy_path)
+
     geofence = copy.deepcopy(geofence_base)
 
     # Read the list of valid taxa
@@ -372,22 +605,74 @@ def fix_geofence_base(
         country = fix["country_code"]
         state = fix["admin1_region_code"]
 
+        # Snapshot the prior allow/block lists for this (taxon, country)
+        # so we can emit warnings when a country-wide row overwrites a
+        # state-specific list, when a state-specific row is a no-op
+        # against an existing country-wide list, or when a country-wide
+        # row coexists with a state-specific rule of the opposite type.
+        prior_taxon = geofence.get(label) or {}
+        prior_allow = (prior_taxon.get("allow") or {}).get(country)
+        prior_block = (prior_taxon.get("block") or {}).get(country)
+
         if rule == "allow":
+            # Mirror the block branch's entry/key creation.  Previously
+            # these two cases were silently skipped with "already
+            # allowed" -- but per geofence semantics, the first allow
+            # rule for a taxon establishes a positive allow list and
+            # blocks everywhere else, so silently dropping the row
+            # loses the user's intent.  See the same idiom below in the
+            # block branch.
             if label not in geofence:
-                continue  # already allowed
-            if "allow" not in geofence[label]:
-                continue  # already allowed
-            if not state:
-                geofence[label]["allow"][country] = geofence[label]["allow"].get(
-                    country, []
+                print(
+                    f"WARNING: allow row `{label},allow,{country},{state}` "
+                    f"introduces the first entry for this taxon; the taxon "
+                    f"was previously allowed everywhere (no entry) and is "
+                    f"now restricted to the locations specified by this "
+                    f"and any other allow rows for it"
                 )
+                geofence[label] = {
+                    "allow": {country: [state] if state else []}
+                }
+            if "allow" not in geofence[label]:
+                print(
+                    f"WARNING: allow row `{label},allow,{country},{state}` "
+                    f"adds the first allow entry for a taxon that previously "
+                    f"had only block rules; the taxon is now restricted to "
+                    f"the locations specified by this and any other allow "
+                    f"rows for it"
+                )
+                geofence[label]["allow"] = {country: [state] if state else []}
+            if not state:
+                # Country-wide allow: replace any existing state list with
+                # [] (country-wide).  Previously this used .get(country, [])
+                # which silently failed to widen a state-restricted entry.
+                if prior_allow:
+                    print(
+                        f"WARNING: country-wide row `{label},allow,"
+                        f"{country},` overwrites existing state-restricted "
+                        f"allow.{country} = {prior_allow}"
+                    )
+                if prior_block:
+                    print(
+                        f"WARNING: country-wide row `{label},allow,"
+                        f"{country},` coexists with state-restricted "
+                        f"block.{country} = {prior_block} (i.e. allowed "
+                        f"everywhere in {country} except those states); "
+                        f"verify this is intentional"
+                    )
+                geofence[label]["allow"][country] = []
             else:
                 curr_country_rule = geofence[label]["allow"].get(country)
                 if curr_country_rule is None:  # missing country rule
                     geofence[label]["allow"][country] = [state]
                 else:
                     if not curr_country_rule:  # an empty list
-                        continue  # already allowed
+                        print(
+                            f"WARNING: state-specific row `{label},allow,"
+                            f"{country},{state}` is a no-op; allow.{country}"
+                            f" = [] (country-wide) is already in effect"
+                        )
+                        continue
                     else:  # not an empty list
                         geofence[label]["allow"][country] = sorted(
                             set(curr_country_rule) | {state}
@@ -398,16 +683,35 @@ def fix_geofence_base(
             if "block" not in geofence[label]:
                 geofence[label]["block"] = {country: [state] if state else []}
             if not state:
-                geofence[label]["block"][country] = geofence[label]["block"].get(
-                    country, []
-                )
+                # Country-wide block: replace any existing state list with
+                # [].  Same widening fix as for the allow branch.
+                if prior_block:
+                    print(
+                        f"WARNING: country-wide row `{label},block,"
+                        f"{country},` overwrites existing state-restricted "
+                        f"block.{country} = {prior_block}"
+                    )
+                if prior_allow:
+                    print(
+                        f"WARNING: country-wide row `{label},block,"
+                        f"{country},` is being applied while state-"
+                        f"restricted allow.{country} = {prior_allow} "
+                        f"exists; block wins, so those allow entries "
+                        f"become ineffective"
+                    )
+                geofence[label]["block"][country] = []
             else:
                 curr_country_rule = geofence[label]["block"].get(country)
                 if curr_country_rule is None:  # missing country rule
                     geofence[label]["block"][country] = [state]
                 else:
                     if not curr_country_rule:  # an empty list
-                        continue  # already blocked
+                        print(
+                            f"WARNING: state-specific row `{label},block,"
+                            f"{country},{state}` is a no-op; block.{country}"
+                            f" = [] (country-wide) is already in effect"
+                        )
+                        continue
                     else:  # not an empty list
                         geofence[label]["block"][country] = sorted(
                             set(curr_country_rule) | {state}
@@ -512,6 +816,11 @@ def propagate_rules(geofence: dict[str, dict], labels_path: str) -> dict[str, di
     def _merge_country_rule_lists(source, target):
         """Add rules from source into target.
 
+        An empty list ([]) at a country key means "the whole country"
+        and is strictly more restrictive than any state-restricted list,
+        so a country-wide contribution from EITHER source or target
+        always wins.
+
         Args:
             source: a regional rules dict, e.g. "{'RUS':[],'USA':['AZ']}"
             target: a regional rules dict, modified in place
@@ -520,13 +829,21 @@ def propagate_rules(geofence: dict[str, dict], labels_path: str) -> dict[str, di
         assert isinstance(target, dict)
         for country in source:
             assert (isinstance(country, str)) and (len(country) == 3)
+            s_list = source[country]
+            assert isinstance(s_list, list)
             if country not in target:
+                target[country] = list(s_list)
+                continue
+            t_list = target[country]
+            assert isinstance(t_list, list)
+            # Country-wide on either side wins.
+            if not s_list or not t_list:
                 target[country] = []
-            assert isinstance(target[country], list)
-            assert isinstance(source[country], list)
-            for region in source[country]:
-                if region not in target[country]:
-                    target[country].append(region)
+                continue
+            # Both are state-restricted lists: union them.
+            for region in s_list:
+                if region not in t_list:
+                    t_list.append(region)
 
     # "label" is a five-token taxon string
     for label in labels:
@@ -539,12 +856,15 @@ def propagate_rules(geofence: dict[str, dict], labels_path: str) -> dict[str, di
                 continue
 
             # "taxon_prefix" is a semicolon-delimited list, but it may have
-            # anywhere from one to five tokens
-            taxon_prefix = taxon_with_block_rule.rstrip(";")
+            # anywhere from one to five tokens.  We append the ";" back
+            # so the prefix match below is anchored to a token boundary
+            # (otherwise e.g. genus "mus" could spuriously match a species
+            # whose name happens to contain the substring "mus").
+            taxon_prefix = taxon_with_block_rule.rstrip(";") + ";"
 
-            # If "taxon_prefix" is a substring of "label", that means that "label"
-            # is a taxonomic child of "taxon_with_block_rule"
-            if taxon_prefix in label:
+            # If "taxon_prefix" is the start of "label", that means "label"
+            # is a taxonomic child of "taxon_with_block_rule".
+            if label.startswith(taxon_prefix):
 
                 print(
                     "Adding block rule to {} because of parent {}".format(
@@ -564,8 +884,14 @@ def propagate_rules(geofence: dict[str, dict], labels_path: str) -> dict[str, di
     print(f"Adding {len(new_block_rules)} new block rules during propagation")
 
     for label in new_block_rules:
-        if label not in new_geofence or "block" not in new_geofence[label]:
+        # Make sure new_geofence[label] has a "block" dict to merge into,
+        # without clobbering an existing "allow" entry.  The previous
+        # version reassigned the whole entry to {"block": {}} when the
+        # label had only an "allow", silently dropping the allow data.
+        if label not in new_geofence:
             new_geofence[label] = {"block": {}}
+        elif "block" not in new_geofence[label]:
+            new_geofence[label]["block"] = {}
         _merge_country_rule_lists(
             new_block_rules[label]["block"], new_geofence[label]["block"]
         )
@@ -695,6 +1021,9 @@ def generate_release_taxonomy_from_label_list(
     model classes).  The taxonomy list is just the set of categories in
     the labels file, plus their parent taxa, which have to be retrieved
     from the public WI taxonomy.
+
+    This is not related to geofencing, but it is part of the release process,
+    which is why it's in this module.
 
     Args:
         labels_path: text file containing labels in seven-token format.
