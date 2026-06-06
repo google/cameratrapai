@@ -15,7 +15,9 @@
 """Script to check GPU availability for PyTorch in the current Python environment."""
 
 
-def torch_test():
+from typing import Optional
+
+def torch_test() -> Optional[int]:
     """Print diagnostic information about Torch/CUDA status, including Torch/CUDA
     versions and all available CUDA device names.
     """
