@@ -156,13 +156,60 @@ taxonomic_replacements["cetartiodactyla"] = "artiodactyla"
 
 # 50 US state codes (no DC, no US territories).  Used by validate_fixes_file
 # to detect the case where a rule has been enumerated for every state.
-us_state_codes = frozenset({
-    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
-})
+us_state_codes = frozenset(
+    {
+        "AL",
+        "AK",
+        "AZ",
+        "AR",
+        "CA",
+        "CO",
+        "CT",
+        "DE",
+        "FL",
+        "GA",
+        "HI",
+        "ID",
+        "IL",
+        "IN",
+        "IA",
+        "KS",
+        "KY",
+        "LA",
+        "ME",
+        "MD",
+        "MA",
+        "MI",
+        "MN",
+        "MS",
+        "MO",
+        "MT",
+        "NE",
+        "NV",
+        "NH",
+        "NJ",
+        "NM",
+        "NY",
+        "NC",
+        "ND",
+        "OH",
+        "OK",
+        "OR",
+        "PA",
+        "RI",
+        "SC",
+        "SD",
+        "TN",
+        "TX",
+        "UT",
+        "VT",
+        "VA",
+        "WA",
+        "WV",
+        "WI",
+        "WY",
+    }
+)
 
 
 def _taxon_allowed_in_region(
@@ -261,9 +308,7 @@ def _is_descendant_taxon(child: str, parent: str) -> bool:
     return child_parts[:parent_depth] == parent_parts[:parent_depth]
 
 
-def validate_fixes_file(
-    fixes_path: StrPath, taxonomy_path: StrPath
-) -> None:
+def validate_fixes_file(fixes_path: StrPath, taxonomy_path: StrPath) -> None:
     """Validates the structural integrity and internal consistency of a
     geofence fixes CSV before any of its rules are applied to the base
     geofence.
@@ -318,9 +363,7 @@ def validate_fixes_file(
     # Validate each data row and collect the rules for cross-row checks.
     rules: list[tuple[int, str, str, str, str]] = []
     for line_num, row in data_rows[1:]:
-        assert len(row) == 4, (
-            f"Line {line_num}: row has {len(row)} columns, expected 4"
-        )
+        assert len(row) == 4, f"Line {line_num}: row has {len(row)} columns, expected 4"
         label = row[0].lower()
         rule_type = row[1].lower()
         country = row[2]
@@ -335,17 +378,18 @@ def validate_fixes_file(
         # Catches taxa with empty intermediate tokens (raises ValueError).
         _validate_taxon_string(label)
 
-        assert label in valid_five_token_taxa, (
-            f"Line {line_num}: taxon `{label}` is not in the taxonomy"
-        )
+        assert (
+            label in valid_five_token_taxa
+        ), f"Line {line_num}: taxon `{label}` is not in the taxonomy"
 
-        assert rule_type in ("allow", "block"), (
-            f"Line {line_num}: rule type `{rule_type}` must be `allow` or `block`"
-        )
+        assert rule_type in (
+            "allow",
+            "block",
+        ), f"Line {line_num}: rule type `{rule_type}` must be `allow` or `block`"
 
-        assert len(country) == 3, (
-            f"Line {line_num}: country code `{country}` must be 3 characters"
-        )
+        assert (
+            len(country) == 3
+        ), f"Line {line_num}: country code `{country}` must be 3 characters"
 
         if state:
             assert len(state) == 2, (
@@ -424,9 +468,7 @@ def validate_fixes_file(
     # country).  After the country-wide widening fix, the country-wide
     # row replaces any state list and subsequent state-specific rows
     # become no-ops, so the combination is redundant but not incorrect.
-    rows_by_group: dict[tuple[str, str, str], list[tuple[int, str]]] = (
-        defaultdict(list)
-    )
+    rows_by_group: dict[tuple[str, str, str], list[tuple[int, str]]] = defaultdict(list)
     for line_num, label, rule_type, country, state in rules:
         rows_by_group[(label, rule_type, country)].append((line_num, state))
 
@@ -630,9 +672,7 @@ def fix_geofence_base(
                     f"now restricted to the locations specified by this "
                     f"and any other allow rows for it"
                 )
-                geofence[label] = {
-                    "allow": {country: [state] if state else []}
-                }
+                geofence[label] = {"allow": {country: [state] if state else []}}
             if "allow" not in geofence[label]:
                 print(
                     f"WARNING: allow row `{label},allow,{country},{state}` "
