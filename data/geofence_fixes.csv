@@ -14205,7 +14205,6 @@ mammalia;carnivora;mustelidae;meles;,block,TZA,
 mammalia;carnivora;mustelidae;meles;,block,UGA,
 mammalia;carnivora;mustelidae;meles;,block,UMI,
 mammalia;carnivora;mustelidae;meles;,block,URY,
-mammalia;carnivora;mustelidae;meles;,block,USA,
 mammalia;carnivora;mustelidae;meles;,block,VCT,
 mammalia;carnivora;mustelidae;meles;,block,VEN,
 mammalia;carnivora;mustelidae;meles;,block,VGB,
@@ -15695,114 +15694,14 @@ mammalia;rodentia;muridae;rattus;norvegicus,allow,YEM,
 mammalia;rodentia;muridae;rattus;norvegicus,allow,ZAF,
 mammalia;rodentia;muridae;rattus;norvegicus,allow,ZMB,
 mammalia;rodentia;muridae;rattus;norvegicus,allow,ZWE,
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,AK
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,AL
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,AR
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,AZ
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,CA
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,CO
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,CT
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,DC
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,DE
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,FL
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,GA
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,HI
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,IA
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,ID
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,IL
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,IN
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,KS
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,KY
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,LA
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,MA
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,MD
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,ME
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,MI
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,MN
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,MO
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,MS
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,MT
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,NC
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,ND
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,NE
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,NH
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,NJ
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,NM
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,NV
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,NY
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,OH
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,OK
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,OR
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,PA
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,RI
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,SC
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,SD
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,TN
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,TX
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,UT
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,VA
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,VT
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,WA
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,WI
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,WV
-mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,WY
+mammalia;rodentia;muridae;rattus;norvegicus,allow,USA,
 
 # Sufficiently common invasive species to allow adding it
 mammalia;lagomorpha;leporidae;oryctolagus;cuniculus,allow,CAN,
 
 # Allow the house mouse in Canada and in every US state (specifically create an allow rule for every US state).
 mammalia;rodentia;muridae;mus;musculus,allow,CAN,
-mammalia;rodentia;muridae;mus;musculus,allow,USA,AK
-mammalia;rodentia;muridae;mus;musculus,allow,USA,AL
-mammalia;rodentia;muridae;mus;musculus,allow,USA,AR
-mammalia;rodentia;muridae;mus;musculus,allow,USA,AZ
-mammalia;rodentia;muridae;mus;musculus,allow,USA,CA
-mammalia;rodentia;muridae;mus;musculus,allow,USA,CO
-mammalia;rodentia;muridae;mus;musculus,allow,USA,CT
-mammalia;rodentia;muridae;mus;musculus,allow,USA,DC
-mammalia;rodentia;muridae;mus;musculus,allow,USA,DE
-mammalia;rodentia;muridae;mus;musculus,allow,USA,FL
-mammalia;rodentia;muridae;mus;musculus,allow,USA,GA
-mammalia;rodentia;muridae;mus;musculus,allow,USA,HI
-mammalia;rodentia;muridae;mus;musculus,allow,USA,IA
-mammalia;rodentia;muridae;mus;musculus,allow,USA,ID
-mammalia;rodentia;muridae;mus;musculus,allow,USA,IL
-mammalia;rodentia;muridae;mus;musculus,allow,USA,IN
-mammalia;rodentia;muridae;mus;musculus,allow,USA,KS
-mammalia;rodentia;muridae;mus;musculus,allow,USA,KY
-mammalia;rodentia;muridae;mus;musculus,allow,USA,LA
-mammalia;rodentia;muridae;mus;musculus,allow,USA,MA
-mammalia;rodentia;muridae;mus;musculus,allow,USA,MD
-mammalia;rodentia;muridae;mus;musculus,allow,USA,ME
-mammalia;rodentia;muridae;mus;musculus,allow,USA,MI
-mammalia;rodentia;muridae;mus;musculus,allow,USA,MN
-mammalia;rodentia;muridae;mus;musculus,allow,USA,MO
-mammalia;rodentia;muridae;mus;musculus,allow,USA,MS
-mammalia;rodentia;muridae;mus;musculus,allow,USA,MT
-mammalia;rodentia;muridae;mus;musculus,allow,USA,NC
-mammalia;rodentia;muridae;mus;musculus,allow,USA,ND
-mammalia;rodentia;muridae;mus;musculus,allow,USA,NE
-mammalia;rodentia;muridae;mus;musculus,allow,USA,NH
-mammalia;rodentia;muridae;mus;musculus,allow,USA,NJ
-mammalia;rodentia;muridae;mus;musculus,allow,USA,NM
-mammalia;rodentia;muridae;mus;musculus,allow,USA,NV
-mammalia;rodentia;muridae;mus;musculus,allow,USA,NY
-mammalia;rodentia;muridae;mus;musculus,allow,USA,OH
-mammalia;rodentia;muridae;mus;musculus,allow,USA,OK
-mammalia;rodentia;muridae;mus;musculus,allow,USA,OR
-mammalia;rodentia;muridae;mus;musculus,allow,USA,PA
-mammalia;rodentia;muridae;mus;musculus,allow,USA,RI
-mammalia;rodentia;muridae;mus;musculus,allow,USA,SC
-mammalia;rodentia;muridae;mus;musculus,allow,USA,SD
-mammalia;rodentia;muridae;mus;musculus,allow,USA,TN
-mammalia;rodentia;muridae;mus;musculus,allow,USA,TX
-mammalia;rodentia;muridae;mus;musculus,allow,USA,UT
-mammalia;rodentia;muridae;mus;musculus,allow,USA,VA
-mammalia;rodentia;muridae;mus;musculus,allow,USA,VT
-mammalia;rodentia;muridae;mus;musculus,allow,USA,WA
-mammalia;rodentia;muridae;mus;musculus,allow,USA,WI
-mammalia;rodentia;muridae;mus;musculus,allow,USA,WV
-mammalia;rodentia;muridae;mus;musculus,allow,USA,WY
+mammalia;rodentia;muridae;mus;musculus,allow,USA,
 
 # Block the Australian zebra finch in all countries other than Australia. Block the genus Taeniopygia in all countries other than Australia and Indonesia. Block the family Estrildidae in all countries in the Western hemisphere.
 aves;passeriformes;estrildidae;taeniopygia;castanotis,block,ABW,
@@ -16382,10 +16281,108 @@ mammalia;rodentia;sciuridae;aeromys;,block,USA,
 aves;passeriformes;paridae;parus;minor,block,USA,
 aves;passeriformes;paridae;parus;,block,USA,
 
-# Block the large-headed capuchin in the United States. Block the genus sapajus in the United States. Block the family cebidae in the United States.
+# Block the large-headed capuchin in the United States. Block the genus sapajus in all US states except Florida. Block the family cebidae in all US states except Florida.
 mammalia;primates;cebidae;sapajus;macrocephalus,block,USA,
-mammalia;primates;cebidae;sapajus;,block,USA,
-mammalia;primates;cebidae;;,block,USA,
+mammalia;primates;cebidae;sapajus;,block,USA,AK
+mammalia;primates;cebidae;sapajus;,block,USA,AL
+mammalia;primates;cebidae;sapajus;,block,USA,AR
+mammalia;primates;cebidae;sapajus;,block,USA,AZ
+mammalia;primates;cebidae;sapajus;,block,USA,CA
+mammalia;primates;cebidae;sapajus;,block,USA,CO
+mammalia;primates;cebidae;sapajus;,block,USA,CT
+mammalia;primates;cebidae;sapajus;,block,USA,DC
+mammalia;primates;cebidae;sapajus;,block,USA,DE
+mammalia;primates;cebidae;sapajus;,block,USA,GA
+mammalia;primates;cebidae;sapajus;,block,USA,HI
+mammalia;primates;cebidae;sapajus;,block,USA,IA
+mammalia;primates;cebidae;sapajus;,block,USA,ID
+mammalia;primates;cebidae;sapajus;,block,USA,IL
+mammalia;primates;cebidae;sapajus;,block,USA,IN
+mammalia;primates;cebidae;sapajus;,block,USA,KS
+mammalia;primates;cebidae;sapajus;,block,USA,KY
+mammalia;primates;cebidae;sapajus;,block,USA,LA
+mammalia;primates;cebidae;sapajus;,block,USA,MA
+mammalia;primates;cebidae;sapajus;,block,USA,MD
+mammalia;primates;cebidae;sapajus;,block,USA,ME
+mammalia;primates;cebidae;sapajus;,block,USA,MI
+mammalia;primates;cebidae;sapajus;,block,USA,MN
+mammalia;primates;cebidae;sapajus;,block,USA,MO
+mammalia;primates;cebidae;sapajus;,block,USA,MS
+mammalia;primates;cebidae;sapajus;,block,USA,MT
+mammalia;primates;cebidae;sapajus;,block,USA,NC
+mammalia;primates;cebidae;sapajus;,block,USA,ND
+mammalia;primates;cebidae;sapajus;,block,USA,NE
+mammalia;primates;cebidae;sapajus;,block,USA,NH
+mammalia;primates;cebidae;sapajus;,block,USA,NJ
+mammalia;primates;cebidae;sapajus;,block,USA,NM
+mammalia;primates;cebidae;sapajus;,block,USA,NV
+mammalia;primates;cebidae;sapajus;,block,USA,NY
+mammalia;primates;cebidae;sapajus;,block,USA,OH
+mammalia;primates;cebidae;sapajus;,block,USA,OK
+mammalia;primates;cebidae;sapajus;,block,USA,OR
+mammalia;primates;cebidae;sapajus;,block,USA,PA
+mammalia;primates;cebidae;sapajus;,block,USA,RI
+mammalia;primates;cebidae;sapajus;,block,USA,SC
+mammalia;primates;cebidae;sapajus;,block,USA,SD
+mammalia;primates;cebidae;sapajus;,block,USA,TN
+mammalia;primates;cebidae;sapajus;,block,USA,TX
+mammalia;primates;cebidae;sapajus;,block,USA,UT
+mammalia;primates;cebidae;sapajus;,block,USA,VA
+mammalia;primates;cebidae;sapajus;,block,USA,VT
+mammalia;primates;cebidae;sapajus;,block,USA,WA
+mammalia;primates;cebidae;sapajus;,block,USA,WI
+mammalia;primates;cebidae;sapajus;,block,USA,WV
+mammalia;primates;cebidae;sapajus;,block,USA,WY
+mammalia;primates;cebidae;;,block,USA,AK
+mammalia;primates;cebidae;;,block,USA,AL
+mammalia;primates;cebidae;;,block,USA,AR
+mammalia;primates;cebidae;;,block,USA,AZ
+mammalia;primates;cebidae;;,block,USA,CA
+mammalia;primates;cebidae;;,block,USA,CO
+mammalia;primates;cebidae;;,block,USA,CT
+mammalia;primates;cebidae;;,block,USA,DC
+mammalia;primates;cebidae;;,block,USA,DE
+mammalia;primates;cebidae;;,block,USA,GA
+mammalia;primates;cebidae;;,block,USA,HI
+mammalia;primates;cebidae;;,block,USA,IA
+mammalia;primates;cebidae;;,block,USA,ID
+mammalia;primates;cebidae;;,block,USA,IL
+mammalia;primates;cebidae;;,block,USA,IN
+mammalia;primates;cebidae;;,block,USA,KS
+mammalia;primates;cebidae;;,block,USA,KY
+mammalia;primates;cebidae;;,block,USA,LA
+mammalia;primates;cebidae;;,block,USA,MA
+mammalia;primates;cebidae;;,block,USA,MD
+mammalia;primates;cebidae;;,block,USA,ME
+mammalia;primates;cebidae;;,block,USA,MI
+mammalia;primates;cebidae;;,block,USA,MN
+mammalia;primates;cebidae;;,block,USA,MO
+mammalia;primates;cebidae;;,block,USA,MS
+mammalia;primates;cebidae;;,block,USA,MT
+mammalia;primates;cebidae;;,block,USA,NC
+mammalia;primates;cebidae;;,block,USA,ND
+mammalia;primates;cebidae;;,block,USA,NE
+mammalia;primates;cebidae;;,block,USA,NH
+mammalia;primates;cebidae;;,block,USA,NJ
+mammalia;primates;cebidae;;,block,USA,NM
+mammalia;primates;cebidae;;,block,USA,NV
+mammalia;primates;cebidae;;,block,USA,NY
+mammalia;primates;cebidae;;,block,USA,OH
+mammalia;primates;cebidae;;,block,USA,OK
+mammalia;primates;cebidae;;,block,USA,OR
+mammalia;primates;cebidae;;,block,USA,PA
+mammalia;primates;cebidae;;,block,USA,RI
+mammalia;primates;cebidae;;,block,USA,SC
+mammalia;primates;cebidae;;,block,USA,SD
+mammalia;primates;cebidae;;,block,USA,TN
+mammalia;primates;cebidae;;,block,USA,TX
+mammalia;primates;cebidae;;,block,USA,UT
+mammalia;primates;cebidae;;,block,USA,VA
+mammalia;primates;cebidae;;,block,USA,VT
+mammalia;primates;cebidae;;,block,USA,WA
+mammalia;primates;cebidae;;,block,USA,WI
+mammalia;primates;cebidae;;,block,USA,WV
+mammalia;primates;cebidae;;,block,USA,WY
 
 # Block the lesser tropical ground squirrel in the United States. Block the genus notocitellus in the United States.
 mammalia;rodentia;sciuridae;notocitellus;adocetus,block,USA,
@@ -18034,7 +18031,7 @@ mammalia;rodentia;sciuridae;callosciurus;,block,ZAF,
 mammalia;rodentia;sciuridae;callosciurus;,block,ZMB,
 mammalia;rodentia;sciuridae;callosciurus;,block,ZWE,
 
-# Allow the grizzly bear in Alaska, Idaho, Montana, Washington, and Wyoming, and block in all other US states.
+# Allow the grizzly bear in Alaska, Idaho, Montana, Washington, and Wyoming, and block in all other US states. Also block in all countries other than Afghanistan, Åland Islands, Albania, Andorra, Armenia, Austria, Azerbaijan, Belarus, Bosnia and Herzegovina, Bulgaria, Canada, China, Croatia, Czechia, Estonia, Finland, France, Georgia, Germany, Greece, Hungary, India, Iran, Iraq, Italy, Japan, Kazakhstan, Kyrgyzstan, Latvia, Liechtenstein, Mongolia, Montenegro, North Korea, North Macedonia, Norway, Pakistan, Poland, Romania, Russia, San Marino, Serbia, Slovakia, Slovenia, Spain, Sweden, Switzerland, Tajikistan, Turkmenistan, Türkiye, Ukraine, United States, and Uzbekistan.
 mammalia;carnivora;ursidae;ursus;arctos horribilis,allow,USA,AK
 mammalia;carnivora;ursidae;ursus;arctos horribilis,allow,USA,ID
 mammalia;carnivora;ursidae;ursus;arctos horribilis,allow,USA,MT
@@ -18086,67 +18083,211 @@ mammalia;carnivora;ursidae;ursus;arctos horribilis,block,USA,VA
 mammalia;carnivora;ursidae;ursus;arctos horribilis,block,USA,VT
 mammalia;carnivora;ursidae;ursus;arctos horribilis,block,USA,WI
 mammalia;carnivora;ursidae;ursus;arctos horribilis,block,USA,WV
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ABW,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,AGO,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,AIA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ARE,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ARG,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ASM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ATA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ATF,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ATG,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,AUS,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BDI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BEL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BEN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BES,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BFA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BGD,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BHR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BHS,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BLM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BLZ,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BMU,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BOL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BRA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BRB,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BRN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BTN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BVT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,BWA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CAF,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CCK,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CHL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CIV,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CMR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,COD,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,COG,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,COK,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,COL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,COM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CPV,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CRI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CUB,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CUW,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CXR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CYM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,CYP,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,DJI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,DMA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,DNK,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,DOM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,DZA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ECU,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,EGY,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ERI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ESH,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ETH,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,FJI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,FLK,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,FRO,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,FSM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GAB,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GBR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GGY,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GHA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GIB,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GIN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GLP,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GMB,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GNB,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GNQ,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GRD,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GRL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GTM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GUF,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GUM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,GUY,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,HKG,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,HMD,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,HND,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,HTI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,IDN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,IMN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,IOT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,IRL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ISL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ISR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,JAM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,JEY,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,JOR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,KEN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,KHM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,KIR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,KNA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,KOR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,KWT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,LAO,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,LBN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,LBR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,LBY,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,LCA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,LKA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,LSO,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,LTU,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,LUX,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MAC,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MAF,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MAR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MCO,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MDA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MDG,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MDV,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MEX,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MHL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MLI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MLT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MMR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MNP,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MOZ,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MRT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MSR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MTQ,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MUS,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MWI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MYS,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,MYT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NAM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NCL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NER,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NFK,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NGA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NIC,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NIU,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NLD,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NPL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NRU,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,NZL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,OMN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PAN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PCN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PER,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PHL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PLW,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PNG,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PRI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PRT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PRY,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PSE,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,PYF,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,QAT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,REU,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,RWA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SAU,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SDN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SEN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SGP,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SGS,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SHN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SJM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SLB,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SLE,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SLV,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SOM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SPM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SSD,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,STP,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SUR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SWZ,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SXM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SYC,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,SYR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TCA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TCD,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TGO,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,THA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TKL,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TLS,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TON,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TTO,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TUN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TUV,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TWN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,TZA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,UGA,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,UMI,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,URY,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,VAT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,VCT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,VEN,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,VGB,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,VIR,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,VNM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,VUT,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,WLF,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,WSM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,YEM,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ZAF,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ZMB,
+mammalia;carnivora;ursidae;ursus;arctos horribilis,block,ZWE,
 
 # Block the raccoon dog at country level in the United States.
 mammalia;carnivora;canidae;nyctereutes;procyonoides,block,USA,
 
-# Block the wild goat with explicit block rules for every US state.
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,AK
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,AL
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,AR
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,AZ
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,CA
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,CO
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,CT
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,DC
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,DE
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,FL
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,GA
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,HI
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,IA
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,ID
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,IL
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,IN
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,KS
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,KY
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,LA
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,MA
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,MD
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,ME
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,MI
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,MN
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,MO
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,MS
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,MT
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,NC
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,ND
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,NE
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,NH
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,NJ
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,NM
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,NV
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,NY
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,OH
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,OK
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,OR
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,PA
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,RI
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,SC
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,SD
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,TN
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,TX
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,UT
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,VA
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,VT
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,WA
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,WI
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,WV
-mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,WY
-
 # Block the emperor penguin at country level in the United States.
 aves;sphenisciformes;spheniscidae;aptenodytes;forsteri,block,USA,
 
-# Block mouflon in all US states, and block mouflon in all countries not in Asia or Europe.
+# Block mouflon in all US states other than Hawaii and Texas, and block mouflon in all countries other than the US that are not in Asia or Europe.
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,AK
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,AL
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,AR
@@ -18158,7 +18299,6 @@ mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,DC
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,DE
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,FL
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,GA
-mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,HI
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,IA
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,ID
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,IL
@@ -18190,7 +18330,6 @@ mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,RI
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,SC
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,SD
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,TN
-mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,TX
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,UT
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,VA
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,VT
@@ -18344,7 +18483,7 @@ mammalia;artiodactyla;bovidae;ovis;orientalis,block,ZAF,
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,ZMB,
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,ZWE,
 
-# Block rules created 2026.06.02
+# Block rules created 2026.06.05
 mammalia;artiodactyla;bovidae;ovis;orientalis,block,CAN,
 aves;pelecaniformes;ardeidae;butorides;striatus,block,CAN,
 aves;accipitriformes;accipitridae;accipiter;tachiro,block,USA,
@@ -18353,7 +18492,6 @@ aves;passeriformes;corvidae;cyanocorax;colliei,block,USA,
 aves;passeriformes;corvidae;corvus;monedula,block,USA,
 mammalia;artiodactyla;camelidae;lama;guanicoe,block,USA,
 aves;strigiformes;strigidae;megascops;guatemalae,block,USA,
-mammalia;artiodactyla;bovidae;ovis;orientalis,block,USA,
 mammalia;chiroptera;vespertilionidae;eptesicus;nilssonii,block,USA,
 aves;passeriformes;icteridae;icterus;croconotus,block,USA,
 mammalia;carnivora;mephitidae;spilogale;angustifrons,block,USA,
@@ -18363,7 +18501,7 @@ mammalia;artiodactyla;bovidae;capra;aegagrus,block,USA,
 mammalia;artiodactyla;cervidae;odocoileus;virginianus,block,USA,HI
 mammalia;artiodactyla;cervidae;rangifer;tarandus,block,USA,OR
 
-# Allow rules created 2026.06.02
+# Allow rules created 2026.06.05
 aves;passeriformes;tyrannidae;sayornis;nigricans,allow,CAN,
 aves;anseriformes;anatidae;dendrocygna;autumnalis,allow,CAN,
 aves;charadriiformes;recurvirostridae;himantopus;mexicanus,allow,CAN,
