@@ -125,7 +125,7 @@ If you have an NVIDIA GPU, SpeciesNet should use it.  If SpeciesNet is using you
 <pre>Loaded SpeciesNetClassifier in 0.96 seconds on <b>CUDA</b>.
 Loaded SpeciesNetDetector in 0.7 seconds on <b>CUDA</b></pre>
 
-"CUDA" is good news, that means "GPU".  
+"CUDA" is good news, that means "GPU".
 
 If SpeciesNet is <i>not</i> using your GPU, you will see something like this instead:
 
@@ -141,7 +141,7 @@ You can also directly check whether SpeciesNet can see your GPU by running:
 1. Install the GPU version of PyTorch, by activating your speciesnet Python environment (e.g. by running "conda activate speciesnet"), then running:
 
    > ```pip install torch torchvision --upgrade --force-reinstall --index-url https://download.pytorch.org/whl/cu118```
-   
+
 2. If the GPU doesn't work immediately after that step, update your [GPU driver](https://www.nvidia.com/en-us/geforce/drivers/), then reboot.  Really, don't skip the reboot part, most problems related to GPU access can be fixed by upgrading your driver and rebooting.
 
 ## Downloading SpeciesNet model weights directly
@@ -149,9 +149,9 @@ You can also directly check whether SpeciesNet can see your GPU by running:
 Both scripts described above (`run_model` and `run_md_and_speciesnet`) will download model weights automatically.  If you want to use the SpeciesNet model weights outside of our script, or if you plan to be offline when you first run the script, you can download model weights directly from Kaggle.  Running our ensemble also requires [MegaDetector](https://github.com/agentmorris/MegaDetector), so in this list of links, we also include a direct link to the MegaDetector model weights.
 
 - [SpeciesNet page on Kaggle](https://www.kaggle.com/models/google/speciesnet)
-- [Direct link to version 4.0.2a weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.2a/1/download) (the crop classifier)
-- [Direct link to version 4.0.2b weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.2b/1/download) (the whole-image classifier)
-- [Direct link to MegaDetector weights](https://github.com/agentmorris/MegaDetector/releases/download/v5.0/md_v5a.0.0.pt)
+- [Direct link to version 4.0.3a weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.3a/1/download) (the crop classifier)
+- [Direct link to version 4.0.3b weights](https://www.kaggle.com/api/v1/models/google/speciesnet/pyTorch/v4.0.3b/1/download) (the whole-image classifier)
+- [Direct link to MegaDetector weights](https://github.com/agentmorris/MegaDetector/releases/download/v5.0/md_v5a.0.1.pt)
 
 ## Contacting us
 

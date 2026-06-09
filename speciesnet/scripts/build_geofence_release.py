@@ -487,13 +487,19 @@ def validate_fixes_file(fixes_path: StrPath, taxonomy_path: StrPath) -> None:
             )
 
 
-def validate_geofence(geofence: dict[str, dict]) -> bool:
+def validate_geofence(
+    geofence: dict[str, dict], taxonomy_path: Optional[StrPath]
+) -> bool:
     """Validates a global geofencing dict.  See module header for
     format rules.
 
     Args:
-        path:
-            Filename of the base geofence .json file.
+        geofence:
+            A global geofencing dict.
+        taxonomy_path:
+            Filename of the .txt file containing valid taxonomy entries
+            (typically taxonomy_release.txt).  Every taxon in the geofence
+            must appear in this file if this is not None.
 
     Returns:
         True if the geofencing dict is valid, else False.
@@ -503,11 +509,20 @@ def validate_geofence(geofence: dict[str, dict]) -> bool:
         print("Invalid geofence type")
         return False
 
+    valid_five_token_taxa = None
+    if taxonomy_path is not None:
+        valid_five_token_taxa = set(validate_release_taxonomy(taxonomy_path))
+
     # Basic format validation
     for taxon in geofence.keys():
 
         # All keys should be five-token taxon strings
         _validate_taxon_string(taxon)
+
+        # Every taxon in the geofence must appear in the release taxonomy.
+        if valid_five_token_taxa is not None and taxon not in valid_five_token_taxa:
+            print(f"Taxon `{taxon}` in geofence is not in the taxonomy")
+            return False
 
         taxon_rules = geofence[taxon]
 
@@ -1008,18 +1023,23 @@ def download_wildlife_insights_taxonomy(
     return output_path
 
 
-def validate_release_taxonomy(taxonomy_path: StrPath):
+def validate_release_taxonomy(
+    taxonomy_path: StrPath, labels_path: Optional[StrPath] = None
+):
     """Verify that taxonomy_path (typically taxonomy_release.txt) represents
     a valid taxonomy file.
 
-    Specifically, verify that:
+    Specifically, assert if any of the following are false:
 
     * All lines are well-formatted seven-token taxonomy strings
     * Only expected duplicated taxa exist
     * Only expected non-taxonomic strings exist
+    * All tokens in the labels file are also in the taxonomy file
+      (if a labels file is provided)
 
     Args:
-        taxonomy_path: .csv file to alidate, typically taxonomy_releaase.txt
+        taxonomy_path: .csv file to validate, typically taxonomy_releaase.txt
+        labels_path: .txt file containing labels that must be in the taxonomy file
 
     Returns:
         list of valid five-token taxon strings
@@ -1049,6 +1069,18 @@ def validate_release_taxonomy(taxonomy_path: StrPath):
         if five_token_taxon_string in five_token_taxa:
             assert five_token_taxon_string in known_duplicate_five_token_strings
         five_token_taxa.add(five_token_taxon_string)
+
+    # If a label list is provided, make sure that every label is also in the
+    # taxonomy file.
+    if labels_path is not None:
+        label_list = _read_label_list(labels_path)
+        for label in label_list:
+            # Non-taxonomic labels are OK
+            if len(label.replace(";", "")) == 0:
+                continue
+            assert (
+                label in five_token_taxa
+            ), f"{label} is in the label list, but not in the taxonomy file"
 
     return sorted(list(five_token_taxa))
 
@@ -1339,8 +1371,12 @@ def save_geofence(geofence: dict[str, dict], output_path: StrPath) -> None:
 def main(argv: list[str]) -> None:
     del argv  # Unused.
 
+    # Validate the taxonomy file
+    validate_release_taxonomy(_TAXONOMY.value, _TRIM.value)
+
+    # Validate the base geofence
     geofence_base = load_geofence_base(_BASE.value)
-    validate_geofence(geofence_base)
+    validate_geofence(geofence_base, None)
 
     geofence_release = fix_geofence_base(
         geofence_base=geofence_base,
@@ -1354,7 +1390,9 @@ def main(argv: list[str]) -> None:
         geofence=geofence_release, labels_path=_TRIM.value
     )
 
-    validate_geofence(geofence_release)
+    assert validate_geofence(
+        geofence_release, _TAXONOMY.value
+    ), "Release geofence validation failed"
 
     save_geofence(geofence_release, _OUTPUT.value)
 

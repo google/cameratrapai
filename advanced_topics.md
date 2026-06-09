@@ -22,15 +22,15 @@ Rather than running everything at once, you may want to run the detection, class
 - Run the detector:
 
   > ```python -m speciesnet.scripts.run_model --detector_only --folders "c:\your\image\folder" --predictions_json "c:\your_detector_output_file.json"```
-  
-- Run the classifier, passing the file that you just created, which contains detection results:  
+
+- Run the classifier, passing the file that you just created, which contains detection results:
 
   > ```python -m speciesnet.scripts.run_model --classifier_only --folders "c:\your\image\folder" --predictions_json "c:\your_clasifier_output_file.json" --detections_json "c:\your_detector_output_file.json"```
-  
-- Run the ensemble step, passing both the files that you just created, which contain the detection and classification results:  
 
-  > ```python -m speciesnet.scripts.run_model --ensemble_only --folders "c:\your\image\folder" --predictions_json "c:\your_ensemble_output_file.json" --detections_json "c:\your_detector_output_file.json" --classifications_json "c:\your_clasifier_output_file.json" --country CAN```  
-  
+- Run the ensemble step, passing both the files that you just created, which contain the detection and classification results:
+
+  > ```python -m speciesnet.scripts.run_model --ensemble_only --folders "c:\your\image\folder" --predictions_json "c:\your_ensemble_output_file.json" --detections_json "c:\your_detector_output_file.json" --classifications_json "c:\your_clasifier_output_file.json" --country CAN```
+
 Note that in this example, we have specified the country code only for the ensemble step; the geofencing is part of the ensemble component, so the country code is only relevant for this step.
 
 ## Alternative installation variants
@@ -61,20 +61,20 @@ Depending on how you plan to run SpeciesNet, you may want to install additional 
 
 There are two variants of the SpeciesNet classifier, which lend themselves to different ensemble strategies:
 
-- [v4.0.2a](model_cards/v4.0.1a.md) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
-- [v4.0.2b](model_cards/v4.0.1b.md): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
+- [v4.0.3a](model_cards/v4.0.1a.md) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
+- [v4.0.3b](model_cards/v4.0.1b.md): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
 
-Both links point to the model cards for the 4.0.1 models; model cards were not updated for the 4.0.2 release, which only included changes to geofencing rules and minor taxonomy updates.
+Both links point to the model cards for the 4.0.1 models; model cards were not updated for the 4.0.3 release, which only included changes to geofencing rules and minor taxonomy updates.
 
-run_model.py defaults to v4.0.2a, but you can specify one model or the other using the --model option, for example:
+run_model.py defaults to v4.0.3a, but you can specify one model or the other using the --model option, for example:
 
-- `--model kaggle:google/speciesnet/pyTorch/v4.0.2a/1`
-- `--model kaggle:google/speciesnet/pyTorch/v4.0.2b/1`
+- `--model kaggle:google/speciesnet/pyTorch/v4.0.3a/1`
+- `--model kaggle:google/speciesnet/pyTorch/v4.0.3b/1`
 
 If you are a DIY type and you plan to run the models outside of our ensemble, a couple of notes:
 
-- The crop classifier (v4.0.2a) expects images to be cropped tightly to animals, then resized to 480x480px.
-- The whole-image classifier (v4.0.2b) expects images to have been cropped vertically to remove some pixels from the top and bottom, then resized to 480x480px.
+- The crop classifier (v4.0.3a) expects images to be cropped tightly to animals, then resized to 480x480px.
+- The whole-image classifier (v4.0.3b) expects images to have been cropped vertically to remove some pixels from the top and bottom, then resized to 480x480px.
 
 See [classifier.py](https://github.com/google/cameratrapai/blob/master/speciesnet/classifier.py) to see how preprocessing is implemented for both classifiers.
 

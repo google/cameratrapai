@@ -23,12 +23,12 @@ from speciesnet.geolocation import *
 from speciesnet.multiprocessing import *
 from speciesnet.utils import *
 
-DEFAULT_MODEL = "kaggle:google/speciesnet/pyTorch/v4.0.2a/1"
+DEFAULT_MODEL = "kaggle:google/speciesnet/pyTorch/v4.0.3a/1"
 
 # This represents the model URLs that will be tested via pytest;
 # this does not indicate that only these models will work with
 # the speciesnet package.
 SUPPORTED_MODELS = [
-    "kaggle:google/speciesnet/pyTorch/v4.0.2a/1",
-    "kaggle:google/speciesnet/pyTorch/v4.0.2b/1",
+    "kaggle:google/speciesnet/pyTorch/v4.0.3a/1",
+    "kaggle:google/speciesnet/pyTorch/v4.0.3b/1",
 ]
