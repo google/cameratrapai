@@ -19,6 +19,7 @@ An ensemble of AI models for classifying wildlife in camera trap images.
 - [Output format](#output-format-from-run_model)
 - [Visualizing SpeciesNet output](#visualizing-speciesnet-output)
 - [Ensemble decision-making](#ensemble-decision-making)
+- [Fine-tuning SpeciesNet](#fine-tuning-speciesnet)
 - [Advanced topics](#advanced-topics)
 - [Animal picture](#animal-picture)
 
@@ -301,6 +302,22 @@ Here is a breakdown of the steps:
 10. **Prediction source:** At each step of the prediction workflow, a `prediction_source` is stored. This will be included in the final results to help diagnose which parts of the overall SpeciesNet ensemble were actually used.
 
 The "geofencing" and "label rollup" steps are also used when running `run_md_and_speciesnet`; the other steps don't apply in this scenario, since the goal of `run_md_and_speciesnet` is to classify each detection, rather than to classify the whole image.
+
+## Fine-tuning SpeciesNet
+
+In some cases it may be helpful to fine-tune SpeciesNet on your own data, e.g. to create a complementary classifier for species-specific sex/age classification, or to adapt to local species that SpeciesNet doesn't handle well.  We don't have an "official" path to fine-tuning SpeciesNet, but we wrote a [tutorial](https://agentmorris.github.io/speciesnet-fine-tuning/) for DIY fine-tuning that may be helpful.
+
+Also, a shout out to the fine-tuned SpeciesNets we're aware of as of June 2026, let us know if we're missing any!
+
+* [Addax Data Science Central Indian Wildlife](https://huggingface.co/Addax-Data-Science/IND-ADS-v1) (fine-tuned SpeciesNet for 40 categories from Central India)
+* [Addax Data Science Northern Territory Vertebrates](https://huggingface.co/Addax-Data-Science/ANT-ADS-v1) (fine-tuned SpeciesNet for 140 categories from NT, Australia)
+* [Addax Data Science Hawaii](https://huggingface.co/Addax-Data-Science/HWI-ADS-v1) (fine-tuned SpeciesNet for 13 taxa in Hawaii)
+* [Addax Data Science Southwest Borderlands USA](https://huggingface.co/Addax-Data-Science/SBUSA-ADS-v1) (fine-tuned SpeciesNet for 68 species in the Southwest US and the US/Mexico border region)
+* [Addax Data Science New Zealand Invasives](https://huggingface.co/Addax-Data-Science/NZI-ADS-v1) (YOLOv8-cls model for 17 New Zealand taxa)
+* [Addax Data Science Victoria](https://huggingface.co/Addax-Data-Science/VIC-ADS-v1/tree/main) (fine-tuned SpeciesNet for 212 categories in Victoria, Australia)
+* [AHDriFT-ID](https://u.osu.edu/lipps.37/ahdrift-id) (fine-tuned SpeciesNet for 46 categories in downward-facing small animal cameras in Ohio)
+* [WildObs Wet Tropics](https://huggingface.co/Addax-Data-Science/WetTropics_WildObs/tree/main) (fine-tuned SpeciesNet for 121 Australian taxa)
+* [WildObs National](https://huggingface.co/WildObs/WildObs_National/tree/main) (fine-tuned SpeciesNet (according to [this notebook](https://huggingface.co/WildObs/WildObs_National/blob/main/evaluate_National_hf.ipynb)) for 46 Australian taxa)
 
 ## Advanced topics
 
