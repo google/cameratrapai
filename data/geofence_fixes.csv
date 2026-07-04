@@ -18522,3 +18522,6 @@ mammalia;artiodactyla;cervidae;odocoileus;hemionus,allow,USA,HI
 mammalia;artiodactyla;bovidae;oreamnos;americanus,allow,USA,NV
 mammalia;artiodactyla;bovidae;oreamnos;americanus,allow,USA,SD
 mammalia;artiodactyla;bovidae;oreamnos;americanus,allow,USA,UT
+
+# Allow elk in WI
+mammalia;artiodactyla;cervidae;cervus;canadensis,allow,USA,WI
