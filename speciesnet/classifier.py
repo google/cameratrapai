@@ -118,7 +118,7 @@ class SpeciesNetClassifier:
         img: Optional[PIL.Image.Image],
         bboxes: Optional[list[BBox]] = None,
         resize: bool = True,
-    ) -> Optional[PreprocessedImage]:
+    ) -> list[Optional[PreprocessedImage]]:
         """Preprocesses an image according to this classifier's needs.
 
         This method prepares an input image for classification. It handles
@@ -140,67 +140,99 @@ class SpeciesNetClassifier:
                 Whether to resize the image to some expected dimensions.
 
         Returns:
-            A preprocessed image, or `None` if no PIL image was provided initially.
+            A list of preprocessed images, one for each bounding box.
         """
-
         if img is None:
-            return None
+            return []
 
         img_tensor = F.pil_to_tensor(img)  # HWC to CHW.
         img_tensor = F.convert_image_dtype(img_tensor, torch.float32)
 
+        results = []
         if self.model_info.type_ == "always_crop":
-            # Crop to top bbox if available, otherwise leave image uncropped.
             if bboxes:
-                img_tensor = F.crop(
-                    img_tensor,
-                    int(bboxes[0].ymin * img.height),
-                    int(bboxes[0].xmin * img.width),
-                    int(bboxes[0].height * img.height),
-                    int(bboxes[0].width * img.width),
-                )
+                for bbox in bboxes:
+                    crop = F.crop(
+                        img_tensor,
+                        int(bbox.ymin * img.height),
+                        int(bbox.xmin * img.width),
+                        int(bbox.height * img.height),
+                        int(bbox.width * img.width),
+                    )
+                    if resize:
+                        crop = F.resize(
+                            crop,
+                            [SpeciesNetClassifier.IMG_SIZE, SpeciesNetClassifier.IMG_SIZE],
+                            antialias=False,
+                        )
+                    crop = F.convert_image_dtype(crop, torch.uint8)
+                    crop = crop.permute([1, 2, 0])  # CHW to HWC.
+                    results.append(PreprocessedImage(crop.numpy(), img.width, img.height))
+            else:
+                # If no bounding boxes are provided but we must crop, we return an uncropped image.
+                if resize:
+                    crop = F.resize(
+                        img_tensor,
+                        [SpeciesNetClassifier.IMG_SIZE, SpeciesNetClassifier.IMG_SIZE],
+                        antialias=False,
+                    )
+                else:
+                    crop = img_tensor
+                crop = F.convert_image_dtype(crop, torch.uint8)
+                crop = crop.permute([1, 2, 0])
+                results.append(PreprocessedImage(crop.numpy(), img.width, img.height))
+                
         elif self.model_info.type_ == "full_image":
             # Crop top and bottom of image.
             target_height = max(
                 int(img.height * (1.0 - SpeciesNetClassifier.MAX_CROP_RATIO)),
                 img.height - SpeciesNetClassifier.MAX_CROP_SIZE,
             )
-            img_tensor = F.center_crop(img_tensor, [target_height, img.width])
+            crop = F.center_crop(img_tensor, [target_height, img.width])
 
-        if resize:
-            img_tensor = F.resize(
-                img_tensor,
-                [SpeciesNetClassifier.IMG_SIZE, SpeciesNetClassifier.IMG_SIZE],
-                antialias=False,
-            )
+            if resize:
+                crop = F.resize(
+                    crop,
+                    [SpeciesNetClassifier.IMG_SIZE, SpeciesNetClassifier.IMG_SIZE],
+                    antialias=False,
+                )
 
-        img_tensor = F.convert_image_dtype(img_tensor, torch.uint8)
-        img_tensor = img_tensor.permute([1, 2, 0])  # CHW to HWC.
-        return PreprocessedImage(img_tensor.numpy(), img.width, img.height)
+            crop = F.convert_image_dtype(crop, torch.uint8)
+            crop = crop.permute([1, 2, 0])  # CHW to HWC.
+            
+            # Note: For full_image model, we just process the image once even if there are many bboxes. 
+            # We duplicate the result so there's a 1-to-1 match with the requested bboxes limit in downstream logic.
+            result_img = PreprocessedImage(crop.numpy(), img.width, img.height)
+            if bboxes:
+                results.extend([result_img for _ in bboxes])
+            else:
+                results.append(result_img)
+
+        return results
 
     def predict(
-        self, filepath: str, img: Optional[PreprocessedImage]
+        self, filepath: str, imgs: list[Optional[PreprocessedImage]]
     ) -> dict[str, Any]:
-        """Runs inference on a given preprocessed image.
+        """Runs inference on a given preprocessed image (or list of crops for the image).
 
         Args:
             filepath:
                 Location of image to run inference on. Used for reporting purposes only,
                 and not for loading the image.
-            img:
-                Preprocessed image to run inference on. If `None`, a failure message is
+            imgs:
+                List of preprocessed image crops to run inference on. If empty, a failure message is
                 reported back.
 
         Returns:
-            A dict containing either the top-5 classifications for the given image (in
+            A dict containing either the top-5 classifications for the given image crops (in
             decreasing order of confidence scores), or a failure message if no
             preprocessed image was provided.
         """
 
-        return self.batch_predict([filepath], [img])[0]
+        return self.batch_predict([filepath], [imgs])[0]
 
     def batch_predict(
-        self, filepaths: list[str], imgs: list[Optional[PreprocessedImage]]
+        self, filepaths: list[str], imgs_list: list[list[Optional[PreprocessedImage]]]
     ) -> list[dict[str, Any]]:
         """Runs inference on a batch of preprocessed images.
 
@@ -208,32 +240,51 @@ class SpeciesNetClassifier:
             filepaths:
                 List of image locations to run inference on. Used for reporting purposes
                 only, and not for loading the images.
-            imgs:
-                List of preprocessed images to run inference on. If an image is `None`,
+            imgs_list:
+                List of lists of preprocessed image crops to run inference on. If an image is `None`,
                 a corresponding failure message is reported back.
 
         Returns:
-            A list of dict results. Each dict result contains either the top-5
-            classifications for the corresponding image (in decreasing order of
-            confidence scores), or a failure message if no preprocessed image was
-            provided.
+            A list of dict results. Each dict result contains `classifications_list`
+            with the top-5 classifications for each corresponding crop image (in decreasing 
+            order of confidence scores for each crop), or a failure message if no preprocessed 
+            image was provided.
         """
 
         predictions = {}
 
         inference_filepaths = []
         batch_arr = []
-        for filepath, img in zip(filepaths, imgs):
-            if img is None:
+        
+        for filepath, imgs in zip(filepaths, imgs_list):
+            if not imgs:
                 predictions[filepath] = {
                     "filepath": filepath,
                     "failures": [Failure.CLASSIFIER.name],
                 }
-            else:
+                continue
+                
+            valid_imgs = [img for img in imgs if img is not None]
+            
+            if not valid_imgs:
+                predictions[filepath] = {
+                    "filepath": filepath,
+                    "failures": [Failure.CLASSIFIER.name],
+                }
+                continue
+                
+            predictions[filepath] = {
+                "filepath": filepath,
+                "classifications_list": []
+            }
+            
+            for img in valid_imgs:
                 inference_filepaths.append(filepath)
-                batch_arr.append(img.arr / 255)
+                batch_arr.append(img.arr / 255.0)
+
         if not batch_arr:
-            return list(predictions.values())
+            return [predictions[fp] for fp in filepaths if fp in predictions]
+
         batch_arr = np.stack(batch_arr, axis=0, dtype=np.float32)
 
         batch_tensor = torch.from_numpy(batch_arr).to(self.device)
@@ -245,16 +296,13 @@ class SpeciesNetClassifier:
             zip(inference_filepaths, scores.numpy(), indices.numpy())
         ):
 
-            predictions[filepath] = {
-                "filepath": filepath,
-                "classifications": {
-                    "classes": [self.labels[idx] for idx in indices_arr],
-                    "scores": scores_arr.tolist(),
-                },
+            classification = {
+                "classes": [self.labels[idx] for idx in indices_arr],
+                "scores": scores_arr.tolist(),
             }
 
             if hasattr(self, "target_idx"):
-                predictions[filepath]["classifications"].update(
+                classification.update(
                     {
                         "target_classes": self.target_labels,
                         "target_logits": [
@@ -262,5 +310,7 @@ class SpeciesNetClassifier:
                         ],
                     }
                 )
+                
+            predictions[filepath]["classifications_list"].append(classification)
 
-        return [predictions[filepath] for filepath in filepaths]
+        return [predictions[filepath] for filepath in filepaths if filepath in predictions]
