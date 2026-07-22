@@ -17,10 +17,9 @@
 # pylint: disable=redefined-outer-name
 
 import pytest
-
 from speciesnet.constants import Classification
 from speciesnet.constants import Detection
-from speciesnet.ensemble_prediction_combiner import combine_predictions_for_single_item
+from speciesnet.ensemble_prediction_combiner import combine_predictions
 
 # fmt: off
 # pylint: disable=line-too-long
@@ -67,310 +66,382 @@ SAND_CAT_FC = "mammalia;carnivora;felidae;felis;margarita"
 
 @pytest.fixture
 def taxonomy_map():
-    return {
-        BLANK_FC: BLANK,
-        HUMAN_FC: HUMAN,
-        VEHICLE_FC: VEHICLE,
-        LION_FC: LION,
-        PANTHERA_GENUS_FC: PANTHERA_GENUS,
-        FELIDAE_FAMILY_FC: FELIDAE_FAMILY,
-        CARNIVORA_ORDER_FC: CARNIVORA_ORDER,
-        MAMMALIA_CLASS_FC: MAMMALIA_CLASS,
-        ANIMAL_KINGDOM_FC: ANIMAL_KINGDOM,
-        BROWN_BEAR_FC: BROWN_BEAR,
-        POLAR_BEAR_FC: POLAR_BEAR,
-        GIANT_PANDA_FC: GIANT_PANDA,
-        URSUS_GENUS_FC: URSUS_GENUS,
-        URSIDAE_FAMILY_FC: URSIDAE_FAMILY,
-    }
+  return {
+      BLANK_FC: BLANK,
+      HUMAN_FC: HUMAN,
+      VEHICLE_FC: VEHICLE,
+      LION_FC: LION,
+      PANTHERA_GENUS_FC: PANTHERA_GENUS,
+      FELIDAE_FAMILY_FC: FELIDAE_FAMILY,
+      CARNIVORA_ORDER_FC: CARNIVORA_ORDER,
+      MAMMALIA_CLASS_FC: MAMMALIA_CLASS,
+      ANIMAL_KINGDOM_FC: ANIMAL_KINGDOM,
+      BROWN_BEAR_FC: BROWN_BEAR,
+      POLAR_BEAR_FC: POLAR_BEAR,
+      GIANT_PANDA_FC: GIANT_PANDA,
+      URSUS_GENUS_FC: URSUS_GENUS,
+      URSIDAE_FAMILY_FC: URSIDAE_FAMILY,
+  }
 
 
 @pytest.fixture
 def geofence_map():
-    return {
-        LION_FC: {
-            "allow": {
-                "KEN": [],
-                "TZA": [],
-            }
-        },
-        PANTHERA_GENUS_FC: {
-            "allow": {
-                "KEN": [],
-                "TZA": [],
-                "USA": ["AK", "CA"],
-            }
-        },
-        FELIDAE_FAMILY_FC: {
-            "allow": {
-                "FRA": [],
-                "KEN": [],
-                "TZA": [],
-                "USA": [],
-            },
-            "block": {
-                "FRA": [],
-                "USA": ["NY"],
-            },
-        },
-        SAND_CAT_FC: {
-            "block": {
-                "AUS": [],
-            },
-        },
-        URSIDAE_FAMILY_FC: {
-            "block": {
-                "GBR": [],
-            },
-        },
-    }
+  return {
+      LION_FC: {
+          "allow": {
+              "KEN": [],
+              "TZA": [],
+          }
+      },
+      PANTHERA_GENUS_FC: {
+          "allow": {
+              "KEN": [],
+              "TZA": [],
+              "USA": ["AK", "CA"],
+          }
+      },
+      FELIDAE_FAMILY_FC: {
+          "allow": {
+              "FRA": [],
+              "KEN": [],
+              "TZA": [],
+              "USA": [],
+          },
+          "block": {
+              "FRA": [],
+              "USA": ["NY"],
+          },
+      },
+      SAND_CAT_FC: {
+          "block": {
+              "AUS": [],
+          },
+      },
+      URSIDAE_FAMILY_FC: {
+          "block": {
+              "GBR": [],
+          },
+      },
+  }
 
 
 def mock_geofence_fn(*args, **kwargs):
-    del args
-    del kwargs
-    return "geofenced_label", 0.9, "geofence_source"
+  del args
+  del kwargs
+  return "geofenced_label", 0.9, "geofence_source"
 
 
 def mock_roll_up_fn(*args, **kwargs):
-    del args
-    del kwargs
-    return "rollup_label", 0.8, "rollup_source"
+  del args
+  del kwargs
+  return "rollup_label", 0.8, "rollup_source"
 
 
 def mock_roll_up_fn_return_none(*args, **kwargs):
-    del args
-    del kwargs
+  del args
+  del kwargs
 
+
+def combine_predictions_for_single_item(
+    classifications, 
+    detections, 
+    country, 
+    admin1_region, 
+    taxonomy_map, 
+    geofence_map, 
+    enable_geofence, 
+    geofence_fn, 
+    roll_up_fn
+):
+    """Test helper transforming single-item permutations into the list format."""
+    results = combine_predictions(
+        classifications_list=[classifications],
+        detections=detections,
+        country=country,
+        admin1_region=admin1_region,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=enable_geofence,
+        geofence_fn=geofence_fn,
+        roll_up_fn=roll_up_fn,
+    )
+    # The tests expect a flat tuple of (label, score, source) to be asserted
+    return results[0]["prediction"], results[0]["prediction_score"], results[0]["prediction_source"]
 
 class TestPredictionEnsembleCombiner:
-    """Tests for the ensemble combiner function."""
+  """Tests for the ensemble combiner function."""
 
-    def test_combine_predictions_for_single_item_human_detections(
-        self, taxonomy_map, geofence_map
-    ) -> None:
-        # High-confidence HUMAN detection.
-        classifications = {"classes": [LION], "scores": [0.1]}
-        detections = [{"label": Detection.HUMAN, "conf": 0.8}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == (Classification.HUMAN, 0.8, "detector")
+  def test_combine_predictions_for_single_item_human_detections(
+      self, taxonomy_map, geofence_map
+  ) -> None:
+    # High-confidence HUMAN detection.
+    classifications = {"classes": [LION], "scores": [0.1]}
+    detections = [{"label": Detection.HUMAN, "conf": 0.8}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == (Classification.HUMAN, 0.8, "detector")
 
-        # Mid-confidence HUMAN detection + high-confidence HUMAN classification.
-        classifications = {"classes": [HUMAN], "scores": [0.7]}
-        detections = [{"label": Detection.HUMAN, "conf": 0.3}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == (Classification.HUMAN, 0.7, "classifier")
+    # Mid-confidence HUMAN detection + high-confidence HUMAN classification.
+    classifications = {"classes": [HUMAN], "scores": [0.7]}
+    detections = [{"label": Detection.HUMAN, "conf": 0.3}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == (Classification.HUMAN, 0.7, "classifier")
 
-        # Mid-confidence HUMAN detection + high-confidence VEHICLE classification.
-        classifications = {"classes": [VEHICLE], "scores": [0.7]}
-        detections = [{"label": Detection.HUMAN, "conf": 0.3}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == (Classification.HUMAN, 0.7, "classifier")
+    # Mid-confidence HUMAN detection + high-confidence VEHICLE classification.
+    classifications = {"classes": [VEHICLE], "scores": [0.7]}
+    detections = [{"label": Detection.HUMAN, "conf": 0.3}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == (Classification.HUMAN, 0.7, "classifier")
 
-    def test_combine_predictions_for_single_item_vehicle_detections(
-        self, taxonomy_map, geofence_map
-    ) -> None:
-        # Mid-confidence VEHICLE detection + high-confidence HUMAN classification.
-        classifications = {"classes": [HUMAN], "scores": [0.7]}
-        detections = [{"label": Detection.VEHICLE, "conf": 0.3}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == (Classification.HUMAN, 0.7, "classifier")
+  def test_combine_predictions_for_single_item_vehicle_detections(
+      self, taxonomy_map, geofence_map
+  ) -> None:
+    # Mid-confidence VEHICLE detection + high-confidence HUMAN classification.
+    classifications = {"classes": [HUMAN], "scores": [0.7]}
+    detections = [{"label": Detection.VEHICLE, "conf": 0.3}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == (Classification.HUMAN, 0.7, "classifier")
 
-        # High-confidence VEHICLE detection.
-        classifications = {"classes": [LION], "scores": [0.1]}
-        detections = [{"label": Detection.VEHICLE, "conf": 0.8}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == (Classification.VEHICLE, 0.8, "detector")
+    # High-confidence VEHICLE detection.
+    classifications = {"classes": [LION], "scores": [0.1]}
+    detections = [{"label": Detection.VEHICLE, "conf": 0.8}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == (Classification.VEHICLE, 0.8, "detector")
 
-        # Mid-confidence VEHICLE detection + high-confidence VEHICLE classification.
-        classifications = {"classes": [VEHICLE], "scores": [0.5]}
-        detections = [{"label": Detection.VEHICLE, "conf": 0.3}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == (Classification.VEHICLE, 0.5, "classifier")
+    # Mid-confidence VEHICLE detection + high-confidence VEHICLE classification.
+    classifications = {"classes": [VEHICLE], "scores": [0.5]}
+    detections = [{"label": Detection.VEHICLE, "conf": 0.3}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == (Classification.VEHICLE, 0.5, "classifier")
 
-    def test_combine_predictions_for_single_item_blank_classifications(
-        self, taxonomy_map, geofence_map
-    ) -> None:
-        # High-confidence BLANK "detection" + high-confidence BLANK classification.
-        classifications = {"classes": [BLANK], "scores": [0.7]}
-        detections = [{"label": Detection.ANIMAL, "conf": 0.1}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == (Classification.BLANK, 0.7, "classifier")
+  def test_combine_predictions_for_single_item_blank_classifications(
+      self, taxonomy_map, geofence_map
+  ) -> None:
+    # High-confidence BLANK "detection" + high-confidence BLANK classification.
+    classifications = {"classes": [BLANK], "scores": [0.7]}
+    detections = [{"label": Detection.ANIMAL, "conf": 0.1}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == (Classification.BLANK, 0.7, "classifier")
 
-        # Extra-high-confidence BLANK classification.
-        classifications = {"classes": [BLANK], "scores": [0.995]}
-        detections = [{"label": Detection.ANIMAL, "conf": 0.3}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == (Classification.BLANK, 0.995, "classifier")
+    # Extra-high-confidence BLANK classification.
+    classifications = {"classes": [BLANK], "scores": [0.995]}
+    detections = [{"label": Detection.ANIMAL, "conf": 0.3}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == (Classification.BLANK, 0.995, "classifier")
 
-    def test_combine_predictions_for_single_item_animal_classifications(
-        self, taxonomy_map, geofence_map
-    ) -> None:
-        # Extra-high-confidence ANIMAL classification.
-        classifications = {"classes": [LION], "scores": [0.9]}
-        detections = [{"label": Detection.ANIMAL, "conf": 0.1}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == ("geofenced_label", 0.9, "geofence_source")
+  def test_combine_predictions_for_single_item_animal_classifications(
+      self, taxonomy_map, geofence_map
+  ) -> None:
+    # Extra-high-confidence ANIMAL classification.
+    classifications = {"classes": [LION], "scores": [0.9]}
+    detections = [{"label": Detection.ANIMAL, "conf": 0.1}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == ("geofenced_label", 0.9, "geofence_source")
 
-        # High-confidence ANIMAL classification + mid-confidence ANIMAL detection.
-        classifications = {"classes": [LION], "scores": [0.7]}
-        detections = [{"label": Detection.ANIMAL, "conf": 0.3}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == ("geofenced_label", 0.9, "geofence_source")
+    # High-confidence ANIMAL classification + mid-confidence ANIMAL detection.
+    classifications = {"classes": [LION], "scores": [0.7]}
+    detections = [{"label": Detection.ANIMAL, "conf": 0.3}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == ("geofenced_label", 0.9, "geofence_source")
 
-    def test_combine_predictions_for_single_item_animal_rollups(
-        self, taxonomy_map, geofence_map
-    ) -> None:
-        # High-confidence ANIMAL rollups.
-        classifications = {"classes": [LION], "scores": [0.6]}
-        detections = [{"label": Detection.ANIMAL, "conf": 0.1}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn,
-        )
-        assert result == ("rollup_label", 0.8, "rollup_source")
+  def test_combine_predictions_for_single_item_animal_rollups(
+      self, taxonomy_map, geofence_map
+  ) -> None:
+    # High-confidence ANIMAL rollups.
+    classifications = {"classes": [LION], "scores": [0.6]}
+    detections = [{"label": Detection.ANIMAL, "conf": 0.1}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn,
+    )
+    assert result == ("rollup_label", 0.8, "rollup_source")
 
-    def test_combine_predictions_for_single_item_animal_detections(
-        self, taxonomy_map, geofence_map
-    ) -> None:
-        # Mid-confidence ANIMAL detection.
-        classifications = {"classes": [LION], "scores": [0.1]}
-        detections = [{"label": Detection.ANIMAL, "conf": 0.6}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn_return_none,
-        )
-        assert result == (Classification.ANIMAL, 0.6, "detector")
+  def test_combine_predictions_for_single_item_animal_detections(
+      self, taxonomy_map, geofence_map
+  ) -> None:
+    # Mid-confidence ANIMAL detection.
+    classifications = {"classes": [LION], "scores": [0.1]}
+    detections = [{"label": Detection.ANIMAL, "conf": 0.6}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn_return_none,
+    )
+    assert result == (Classification.ANIMAL, 0.6, "detector")
 
-    def test_combine_predictions_for_single_item_unknown(
-        self, taxonomy_map, geofence_map
-    ) -> None:
-        # Fallback to UNKNOWN classification.
-        classifications = {"classes": [LION], "scores": [0.1]}
-        detections = [{"label": Detection.ANIMAL, "conf": 0.1}]
-        result = combine_predictions_for_single_item(
-            classifications=classifications,
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn_return_none,
-        )
-        assert result == (Classification.UNKNOWN, 0.1, "classifier")
+  def test_combine_predictions_for_single_item_unknown(
+      self, taxonomy_map, geofence_map
+  ) -> None:
+    # Fallback to UNKNOWN classification.
+    classifications = {"classes": [LION], "scores": [0.1]}
+    detections = [{"label": Detection.ANIMAL, "conf": 0.1}]
+    result = combine_predictions_for_single_item(
+        classifications=classifications,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn_return_none,
+    )
+    assert result == (Classification.UNKNOWN, 0.1, "classifier")
+
+  def test_combine_predictions_for_all_items(
+      self, taxonomy_map, geofence_map
+  ) -> None:
+    classifications_list = [
+        {"classes": [HUMAN], "scores": [0.7]},
+        {"classes": [LION], "scores": [0.9]},
+        {"classes": [VEHICLE], "scores": [0.8]},
+    ]
+    detections = [
+        {"label": Detection.HUMAN, "conf": 0.8, "bbox": [0.1, 0.1, 0.2, 0.2]},
+        {"label": Detection.ANIMAL, "conf": 0.9, "bbox": [0.5, 0.5, 0.6, 0.6]},
+        {"label": Detection.VEHICLE, "conf": 0.9, "bbox": [0.8, 0.8, 0.9, 0.9]},
+    ]
+
+    results = combine_predictions(
+        classifications_list=classifications_list,
+        detections=detections,
+        country=None,
+        admin1_region=None,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=True,
+        geofence_fn=mock_geofence_fn,
+        roll_up_fn=mock_roll_up_fn_return_none,
+    )
+
+    assert len(results) == 3
+
+    # First is HUMAN
+    assert results[0]["prediction"] == Classification.HUMAN
+    assert results[0]["prediction_score"] == 0.8
+    assert results[0]["prediction_source"] == "detector"
+    assert results[0]["bbox"] == [0.1, 0.1, 0.2, 0.2]
+
+    # Second is LION (gets geofenced)
+    assert results[1]["prediction"] == "geofenced_label"
+    assert results[1]["prediction_score"] == 0.9
+    assert results[1]["prediction_source"] == "geofence_source"
+    assert results[1]["bbox"] == [0.5, 0.5, 0.6, 0.6]
+
+    # Third is VEHICLE
+    assert results[2]["prediction"] == Classification.VEHICLE
+    assert results[2]["prediction_score"] == 0.9
+    assert results[2]["prediction_source"] == "detector"
+    assert results[2]["bbox"] == [0.8, 0.8, 0.9, 0.9]
