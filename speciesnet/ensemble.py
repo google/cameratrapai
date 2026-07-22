@@ -20,14 +20,14 @@ __all__ = [
 
 import json
 import time
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from absl import logging
 from humanfriendly import format_timespan
 
 from speciesnet.constants import Classification
 from speciesnet.constants import Failure
-from speciesnet.ensemble_prediction_combiner import combine_predictions_for_single_item
+from speciesnet.ensemble_prediction_combiner import combine_predictions
 from speciesnet.geofence_utils import geofence_animal_classification
 from speciesnet.geofence_utils import roll_up_labels_to_first_matching_level
 from speciesnet.utils import ModelInfo
@@ -72,7 +72,7 @@ class SpeciesNetEnsemble:
         self,
         model_name: str,
         geofence: bool = True,
-        prediction_combiner: Callable = combine_predictions_for_single_item,
+        prediction_combiner: Callable = combine_predictions,
     ) -> None:
         """Loads the ensemble resources.
 
@@ -114,10 +114,11 @@ class SpeciesNetEnsemble:
     def combine(  # pylint: disable=too-many-positional-arguments
         self,
         filepaths: list[str],
-        classifier_results: dict[str, Any],
-        detector_results: dict[str, Any],
-        geolocation_results: dict[str, Any],
-        partial_predictions: dict[str, dict],
+        classifier_results: dict[str, dict],
+        detector_results: dict[str, dict],
+        geolocation_results: dict[str, dict],
+        partial_predictions: Optional[dict[str, dict]] = None,
+        max_classifications: Optional[int] = None,
     ) -> list[dict[str, Any]]:
         """Ensembles classifications and detections for a list of images.
 
@@ -155,9 +156,9 @@ class SpeciesNetEnsemble:
                 filepath in classifier_results
                 and "failures" not in classifier_results[filepath]
             ):
-                classifications = classifier_results[filepath]["classifications"]
+                classifications_list = classifier_results[filepath]["classifications_list"]
             else:
-                classifications = None
+                classifications_list = None
                 failure |= Failure.CLASSIFIER
             if (
                 filepath in detector_results
@@ -183,15 +184,15 @@ class SpeciesNetEnsemble:
                 "admin1_region": geolocation.get("admin1_region"),
                 "latitude": geolocation.get("latitude"),
                 "longitude": geolocation.get("longitude"),
-                "classifications": classifications,
+                "classifications_list": classifications_list,
                 "detections": detections,
             }
             result = {key: value for key, value in result.items() if value is not None}
 
-            # Most importantly, ensemble everything into a single prediction.
-            if classifications is not None and detections is not None:
-                prediction, score, source = self.prediction_combiner(
-                    classifications=classifications,
+            # Most importantly, ensemble everything into predictions.
+            if classifications_list is not None and detections is not None:
+                result["ensemble_predictions"] = self.prediction_combiner(
+                    classifications_list=classifications_list,
                     detections=detections,
                     country=geolocation.get("country"),
                     admin1_region=geolocation.get("admin1_region"),
@@ -200,14 +201,8 @@ class SpeciesNetEnsemble:
                     enable_geofence=self.enable_geofence,
                     geofence_fn=geofence_animal_classification,
                     roll_up_fn=roll_up_labels_to_first_matching_level,
+                    max_classifications=max_classifications,
                 )
-                result["prediction"] = (
-                    prediction.value
-                    if isinstance(prediction, Classification)
-                    else prediction
-                )
-                result["prediction_score"] = score
-                result["prediction_source"] = source
 
             # Finally, report the model version.
             result["model_version"] = self.model_info.version

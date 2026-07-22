@@ -147,6 +147,12 @@ _IGNORE_EXISTING_PREDICTIONS = flags.DEFINE_bool(
     "instances. --ignore_existing_predictions bypasses loading partial results, "
     "--noignore_existing_predictions (default) resumes from existing predictions.",
 )
+_MAX_CLASSIFICATIONS_PER_IMAGE = flags.DEFINE_integer(
+    "max_classifications_per_image",
+    None,
+    "Maximum number of classifications to return per image. "
+    "If not specified, returns all possible classifications.",
+)
 
 
 def guess_predictions_source(
@@ -464,6 +470,7 @@ def main(argv: list[str]) -> None:
             batch_size=_BATCH_SIZE.value,
             progress_bars=_PROGRESS_BARS.value,
             predictions_json=_PREDICTIONS_JSON.value,
+            max_classifications_per_image=_MAX_CLASSIFICATIONS_PER_IMAGE.value,
         )
     if predictions_dict is not None:
         print(

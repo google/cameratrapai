@@ -104,7 +104,7 @@ class TestClassifier:
             preprocessed = classifier.preprocess(
                 img_red_green_blue_w100_h150_h700_h150,
                 resize=False,
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -115,7 +115,7 @@ class TestClassifier:
                 img_red_green_blue_w100_h150_h700_h150,
                 bboxes=[],
                 resize=False,
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -126,7 +126,7 @@ class TestClassifier:
                 img_red_green_blue_w100_h150_h700_h150,
                 bboxes=[BBox(0 / 100, 150 / 1000, 100 / 100, 700 / 1000)],
                 resize=False,
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -136,7 +136,7 @@ class TestClassifier:
             preprocessed = classifier.preprocess(
                 img_red_green_blue_w100_h150_h700_h150,
                 bboxes=[BBox(0 / 100, 150 / 1000, 100 / 100, 700 / 1000)],
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -147,7 +147,7 @@ class TestClassifier:
                 img_red_green_blue_w100_h150_h700_h150,
                 bboxes=[BBox(10 / 100, 150 / 1000, 40 / 100, 100 / 1000)],
                 resize=False,
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -157,7 +157,7 @@ class TestClassifier:
             preprocessed = classifier.preprocess(
                 img_red_green_blue_w100_h150_h700_h150,
                 bboxes=[BBox(10 / 100, 150 / 1000, 40 / 100, 100 / 1000)],
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -170,7 +170,7 @@ class TestClassifier:
                 img_red_green_blue_w100_h150_h700_h150,
                 bboxes=[BBox(10 / 100, 150 / 1000, 40 / 100, 100 / 1000)],
                 resize=False,
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -180,7 +180,7 @@ class TestClassifier:
             preprocessed = classifier.preprocess(
                 img_red_green_blue_w100_h150_h700_h150,
                 resize=False,
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -189,7 +189,7 @@ class TestClassifier:
 
             preprocessed = classifier.preprocess(
                 img_red_green_blue_w100_h150_h700_h150,
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -199,7 +199,7 @@ class TestClassifier:
             preprocessed = classifier.preprocess(
                 img_red_green_blue_w100_h200_h2000_h200,
                 resize=False,
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 2400
@@ -208,7 +208,7 @@ class TestClassifier:
 
             preprocessed = classifier.preprocess(
                 img_red_green_blue_w100_h200_h2000_h200,
-            )
+            )[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 2400
@@ -218,21 +218,21 @@ class TestClassifier:
     def test_predict(self, classifier, img_green_w480_h480) -> None:
 
         filepath = "missing.jpg"
-        prediction = classifier.predict(filepath, None)
+        prediction = classifier.predict(filepath, [])
         assert prediction["filepath"] == filepath
         assert "failures" in prediction
 
         filepath = "green.png"
         prediction = classifier.predict(
-            filepath, PreprocessedImage(np.asarray(img_green_w480_h480), 480, 480)
+            filepath, [PreprocessedImage(np.asarray(img_green_w480_h480), 480, 480)]
         )
         assert prediction["filepath"] == filepath
         assert "failures" not in prediction
-        assert "classifications" in prediction
-        assert "classes" in prediction["classifications"]
-        assert "scores" in prediction["classifications"]
-        assert prediction["classifications"]["scores"] == sorted(
-            prediction["classifications"]["scores"], reverse=True
+        assert "classifications_list" in prediction
+        assert "classes" in prediction["classifications_list"][0]
+        assert "scores" in prediction["classifications_list"][0]
+        assert prediction["classifications_list"][0]["scores"] == sorted(
+            prediction["classifications_list"][0]["scores"], reverse=True
         )
 
     @pytest.fixture(
@@ -312,9 +312,9 @@ class TestClassifier:
     )
     def predicted_vs_expected(self, classifier, request) -> tuple[dict, str]:
         filepath, bboxes, label = request.param
-        img = classifier.preprocess(load_rgb_image(filepath), bboxes=bboxes)
-        assert img is not None
-        return classifier.predict(filepath, img)["classifications"], label
+        img_list = classifier.preprocess(load_rgb_image(filepath), bboxes=bboxes)
+        assert img_list is not []
+        return classifier.predict(filepath, img_list)["classifications_list"][0], label
 
     def test_classifications(self, predicted_vs_expected) -> None:
         classifications, label = predicted_vs_expected
@@ -365,8 +365,8 @@ class TestClassifier:
 
         # Test 1: Non-batched prediction (batch_size=1)
         non_batched_predictions = []
-        for filepath, img in zip(filepaths, preprocessed_imgs):
-            prediction = classifier_with_targets.predict(filepath, img)
+        for filepath, imgs in zip(filepaths, preprocessed_imgs):
+            prediction = classifier_with_targets.predict(filepath, imgs)
             non_batched_predictions.append(prediction)
 
         # Test 2: Batched prediction (batch_size>1)
@@ -381,20 +381,20 @@ class TestClassifier:
             zip(non_batched_predictions, batched_predictions)
         ):
             # Check that both have target_logits
-            assert "target_logits" in non_batched["classifications"]
-            assert "target_logits" in batched["classifications"]
+            assert "target_logits" in non_batched["classifications_list"][0]
+            assert "target_logits" in batched["classifications_list"][0]
 
             # Check that target_classes are present and identical
-            assert "target_classes" in non_batched["classifications"]
-            assert "target_classes" in batched["classifications"]
+            assert "target_classes" in non_batched["classifications_list"][0]
+            assert "target_classes" in batched["classifications_list"][0]
             assert (
-                non_batched["classifications"]["target_classes"]
-                == batched["classifications"]["target_classes"]
+                non_batched["classifications_list"][0]["target_classes"]
+                == batched["classifications_list"][0]["target_classes"]
             )
 
             # Check that target_logits are identical
-            non_batched_logits = non_batched["classifications"]["target_logits"]
-            batched_logits = batched["classifications"]["target_logits"]
+            non_batched_logits = non_batched["classifications_list"][0]["target_logits"]
+            batched_logits = batched["classifications_list"][0]["target_logits"]
 
             assert len(non_batched_logits) == len(batched_logits)
             assert len(non_batched_logits) == len(target_species)
@@ -414,12 +414,12 @@ class TestClassifier:
 
             # Also verify that regular classifications match
             assert (
-                non_batched["classifications"]["classes"]
-                == batched["classifications"]["classes"]
+                non_batched["classifications_list"][0]["classes"]
+                == batched["classifications_list"][0]["classes"]
             )
             np.testing.assert_allclose(
-                non_batched["classifications"]["scores"],
-                batched["classifications"]["scores"],
+                non_batched["classifications_list"][0]["scores"],
+                batched["classifications_list"][0]["scores"],
                 rtol=1e-3,  # 0.1% relative tolerance
                 atol=1e-3,  # 0.001 absolute tolerance
                 err_msg=f"Scores mismatch for image {i} ({filepaths[i]})",
