@@ -73,6 +73,7 @@ class SpeciesNetEnsemble:
         model_name: str,
         geofence: bool = True,
         prediction_combiner: Callable = combine_predictions_for_single_item,
+        force_model_download: bool = False,
     ) -> None:
         """Loads the ensemble resources.
 
@@ -83,11 +84,18 @@ class SpeciesNetEnsemble:
                 with `hf:`) or a local folder to load the model from.
             geofence:
                 Whether to enable geofencing. If `False` skip it entirely.
+            force_model_download:
+                Whether to download model files even if they are already present
+                locally. Typically used to replace model files that were only partially
+                downloaded, and are therefore corrupted. Has no effect when `model_name`
+                refers to a local folder.
         """
 
         start_time = time.time()
 
-        self.model_info = ModelInfo(model_name)
+        self.model_info = ModelInfo(
+            model_name, force_model_download=force_model_download
+        )
         self.enable_geofence = geofence
         self.taxonomy_map = self.load_taxonomy()
         self.geofence_map = self.load_geofence()
