@@ -50,7 +50,7 @@ class SpeciesNetDetector:
     STRIDE = 64
     DETECTION_THRESHOLD = 0.01
 
-    def __init__(self, model_name: str) -> None:
+    def __init__(self, model_name: str, force_model_download: bool = False) -> None:
         """Loads the detector resources.
 
         Code adapted from: https://github.com/agentmorris/MegaDetector
@@ -62,11 +62,18 @@ class SpeciesNetDetector:
                 String value identifying the model to be loaded. It can be a Kaggle
                 identifier (starting with `kaggle:`), a HuggingFace identifier (starting
                 with `hf:`) or a local folder to load the model from.
+            force_model_download:
+                Whether to download model files even if they are already present
+                locally. Typically used to replace model files that were only partially
+                downloaded, and are therefore corrupted. Has no effect when `model_name`
+                refers to a local folder.
         """
 
         start_time = time.time()
 
-        self.model_info = ModelInfo(model_name)
+        self.model_info = ModelInfo(
+            model_name, force_model_download=force_model_download
+        )
 
         # Select the best device available.
         if torch.cuda.is_available():

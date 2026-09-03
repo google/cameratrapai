@@ -200,7 +200,9 @@ We use the following tools for testing and validating code:
 
 Handy one-liner to run all of the code formatting/checking steps from above:
 
-`black . && isort . && pylint . --recursive=yes && pyright`
+```bash
+black . && isort . && pylint . --recursive=yes && pyright
+```
 
 If you submit a PR to contribute your code back to this repo, you will be asked to sign a contributor license agreement; see [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 

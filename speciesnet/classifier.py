@@ -51,6 +51,7 @@ class SpeciesNetClassifier:
         model_name: str,
         target_species_txt: Optional[str] = None,
         device: Optional[str] = None,
+        force_model_download: bool = False,
     ) -> None:
         """Loads the classifier resources.
 
@@ -62,11 +63,18 @@ class SpeciesNetClassifier:
             device:
                 Specific device identifier, e.g. "cpu" or "cuda".  If None, "cuda"
                 and "mps" will be used if available.
+            force_model_download:
+                Whether to download model files even if they are already present
+                locally. Typically used to replace model files that were only partially
+                downloaded, and are therefore corrupted. Has no effect when `model_name`
+                refers to a local folder.
         """
 
         start_time = time.time()
 
-        self.model_info = ModelInfo(model_name)
+        self.model_info = ModelInfo(
+            model_name, force_model_download=force_model_download
+        )
 
         # Select the best device available.
         if device is not None:
