@@ -45,6 +45,7 @@ from speciesnet.geolocation import find_admin1_region
 from speciesnet.utils import BBox
 from speciesnet.utils import load_partial_predictions
 from speciesnet.utils import load_rgb_image
+from speciesnet.utils import ModelInfo
 from speciesnet.utils import prepare_instances_dict
 from speciesnet.utils import PreprocessedImage
 from speciesnet.utils import save_predictions
@@ -563,6 +564,7 @@ class SpeciesNet:
         target_species_txt: Optional[str] = None,
         combine_predictions_fn: Callable = combine_predictions_for_single_item,
         multiprocessing: bool = False,
+        force_model_download: bool = False,
     ) -> None:
         """Initializes the SpeciesNet model with specified settings.
 
@@ -583,7 +585,20 @@ class SpeciesNet:
                 individual model components (e.g. classifications, detections etc.)
             multiprocessing:
                 Whether to enable multiprocessing or not. Defaults to `False`.
+            force_model_download:
+                Whether to download model files even if they are already present
+                locally. Typically used to replace model files that were only partially
+                downloaded, and are therefore corrupted. Has no effect when `model_name`
+                refers to a local folder.
         """
+
+        # Each component below loads the model files independently, and forcing a
+        # download in each of them would download the same files several times. So
+        # instead we download them here, then let the components load what we just
+        # downloaded.
+        if force_model_download:
+            logging.info("Forcing a download of model %s.", model_name)
+            _ = ModelInfo(model_name, force_model_download=True)
 
         if multiprocessing:
             self.manager = SyncManager()
