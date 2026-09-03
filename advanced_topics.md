@@ -152,11 +152,9 @@ The main README describes the typical output format for run_model, when you are 
 
 ## Contributing code
 
-If you're interested in contributing to our repo, rather than installing via pip, we recommend cloning the repo, then creating the Python virtual environment for development using the following commands:
+If you're interested in contributing to our repo, rather than installing via pip, we recommend cloning the repo, creating a Python virtual environment for development, and installing the package locally using the following command:
 
 ```bash
-python -m venv .env
-source .env/bin/activate
 pip install -e .[dev]
 ```
 
