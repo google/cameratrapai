@@ -34,6 +34,7 @@ import torch
 import torchvision.transforms.functional as F
 
 from speciesnet.constants import Failure
+from speciesnet.constants import mps_inference_lock
 from speciesnet.utils import BBox
 from speciesnet.utils import ModelInfo
 from speciesnet.utils import PreprocessedImage
@@ -244,8 +245,11 @@ class SpeciesNetClassifier:
             return list(predictions.values())
         batch_arr = np.stack(batch_arr, axis=0, dtype=np.float32)
 
-        batch_tensor = torch.from_numpy(batch_arr).to(self.device)
-        logits = self.model(batch_tensor).cpu()
+        # On MPS devices, make sure all MPS operations happen serially.  This
+        # lock is a no-op on non-MPS devices.
+        with mps_inference_lock(self.device):
+            batch_tensor = torch.from_numpy(batch_arr).to(self.device)
+            logits = self.model(batch_tensor).cpu()
         scores = torch.softmax(logits, dim=-1)
         scores, indices = torch.topk(scores, k=5, dim=-1)
 

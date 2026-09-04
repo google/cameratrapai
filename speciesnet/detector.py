@@ -39,6 +39,7 @@ except ImportError:
 
 from speciesnet.constants import Detection
 from speciesnet.constants import Failure
+from speciesnet.constants import mps_inference_lock
 from speciesnet.utils import ModelInfo
 from speciesnet.utils import PreprocessedImage
 
@@ -186,12 +187,14 @@ class SpeciesNetDetector:
         img_tensor = torch.from_numpy(img.arr / 255)
         img_tensor = img_tensor.permute([2, 0, 1])  # HWC to CHW.
         batch_tensor = torch.unsqueeze(img_tensor, 0).float()  # CHW to NCHW.
-        batch_tensor = batch_tensor.to(self.device)
 
-        # Run inference.
-        results = self.model(batch_tensor, augment=False)[0]
-        if self.device == "mps":
-            results = results.cpu()
+        # On MPS devices, make sure all MPS operations happen serially.  This
+        # lock is a no-op on non-MPS devices.
+        with mps_inference_lock(self.device):
+            batch_tensor = batch_tensor.to(self.device)
+            results = self.model(batch_tensor, augment=False)[0]
+            if self.device == "mps":
+                results = results.cpu()
         results = yolov5_non_max_suppression(
             prediction=results,
             conf_thres=SpeciesNetDetector.DETECTION_THRESHOLD,
