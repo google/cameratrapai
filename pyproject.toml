@@ -54,11 +54,7 @@ dependencies = [
     "requests",
     "reverse_geocoder",
     "tqdm",
-    # torch 2.14.0 deadlocks during multi-threaded/multi-process inference on
-    # macOS; 2.13.0 is the last version verified to work. Reproduced on macOS 15
-    # (arm64, MPS) with Python 3.10 through 3.14. Linux and Windows are unaffected.
-    "torch >= 2.0, < 2.14 ; sys_platform == 'darwin'",
-    "torch >= 2.0 ; sys_platform != 'darwin'",
+    "torch >= 2.0",
     "yolov5 >= 7.0.8, < 7.0.12",
     "setuptools<82"
 ]
