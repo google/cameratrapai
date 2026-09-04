@@ -11,7 +11,7 @@ permissions:
 jobs:
   run_tests:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 720
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -40,4 +40,4 @@ jobs:
       - name: Run tests with pytest
         if: steps.changes.outputs.target_files == 'true'
         run: |
-          pytest -vv --suppress-no-test-exit-code
+          pytest -vv --suppress-no-test-exit-code --timeout=900 --timeout-method=thread

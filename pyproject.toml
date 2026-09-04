@@ -99,6 +99,7 @@ dev = [
 github = [
     "speciesnet[dev]",
     "pytest-custom_exit_code",
+    "pytest-timeout",
 ]
 
 [project.urls]
