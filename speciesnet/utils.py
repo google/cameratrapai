@@ -77,7 +77,7 @@ class ModelInfo:
     taxonomy: Path  # Path to taxonomy file used by ensemble.
     geofence: Path  # Path to geofence file used by ensemble.
 
-    def __init__(self, model_name: str) -> None:
+    def __init__(self, model_name: str, force_model_download: bool = False) -> None:
         """Creates dataclass to describe a given model.
 
         Args:
@@ -87,15 +87,24 @@ class ModelInfo:
                 identifier (starting with `hf:`) or a local folder to load the model
                 from. If the model name is a remote identifier (Kaggle or HuggingFace),
                 the model files are automatically downloaded on the first call.
+            force_model_download:
+                Whether to download model files even if they are already present
+                locally. Typically used to replace model files that were only partially
+                downloaded, and are therefore corrupted. Has no effect when `model_name`
+                refers to a local folder.
         """
 
         # Download model files (if necessary) and set the base local directory.
         kaggle_prefix = "kaggle:"
         hf_prefix = "hf:"
         if model_name.startswith(kaggle_prefix):
-            base_dir = kagglehub.model_download(model_name[len(kaggle_prefix) :])
+            base_dir = kagglehub.model_download(
+                model_name[len(kaggle_prefix) :], force_download=force_model_download
+            )
         elif model_name.startswith(hf_prefix):
-            base_dir = snapshot_download(model_name[len(hf_prefix) :])
+            base_dir = snapshot_download(
+                model_name[len(hf_prefix) :], force_download=force_model_download
+            )
         else:
             base_dir = model_name
         base_dir = Path(base_dir)
@@ -111,7 +120,7 @@ class ModelInfo:
             filename = self._url_to_filename(filepath_or_url)
             info["detector"] = filename
             filepath = base_dir / filename
-            if not filepath.exists():
+            if force_model_download or (not filepath.exists()):
                 response = requests.get(filepath_or_url, stream=True, timeout=600)
                 response.raise_for_status()
                 with open(filepath, mode="wb") as fp:

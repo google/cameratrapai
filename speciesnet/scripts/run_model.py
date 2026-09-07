@@ -147,6 +147,15 @@ _IGNORE_EXISTING_PREDICTIONS = flags.DEFINE_bool(
     "instances. --ignore_existing_predictions bypasses loading partial results, "
     "--noignore_existing_predictions (default) resumes from existing predictions.",
 )
+_FORCE_MODEL_DOWNLOAD = flags.DEFINE_bool(
+    "force_model_download",
+    False,
+    "Download model files even if they are already present locally, "
+    "typically to replace model files that were only partially downloaded, and are "
+    "therefore corrupted. --force_model_download forces a download, "
+    "--noforce_model_download (default) does not. Has no effect when --model refers "
+    "to a local folder.",
+)
 
 
 def guess_predictions_source(
@@ -296,6 +305,16 @@ def main(argv: list[str]) -> None:
     else:
         components = "all"
 
+    # Validate region code formatting.
+    if _COUNTRY.value:
+        if not isinstance(_COUNTRY.value, str) or len(_COUNTRY.value) != 3:
+            raise ValueError(f"Invalid three-letter country code {str(_COUNTRY.value)}")
+    if _ADMIN1_REGION.value:
+        if not isinstance(_ADMIN1_REGION.value, str) or len(_ADMIN1_REGION.value) != 2:
+            raise ValueError(
+                f"Invalid two-letter region code {str(_ADMIN1_REGION.value)}"
+            )
+
     # Check for valid inputs.
     inputs = [_INSTANCES_JSON, _FILEPATHS, _FILEPATHS_TXT, _FOLDERS, _FOLDERS_TXT]
     inputs_names = [f"--{i.name}" for i in inputs]
@@ -404,6 +423,7 @@ def main(argv: list[str]) -> None:
         # routine. And also, implement that routine! :-)
         # combine_predictions_fn=custom_combine_predictions_fn,
         multiprocessing=(run_mode == "multi_process"),
+        force_model_download=_FORCE_MODEL_DOWNLOAD.value,
     )
     if hasattr(model, "classifier") and not hasattr(model, "detector"):
         if (

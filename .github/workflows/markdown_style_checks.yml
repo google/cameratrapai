@@ -5,6 +5,9 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+permissions:
+  contents: read      # required by actions/checkout
+  pull-requests: read # required by dorny/paths-filter
 jobs:
   run_style_checks:
     runs-on: ${{ matrix.os }}
@@ -15,9 +18,9 @@ jobs:
         python-version: ['3.12']
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Look out for file changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: changes
         with:
           filters: |
@@ -25,7 +28,7 @@ jobs:
               - '**/*.md'
               - '.github/workflows/**'
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         if: steps.changes.outputs.target_files == 'true'
         with:
           python-version: ${{ matrix.python-version }}

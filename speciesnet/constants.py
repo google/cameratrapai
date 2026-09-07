@@ -17,10 +17,13 @@
 __all__ = [
     "Classification",
     "Detection",
+    "mps_inference_lock",
 ]
 
+import contextlib
 import enum
-from typing import Optional
+import threading
+from typing import Iterator, Optional
 
 
 class Classification(str, enum.Enum):
@@ -72,3 +75,37 @@ class Failure(enum.Flag):
     CLASSIFIER = enum.auto()
     DETECTOR = enum.auto()
     GEOLOCATION = enum.auto()
+
+
+# PyTorch's MPS backend shares a single Metal command buffer per process, and a
+# Metal command buffer cannot be encoded from more than one thread at a time.
+# The inference pipeline runs the detector and the classifier concurrently, and
+# both models live in the same process whether or not multiprocessing is enabled,
+# since with multiprocessing they are both hosted by the same SyncManager server.
+#
+# This lock guards both inference calls with a process-wide lock (only on MPS).
+_MPS_INFERENCE_LOCK = threading.Lock()
+
+
+@contextlib.contextmanager
+def mps_inference_lock(device: str) -> Iterator[None]:
+    """Serializes model inference when running on MPS.
+
+    Callers must hold this across the whole inference call, including moving inputs
+    onto the device and moving results back off it. MPS work is asynchronous, so
+    releasing the lock before the results have been transferred would leave work
+    queued on the shared command buffer and defeat the purpose.
+
+    Args:
+        device:
+            Device inference is about to run on, e.g. "cpu", "cuda" or "mps".
+
+    Yields:
+        Nothing. On devices other than MPS this is a no-op and acquires no lock.
+    """
+
+    if device != "mps":
+        yield
+        return
+    with _MPS_INFERENCE_LOCK:
+        yield

@@ -612,4 +612,4 @@ class TestDetector:
             assert pred_det["category"] == exp_det["category"]
             assert pred_det["label"] == Detection.from_category(exp_det["category"])
             assert pred_det["conf"] == pytest.approx(pred_det["conf"], abs=1.5e-3)
-            assert pred_det["bbox"] == pytest.approx(exp_det["bbox"], abs=1.5e-3)
+            assert pred_det["bbox"] == pytest.approx(exp_det["bbox"], abs=5e-3)

@@ -66,6 +66,14 @@ def should_geofence_animal_classification(
     if not country:
         return False
 
+    # We are only checking basic validity of the region codse here, we are
+    # not confirming that they are valid countries/states.
+    if len(country) != 3:
+        raise ValueError(f"Invalid country code {country}")
+
+    if admin1_region and len(admin1_region) != 2:
+        raise ValueError(f"Invalid region code {admin1_region}")
+
     # Do not geofence if full class string is missing from the geofence map.
     full_class_string = get_full_class_string(label)
     if full_class_string not in geofence_map:

@@ -34,6 +34,7 @@ import torch
 import torchvision.transforms.functional as F
 
 from speciesnet.constants import Failure
+from speciesnet.constants import mps_inference_lock
 from speciesnet.utils import BBox
 from speciesnet.utils import ModelInfo
 from speciesnet.utils import PreprocessedImage
@@ -51,6 +52,7 @@ class SpeciesNetClassifier:
         model_name: str,
         target_species_txt: Optional[str] = None,
         device: Optional[str] = None,
+        force_model_download: bool = False,
     ) -> None:
         """Loads the classifier resources.
 
@@ -62,11 +64,18 @@ class SpeciesNetClassifier:
             device:
                 Specific device identifier, e.g. "cpu" or "cuda".  If None, "cuda"
                 and "mps" will be used if available.
+            force_model_download:
+                Whether to download model files even if they are already present
+                locally. Typically used to replace model files that were only partially
+                downloaded, and are therefore corrupted. Has no effect when `model_name`
+                refers to a local folder.
         """
 
         start_time = time.time()
 
-        self.model_info = ModelInfo(model_name)
+        self.model_info = ModelInfo(
+            model_name, force_model_download=force_model_download
+        )
 
         # Select the best device available.
         if device is not None:
@@ -236,8 +245,11 @@ class SpeciesNetClassifier:
             return list(predictions.values())
         batch_arr = np.stack(batch_arr, axis=0, dtype=np.float32)
 
-        batch_tensor = torch.from_numpy(batch_arr).to(self.device)
-        logits = self.model(batch_tensor).cpu()
+        # On MPS devices, make sure all MPS operations happen serially.  This
+        # lock is a no-op on non-MPS devices.
+        with mps_inference_lock(self.device):
+            batch_tensor = torch.from_numpy(batch_arr).to(self.device)
+            logits = self.model(batch_tensor).cpu()
         scores = torch.softmax(logits, dim=-1)
         scores, indices = torch.topk(scores, k=5, dim=-1)
 
