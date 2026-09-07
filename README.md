@@ -9,13 +9,12 @@ An ensemble of AI models for classifying wildlife in camera trap images.
   - [Do I have to do all this command-line stuff?](#do-i-have-to-do-all-this-command-line-stuff)
   - [Setting up your Python environment](#setting-up-your-python-environment)
   - [Installing the SpeciesNet Python package](#installing-the-speciesnet-python-package)
-  - [Running SpeciesNet](#running-speciesnet)
+  - [Running SpeciesNet](#running-speciesnet-1)
   - [Running SpeciesNet on multiple detections per image (or on videos)](#running-speciesnet-on-multiple-detections-per-image-or-on-videos)
   - [Using GPUs](#using-gpus)
 - [Downloading SpeciesNet model weights directly](#downloading-speciesnet-model-weights-directly)
 - [Contacting us](#contacting-us)
 - [Citing SpeciesNet](#citing-speciesnet)
-- [Supported models](#supported-models)
 - [Output format](#output-format-from-run_model)
 - [Visualizing SpeciesNet output](#visualizing-speciesnet-output)
 - [Ensemble decision-making](#ensemble-decision-making)
@@ -79,9 +78,9 @@ Change `c:\your\image\folder` to the root folder where your images live, and cha
 
 This will automatically download and run the detector and the classifier.  This command periodically logs output to the output file, and if this command doesn't finish (e.g. you have to cancel or reboot), you can just run the same command, and it will pick up where it left off.
 
-These commands produce an output file in .json format; for details about this format, and information about converting it to other formats, see the "[output format](#output-format)" section below.
+These commands produce an output file in .json format; for details about this format, and information about converting it to other formats, see the "[output format](#output-format-from-run_model)" section below.
 
-You can also run the three steps (detector, classifier, ensemble) separately; see the "[running each component separately](#running-each-component-separately)" section for more information.
+You can also run the three steps (detector, classifier, ensemble) separately; see the "[running each component separately](advanced_topics.md#running-each-component-separately)" section for more information.
 
 In the above example, we didn't tell the ensemble what part of the world your images came from, so it may, for example, predict a kangaroo for an image from England.  If you want to let our ensemble filter predictions geographically, add, for example:
 
@@ -178,7 +177,7 @@ If you use this model, please cite:
 
 `run_model.py` produces output in .json format, containing an array called "predictions", with one element per image.  We provide a script to convert this format to the format used by [MegaDetector](https://github.com/agentmorris/MegaDetector), which can be imported into [Timelapse](https://timelapse.ucalgary.ca/), see [speciesnet_to_md.py](speciesnet/scripts/speciesnet_to_md.py).
 
-Each element always contains  field called "filepath"; the exact content of those elements will vary depending on which elements of the ensemble you ran.  If you didn't go out of your way to do something unusual, you ran the entire ensemble (i.e., both the detector and the classifier), so the "full ensemble" output format applies.  Output formats for other scenarios are described in the [advanced topics documentation](advances_topics.md).
+Each element always contains a field called "filepath"; the exact content of those elements will vary depending on which elements of the ensemble you ran.  If you didn't go out of your way to do something unusual, you ran the entire ensemble (i.e., both the detector and the classifier), so the "full ensemble" output format applies.  Output formats for other scenarios are described in the [advanced topics documentation](advanced_topics.md).
 
 ### Full ensemble output format
 
@@ -194,13 +193,13 @@ In the full ensemble output, the "classifications" field contains raw classifier
             "admin1_region": str (optional)  => First-level administrative division (in ISO 3166-2 format) within the country above. If not provided in the request, it can be computed from (latitude, longitude) when those coordinates are specified. Included in the response only for some countries that are used in geofencing (e.g. "USA").
             "latitude": float (optional)  => Latitude where the image was taken, included only if (latitude, longitude) were present in the request.
             "longitude": float (optional)  => Longitude where the image was taken, included only if (latitude, longitude) were present in the request.
-            "classifications": {  => dict (optional)  => Top-5 classifications. Included only if "CLASSIFIER" if not part of the "failures" field.
+            "classifications": {  => dict (optional)  => Top-5 classifications. Included only if "CLASSIFIER" is not part of the "failures" field.
                 "classes": list[str]  => List of top-5 classes predicted by the classifier, matching the decreasing order of their scores below.
                 "scores": list[float]  => List of scores corresponding to top-5 classes predicted by the classifier, in decreasing order.
                 "target_classes": list[str] (optional)  => List of target classes, only present if target classes are passed as arguments.
                 "target_logits": list[float] (optional)  => Raw confidence scores (logits) of the target classes, only present if target classes are passed as arguments.
             },
-            "detections": [  => list (optional)  => List of detections with confidence scores > 0.01, in decreasing order of their scores. Included only if "DETECTOR" if not part of the "failures" field.
+            "detections": [  => list (optional)  => List of detections with confidence scores > 0.01, in decreasing order of their scores. Included only if "DETECTOR" is not part of the "failures" field.
                 {
                     "category": str  => Detection class "1" (= animal), "2" (= human) or "3" (= vehicle) from MegaDetector's raw output.
                     "label": str  => Detection class "animal", "human" or "vehicle", matching the "category" field above. Added for readability purposes.
