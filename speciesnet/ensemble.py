@@ -146,6 +146,8 @@ class SpeciesNetEnsemble:
                 Dict of partial predictions from previous ensemblings, with keys given
                 by the filepaths for which predictions where already ensembled. Used to
                 skip re-ensembling for the matching filepaths.
+            max_classifications:
+                Optional maximum number of classifications to return per image.
 
         Returns:
             List of ensembled predictions.
@@ -154,7 +156,7 @@ class SpeciesNetEnsemble:
         results = []
         for filepath in filepaths:
             # Use the result from previously computed predictions when available.
-            if filepath in partial_predictions:
+            if partial_predictions is not None and filepath in partial_predictions:
                 results.append(partial_predictions[filepath])
                 continue
 
@@ -164,7 +166,9 @@ class SpeciesNetEnsemble:
                 filepath in classifier_results
                 and "failures" not in classifier_results[filepath]
             ):
-                classifications_list = classifier_results[filepath]["classifications_list"]
+                classifications_list = classifier_results[filepath][
+                    "classifications_list"
+                ]
             else:
                 classifications_list = None
                 failure |= Failure.CLASSIFIER

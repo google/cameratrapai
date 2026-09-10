@@ -31,7 +31,7 @@ from pathlib import Path
 import queue
 import threading
 import traceback
-from typing import Any, Callable, Literal, Optional, Union
+from typing import Callable, Literal, Optional, Union
 
 from absl import logging
 from tqdm import tqdm
@@ -40,7 +40,7 @@ from speciesnet.classifier import SpeciesNetClassifier
 from speciesnet.constants import Failure
 from speciesnet.detector import SpeciesNetDetector
 from speciesnet.ensemble import SpeciesNetEnsemble
-from speciesnet.ensemble_prediction_combiner import combine_predictions_for_single_item
+from speciesnet.ensemble_prediction_combiner import combine_predictions
 from speciesnet.geolocation import find_admin1_region
 from speciesnet.utils import BBox
 from speciesnet.utils import load_partial_predictions
@@ -54,7 +54,7 @@ from speciesnet.utils import save_predictions
 StrPath = Union[str, Path]
 DetectorInput = tuple[str, Optional[PreprocessedImage]]
 BBoxOutput = tuple[str, list[BBox]]
-ClassifierInput = tuple[str, Optional[PreprocessedImage]]
+ClassifierInput = tuple[str, list[Optional[PreprocessedImage]]]
 
 # Register SpeciesNet model components with the SyncManager to be able to safely share
 # them between processes.
@@ -282,10 +282,10 @@ def _prepare_classifier_input(
     filepath, bboxes = bboxes_queue.get()
     img = load_rgb_image(filepath)
     try:
-        img = classifier.preprocess(img, bboxes=bboxes)
-        classifier_queue.put((filepath, img))
+        imgs = classifier.preprocess(img, bboxes=bboxes)
+        classifier_queue.put((filepath, imgs))
     except:
-        classifier_queue.put((filepath, None))
+        classifier_queue.put((filepath, []))
         raise
 
 
@@ -564,7 +564,7 @@ class SpeciesNet:
         components: Literal["all", "classifier", "detector", "ensemble"] = "all",
         geofence: bool = True,
         target_species_txt: Optional[str] = None,
-        combine_predictions_fn: Callable = combine_predictions_for_single_item,
+        combine_predictions_fn: Callable = combine_predictions,
         multiprocessing: bool = False,
         force_model_download: bool = False,
     ) -> None:
@@ -987,7 +987,7 @@ class SpeciesNet:
         instances_dict: dict,
         batch_size: int = 8,
         progress_bars: bool = False,
-            predictions_json: Optional[StrPath] = None,
+        predictions_json: Optional[StrPath] = None,
         max_classifications_per_image: Optional[int] = None,
     ) -> Optional[dict]:
         return self._predict_using_worker_pools(

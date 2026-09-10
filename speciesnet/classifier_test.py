@@ -164,6 +164,18 @@ class TestClassifier:
             assert preprocessed.arr.shape == (480, 480, 3)
             assert_array_equal(preprocessed.arr, img_green_w480_h480)
 
+            # Multiple bounding boxes
+            preprocessed_list = classifier.preprocess(
+                img_red_green_blue_w100_h150_h700_h150,
+                bboxes=[
+                    BBox(0 / 100, 150 / 1000, 100 / 100, 700 / 1000),
+                    BBox(10 / 100, 150 / 1000, 40 / 100, 100 / 1000),
+                ],
+            )
+            assert len(preprocessed_list) == 2
+            assert preprocessed_list[0].arr.shape == (480, 480, 3)
+            assert preprocessed_list[1].arr.shape == (480, 480, 3)
+
         elif classifier.model_info.type_ == "full_image":
 
             preprocessed = classifier.preprocess(
@@ -234,6 +246,14 @@ class TestClassifier:
         assert prediction["classifications_list"][0]["scores"] == sorted(
             prediction["classifications_list"][0]["scores"], reverse=True
         )
+
+        # Test predicting multiple crops for an image
+        crops = [
+            PreprocessedImage(np.asarray(img_green_w480_h480), 480, 480),
+            PreprocessedImage(np.asarray(img_green_w480_h480), 480, 480),
+        ]
+        prediction = classifier.predict(filepath, crops)
+        assert len(prediction["classifications_list"]) == 2
 
     @pytest.fixture(
         # Expected classifications.
@@ -313,8 +333,11 @@ class TestClassifier:
     def predicted_vs_expected(self, classifier, request) -> tuple[dict, str]:
         filepath, bboxes, label = request.param
         img_list = classifier.preprocess(load_rgb_image(filepath), bboxes=bboxes)
-        assert img_list is not []
-        return classifier.predict(filepath, img_list)["classifications_list"][0], label
+        assert len(img_list) > 0
+        return (
+            classifier.predict(filepath, img_list)["classifications_list"][0],
+            label,
+        )
 
     def test_classifications(self, predicted_vs_expected) -> None:
         classifications, label = predicted_vs_expected
@@ -327,7 +350,9 @@ class TestClassifier:
         self, model_name: str, tmp_path
     ) -> None:
         """Test that target_species_txt works consistently
-        with batch and non-batch predict."""
+
+        with batch and non-batch predict.
+        """
 
         # Create a temporary target species file with a subset of species
         target_species_file = tmp_path / "target_species.txt"
@@ -347,7 +372,10 @@ class TestClassifier:
 
         # Test images with various species
         test_cases = [
-            ("test_data/african_elephants.jpg", [BBox(0.7041, 0.4765, 0.1108, 0.125)]),
+            (
+                "test_data/african_elephants.jpg",
+                [BBox(0.7041, 0.4765, 0.1108, 0.125)],
+            ),
             ("test_data/domestic_dog.jpg", [BBox(0.2377, 0.08398, 0.5161, 0.6497)]),
             ("test_data/human.jpg", [BBox(0.7115, 0.4976, 0.0664, 0.2424)]),
             ("test_data/blank.jpg", []),

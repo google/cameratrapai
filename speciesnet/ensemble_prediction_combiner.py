@@ -22,9 +22,7 @@ from speciesnet.constants import Detection
 PredictionLabelType = str
 PredictionScoreType = float
 PredictionSourceType = str
-PredictionType = tuple[
-    PredictionLabelType, PredictionScoreType, PredictionSourceType
-]
+PredictionType = tuple[PredictionLabelType, PredictionScoreType, PredictionSourceType]
 
 
 def combine_predictions(
@@ -241,21 +239,23 @@ def combine_predictions(
                     "classifier",
                 )
 
-        results.append({
-            "prediction": (
-                prediction.value
-                if isinstance(prediction, Classification)
-                else prediction
-            ),
-            "prediction_score": score,
-            "prediction_source": source,
-            "bbox": det.get("bbox") if "bbox" in det else None,
-        })
+        results.append(
+            {
+                "prediction": (
+                    prediction.value
+                    if isinstance(prediction, Classification)
+                    else prediction
+                ),
+                "prediction_score": score,
+                "prediction_source": source,
+                "bbox": det.get("bbox") if "bbox" in det else None,
+            }
+        )
 
     results.sort(
-        key=lambda x: x["prediction_score"]
-        if x["prediction_score"] is not None
-        else 0.0,
+        key=lambda x: (
+            x["prediction_score"] if x["prediction_score"] is not None else 0.0
+        ),
         reverse=True,
     )
     if max_classifications is not None and max_classifications > 0:
