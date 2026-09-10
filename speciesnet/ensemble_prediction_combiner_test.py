@@ -20,7 +20,7 @@ import pytest
 
 from speciesnet.constants import Classification
 from speciesnet.constants import Detection
-from speciesnet.ensemble_prediction_combiner import combine_predictions_for_single_item
+from speciesnet.ensemble_prediction_combiner import combine_predictions
 
 # fmt: off
 # pylint: disable=line-too-long
@@ -141,6 +141,37 @@ def mock_roll_up_fn(*args, **kwargs):
 def mock_roll_up_fn_return_none(*args, **kwargs):
     del args
     del kwargs
+
+
+def combine_predictions_for_single_item(  # pylint: disable=too-many-positional-arguments
+    classifications,
+    detections,
+    country,
+    admin1_region,
+    taxonomy_map,
+    geofence_map,
+    enable_geofence,
+    geofence_fn,
+    roll_up_fn,
+):
+    """Test helper transforming single-item permutations into the list format."""
+    results = combine_predictions(
+        classifications_list=[classifications],
+        detections=detections,
+        country=country,
+        admin1_region=admin1_region,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=enable_geofence,
+        geofence_fn=geofence_fn,
+        roll_up_fn=roll_up_fn,
+    )
+    # The tests expect a flat tuple of (label, score, source) to be asserted
+    return (
+        results[0]["prediction"],
+        results[0]["prediction_score"],
+        results[0]["prediction_source"],
+    )
 
 
 class TestPredictionEnsembleCombiner:
@@ -374,3 +405,124 @@ class TestPredictionEnsembleCombiner:
             roll_up_fn=mock_roll_up_fn_return_none,
         )
         assert result == (Classification.UNKNOWN, 0.1, "classifier")
+
+    def test_combine_predictions_for_all_items(
+        self, taxonomy_map, geofence_map
+    ) -> None:
+        classifications_list = [
+            {"classes": [HUMAN], "scores": [0.7]},
+            {"classes": [LION], "scores": [0.9]},
+            {"classes": [VEHICLE], "scores": [0.8]},
+        ]
+        detections = [
+            {"label": Detection.HUMAN, "conf": 0.95, "bbox": [0.1, 0.1, 0.2, 0.2]},
+            {"label": Detection.ANIMAL, "conf": 0.9, "bbox": [0.5, 0.5, 0.6, 0.6]},
+            {"label": Detection.VEHICLE, "conf": 0.85, "bbox": [0.8, 0.8, 0.9, 0.9]},
+        ]
+
+        results = combine_predictions(
+            classifications_list=classifications_list,
+            detections=detections,
+            country=None,
+            admin1_region=None,
+            taxonomy_map=taxonomy_map,
+            geofence_map=geofence_map,
+            enable_geofence=True,
+            geofence_fn=mock_geofence_fn,
+            roll_up_fn=mock_roll_up_fn_return_none,
+        )
+
+        assert len(results) == 3
+
+        # First is HUMAN
+        assert results[0]["prediction"] == Classification.HUMAN
+        assert results[0]["prediction_score"] == 0.95
+        assert results[0]["prediction_source"] == "detector"
+        assert results[0]["bbox"] == [0.1, 0.1, 0.2, 0.2]
+
+        # Second is LION (gets geofenced)
+        assert results[1]["prediction"] == "geofenced_label"
+        assert results[1]["prediction_score"] == 0.9
+        assert results[1]["prediction_source"] == "geofence_source"
+        assert results[1]["bbox"] == [0.5, 0.5, 0.6, 0.6]
+
+        # Third is VEHICLE
+        assert results[2]["prediction"] == Classification.VEHICLE
+        assert results[2]["prediction_score"] == 0.85
+        assert results[2]["prediction_source"] == "detector"
+        assert results[2]["bbox"] == [0.8, 0.8, 0.9, 0.9]
+
+    def test_combine_predictions_max_classifications(
+        self, taxonomy_map, geofence_map
+    ) -> None:
+        classifications_list = [
+            {"classes": [HUMAN], "scores": [0.7]},
+            {"classes": [LION], "scores": [0.9]},
+            {"classes": [VEHICLE], "scores": [0.8]},
+        ]
+        detections = [
+            {"label": Detection.HUMAN, "conf": 0.95, "bbox": [0.1, 0.1, 0.2, 0.2]},
+            {"label": Detection.ANIMAL, "conf": 0.9, "bbox": [0.5, 0.5, 0.6, 0.6]},
+            {"label": Detection.VEHICLE, "conf": 0.85, "bbox": [0.8, 0.8, 0.9, 0.9]},
+        ]
+
+        results = combine_predictions(
+            classifications_list=classifications_list,
+            detections=detections,
+            country=None,
+            admin1_region=None,
+            taxonomy_map=taxonomy_map,
+            geofence_map=geofence_map,
+            enable_geofence=True,
+            geofence_fn=mock_geofence_fn,
+            roll_up_fn=mock_roll_up_fn_return_none,
+            max_classifications=2,
+        )
+
+        assert len(results) == 2
+        assert results[0]["prediction"] == Classification.HUMAN
+        assert results[1]["prediction"] == "geofenced_label"
+
+    def test_combine_predictions_empty_detections(
+        self, taxonomy_map, geofence_map
+    ) -> None:
+        results = combine_predictions(
+            classifications_list=[{"classes": [BLANK], "scores": [0.995]}],
+            detections=[],
+            country=None,
+            admin1_region=None,
+            taxonomy_map=taxonomy_map,
+            geofence_map=geofence_map,
+            enable_geofence=True,
+            geofence_fn=mock_geofence_fn,
+            roll_up_fn=mock_roll_up_fn_return_none,
+        )
+
+        assert len(results) == 1
+        assert results[0]["prediction"] == Classification.BLANK
+        assert results[0]["bbox"] is None
+
+    def test_combine_predictions_mismatched_classification_count(
+        self, taxonomy_map, geofence_map
+    ) -> None:
+        detections = [
+            {"label": Detection.HUMAN, "conf": 0.95, "bbox": [0.1, 0.1, 0.2, 0.2]},
+            {"label": Detection.ANIMAL, "conf": 0.6, "bbox": [0.5, 0.5, 0.6, 0.6]},
+        ]
+        results = combine_predictions(
+            classifications_list=[{"classes": [HUMAN], "scores": [0.7]}],
+            detections=detections,
+            country=None,
+            admin1_region=None,
+            taxonomy_map=taxonomy_map,
+            geofence_map=geofence_map,
+            enable_geofence=True,
+            geofence_fn=mock_geofence_fn,
+            roll_up_fn=mock_roll_up_fn_return_none,
+        )
+
+        assert len(results) == 2
+        assert results[0]["prediction"] == Classification.HUMAN
+        assert results[1]["prediction"] == Classification.ANIMAL
+        assert results[1]["prediction_source"] == "detector"
+        assert results[1]["bbox"] == [0.5, 0.5, 0.6, 0.6]

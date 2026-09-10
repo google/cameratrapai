@@ -20,7 +20,6 @@ import warnings
 import pytest
 
 from speciesnet.constants import Classification
-from speciesnet.ensemble import PredictionType
 from speciesnet.ensemble import SpeciesNetEnsemble
 from speciesnet.taxonomy_utils import get_ancestor_at_level
 from speciesnet.utils import load_rgb_image
@@ -147,11 +146,17 @@ class TestEnsemble:
     def mock_ensemble2(self, monkeypatch, ensemble) -> SpeciesNetEnsemble:
 
         def prediction_combiner_mock(
-            classifications: dict[str, list], *args, **kwargs
-        ) -> PredictionType:
+            classifications_list: list[dict], *args, **kwargs
+        ) -> list[dict]:
             del args  # Unused.
             del kwargs  # Unused.
-            return classifications["classes"][0], classifications["scores"][0], "mock"
+            return [
+                {
+                    "prediction": classifications_list[0]["classes"][0],
+                    "prediction_score": classifications_list[0]["scores"][0],
+                    "prediction_source": "mock",
+                }
+            ]
 
         monkeypatch.setattr(
             ensemble,
@@ -184,31 +189,39 @@ class TestEnsemble:
             },
             "c.jpg": {
                 "filepath": "c.jpg",
-                "classifications": {
-                    "classes": ["X", "Y", "Z"],
-                    "scores": [0.5, 0.3, 0.2],
-                },
+                "classifications_list": [
+                    {
+                        "classes": ["X", "Y", "Z"],
+                        "scores": [0.5, 0.3, 0.2],
+                    }
+                ],
             },
             "d.jpg": {
                 "filepath": "d.jpg",
-                "classifications": {
-                    "classes": ["R", "S", "T"],
-                    "scores": [0.7, 0.2, 0.1],
-                },
+                "classifications_list": [
+                    {
+                        "classes": ["R", "S", "T"],
+                        "scores": [0.7, 0.2, 0.1],
+                    }
+                ],
             },
             "e.jpg": {
                 "filepath": "e.jpg",
-                "classifications": {
-                    "classes": ["K", "L", "M"],
-                    "scores": [0.9, 0.1, 0.0],
-                },
+                "classifications_list": [
+                    {
+                        "classes": ["K", "L", "M"],
+                        "scores": [0.9, 0.1, 0.0],
+                    }
+                ],
             },
             "f.jpg": {
                 "filepath": "f.jpg",
-                "classifications": {
-                    "classes": ["K", "L", "M"],
-                    "scores": [0.9, 0.1, 0.0],
-                },
+                "classifications_list": [
+                    {
+                        "classes": ["K", "L", "M"],
+                        "scores": [0.9, 0.1, 0.0],
+                    }
+                ],
             },
         }
         detector_results = {
@@ -274,14 +287,20 @@ class TestEnsemble:
         partial_predictions = {
             "f.jpg": {
                 "filepath": "f.jpg",
-                "classifications": {
-                    "classes": ["XYZ"],
-                    "scores": [0.8],
-                },
+                "classifications_list": [
+                    {
+                        "classes": ["XYZ"],
+                        "scores": [0.8],
+                    }
+                ],
                 "detections": [],
-                "prediction": "XYZ",
-                "prediction_score": 0.4,
-                "prediction_source": "partial",
+                "ensemble_predictions": [
+                    {
+                        "prediction": "XYZ",
+                        "prediction_score": 0.4,
+                        "prediction_source": "partial",
+                    }
+                ],
                 "model_version": expected_model_version,
             },
         }
@@ -317,19 +336,23 @@ class TestEnsemble:
                 "filepath": "c.jpg",
                 "failures": ["DETECTOR"],
                 "country": "COUNTRY_C",
-                "classifications": {
-                    "classes": ["X", "Y", "Z"],
-                    "scores": [0.5, 0.3, 0.2],
-                },
+                "classifications_list": [
+                    {
+                        "classes": ["X", "Y", "Z"],
+                        "scores": [0.5, 0.3, 0.2],
+                    }
+                ],
                 "model_version": expected_model_version,
             },
             {
                 "filepath": "d.jpg",
                 "failures": ["GEOLOCATION"],
-                "classifications": {
-                    "classes": ["R", "S", "T"],
-                    "scores": [0.7, 0.2, 0.1],
-                },
+                "classifications_list": [
+                    {
+                        "classes": ["R", "S", "T"],
+                        "scores": [0.7, 0.2, 0.1],
+                    }
+                ],
                 "detections": [
                     {
                         "category": "2",
@@ -338,18 +361,24 @@ class TestEnsemble:
                         "bbox": [0.1, 0.2, 0.3, 0.4],
                     }
                 ],
-                "prediction": "R",
-                "prediction_score": 0.7,
-                "prediction_source": "mock",
+                "ensemble_predictions": [
+                    {
+                        "prediction": "R",
+                        "prediction_score": 0.7,
+                        "prediction_source": "mock",
+                    }
+                ],
                 "model_version": expected_model_version,
             },
             {
                 "filepath": "e.jpg",
                 "country": "COUNTRY_E",
-                "classifications": {
-                    "classes": ["K", "L", "M"],
-                    "scores": [0.9, 0.1, 0.0],
-                },
+                "classifications_list": [
+                    {
+                        "classes": ["K", "L", "M"],
+                        "scores": [0.9, 0.1, 0.0],
+                    }
+                ],
                 "detections": [
                     {
                         "category": "2",
@@ -358,24 +387,64 @@ class TestEnsemble:
                         "bbox": [0.1, 0.2, 0.3, 0.4],
                     }
                 ],
-                "prediction": "K",
-                "prediction_score": 0.9,
-                "prediction_source": "mock",
+                "ensemble_predictions": [
+                    {
+                        "prediction": "K",
+                        "prediction_score": 0.9,
+                        "prediction_source": "mock",
+                    }
+                ],
                 "model_version": expected_model_version,
             },
             {
                 "filepath": "f.jpg",
-                "classifications": {
-                    "classes": ["XYZ"],
-                    "scores": [0.8],
-                },
+                "classifications_list": [
+                    {
+                        "classes": ["XYZ"],
+                        "scores": [0.8],
+                    }
+                ],
                 "detections": [],
-                "prediction": "XYZ",
-                "prediction_score": 0.4,
-                "prediction_source": "partial",
+                "ensemble_predictions": [
+                    {
+                        "prediction": "XYZ",
+                        "prediction_score": 0.4,
+                        "prediction_source": "partial",
+                    }
+                ],
                 "model_version": expected_model_version,
             },
         ]
+
+    def test_multi_combine(self, mock_ensemble2) -> None:
+        classifications_list = [
+            {
+                "classes": ["R", "S", "T"],
+                "scores": [0.7, 0.2, 0.1],
+            }
+        ]
+        detections = [
+            {
+                "category": "2",
+                "label": "human",
+                "conf": 0.7,
+                "bbox": [0.1, 0.2, 0.3, 0.4],
+            }
+        ]
+
+        result = mock_ensemble2.combine(
+            filepaths=["d.jpg"],
+            classifier_results={
+                "d.jpg": {"classifications_list": classifications_list}
+            },
+            detector_results={"d.jpg": {"detections": detections}},
+            geolocation_results={"d.jpg": {"country": "COUNTRY_D"}},
+        )[0]["ensemble_predictions"]
+
+        assert len(result) == 1
+        assert result[0]["prediction"] == "R"
+        assert result[0]["prediction_score"] == 0.7
+        assert result[0]["prediction_source"] == "mock"
 
     def test_complete_taxonomy(self, ensemble) -> None:
 

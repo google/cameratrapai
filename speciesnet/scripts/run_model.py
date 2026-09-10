@@ -156,6 +156,12 @@ _FORCE_MODEL_DOWNLOAD = flags.DEFINE_bool(
     "--noforce_model_download (default) does not. Has no effect when --model refers "
     "to a local folder.",
 )
+_MAX_CLASSIFICATIONS_PER_IMAGE = flags.DEFINE_integer(
+    "max_classifications_per_image",
+    None,
+    "Maximum number of classifications to return per image. "
+    "If not specified, returns all possible classifications.",
+)
 
 
 def guess_predictions_source(
@@ -484,6 +490,7 @@ def main(argv: list[str]) -> None:
             batch_size=_BATCH_SIZE.value,
             progress_bars=_PROGRESS_BARS.value,
             predictions_json=_PREDICTIONS_JSON.value,
+            max_classifications_per_image=_MAX_CLASSIFICATIONS_PER_IMAGE.value,
         )
     if predictions_dict is not None:
         print(

@@ -40,7 +40,7 @@ from speciesnet.classifier import SpeciesNetClassifier
 from speciesnet.constants import Failure
 from speciesnet.detector import SpeciesNetDetector
 from speciesnet.ensemble import SpeciesNetEnsemble
-from speciesnet.ensemble_prediction_combiner import combine_predictions_for_single_item
+from speciesnet.ensemble_prediction_combiner import combine_predictions
 from speciesnet.geolocation import find_admin1_region
 from speciesnet.utils import BBox
 from speciesnet.utils import load_partial_predictions
@@ -54,7 +54,7 @@ from speciesnet.utils import save_predictions
 StrPath = Union[str, Path]
 DetectorInput = tuple[str, Optional[PreprocessedImage]]
 BBoxOutput = tuple[str, list[BBox]]
-ClassifierInput = tuple[str, Optional[PreprocessedImage]]
+ClassifierInput = tuple[str, list[Optional[PreprocessedImage]]]
 
 # Register SpeciesNet model components with the SyncManager to be able to safely share
 # them between processes.
@@ -282,10 +282,10 @@ def _prepare_classifier_input(
     filepath, bboxes = bboxes_queue.get()
     img = load_rgb_image(filepath)
     try:
-        img = classifier.preprocess(img, bboxes=bboxes)
-        classifier_queue.put((filepath, img))
+        imgs = classifier.preprocess(img, bboxes=bboxes)
+        classifier_queue.put((filepath, imgs))
     except:
-        classifier_queue.put((filepath, None))
+        classifier_queue.put((filepath, []))
         raise
 
 
@@ -367,6 +367,7 @@ def _combine_results(  # pylint: disable=too-many-positional-arguments
     partial_predictions: dict[str, dict],
     predictions_json: Optional[StrPath] = None,
     save_lock: Optional[threading.Lock] = None,
+    max_classifications_per_image: Optional[int] = None,
 ) -> Optional[dict]:
     """Combines inference results from multiple jobs that ran independently.
 
@@ -411,6 +412,7 @@ def _combine_results(  # pylint: disable=too-many-positional-arguments
         detector_results=detector_results,
         geolocation_results=geolocation_results,
         partial_predictions=partial_predictions,
+        max_classifications=max_classifications_per_image,
     )
     predictions_dict = {"predictions": ensemble_results}
     if predictions_json:
@@ -562,7 +564,7 @@ class SpeciesNet:
         components: Literal["all", "classifier", "detector", "ensemble"] = "all",
         geofence: bool = True,
         target_species_txt: Optional[str] = None,
-        combine_predictions_fn: Callable = combine_predictions_for_single_item,
+        combine_predictions_fn: Callable = combine_predictions,
         multiprocessing: bool = False,
         force_model_download: bool = False,
     ) -> None:
@@ -643,6 +645,7 @@ class SpeciesNet:
         instances_dict: dict,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        max_classifications_per_image: Optional[int] = None,
     ) -> Optional[dict]:
         """Runs prediction using a single thread, processing each image one by one.
 
@@ -772,6 +775,7 @@ class SpeciesNet:
             partial_predictions=partial_predictions,
             predictions_json=predictions_json,
             save_lock=save_lock,
+            max_classifications_per_image=max_classifications_per_image,
         )
 
     def _predict_using_worker_pools(  # pylint: disable=too-many-positional-arguments
@@ -785,6 +789,7 @@ class SpeciesNet:
         new_dict_fn: Optional[Callable] = None,
         new_queue_fn: Optional[Callable] = None,
         new_rlock_fn: Optional[Callable] = None,
+        max_classifications_per_image: Optional[int] = None,
     ) -> Optional[dict]:
         """Runs prediction using worker pools (multi-threading or multiprocessing).
 
@@ -974,6 +979,7 @@ class SpeciesNet:
             partial_predictions=partial_predictions,
             predictions_json=predictions_json,
             save_lock=save_lock,
+            max_classifications_per_image=max_classifications_per_image,
         )
 
     def _predict_using_thread_pools(
@@ -982,6 +988,7 @@ class SpeciesNet:
         batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        max_classifications_per_image: Optional[int] = None,
     ) -> Optional[dict]:
         return self._predict_using_worker_pools(
             instances_dict,
@@ -993,6 +1000,7 @@ class SpeciesNet:
             new_dict_fn=dict,
             new_queue_fn=queue.Queue,
             new_rlock_fn=threading.RLock,
+            max_classifications_per_image=max_classifications_per_image,
         )
 
     def _predict_using_process_pools(
@@ -1001,6 +1009,7 @@ class SpeciesNet:
         batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        max_classifications_per_image: Optional[int] = None,
     ) -> Optional[dict]:
         assert self.manager is not None
         return self._predict_using_worker_pools(
@@ -1013,6 +1022,7 @@ class SpeciesNet:
             new_dict_fn=self.manager.dict,
             new_queue_fn=self.manager.Queue,
             new_rlock_fn=self.manager.RLock,
+            max_classifications_per_image=max_classifications_per_image,
         )
 
     def _classify_using_worker_pools(  # pylint: disable=too-many-positional-arguments
@@ -1317,6 +1327,7 @@ class SpeciesNet:
         detections_dict: Optional[dict] = None,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        max_classifications_per_image: Optional[int] = None,
     ) -> Optional[dict]:
         instances = instances_dict["instances"]
         filepaths = [instance["filepath"] for instance in instances]
@@ -1391,6 +1402,7 @@ class SpeciesNet:
             partial_predictions=partial_predictions,
             predictions_json=predictions_json,
             save_lock=save_lock,
+            max_classifications_per_image=max_classifications_per_image,
         )
 
     def predict(
@@ -1410,6 +1422,7 @@ class SpeciesNet:
         batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        max_classifications_per_image: Optional[int] = None,
     ) -> Optional[dict]:
         instances_dict = prepare_instances_dict(
             instances_dict,
@@ -1426,6 +1439,7 @@ class SpeciesNet:
                 instances_dict,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
+                max_classifications_per_image=max_classifications_per_image,
             )
         elif run_mode == "multi_thread":
             return self._predict_using_thread_pools(
@@ -1433,6 +1447,7 @@ class SpeciesNet:
                 batch_size=batch_size,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
+                max_classifications_per_image=max_classifications_per_image,
             )
         elif run_mode == "multi_process":
             return self._predict_using_process_pools(
@@ -1440,6 +1455,7 @@ class SpeciesNet:
                 batch_size=batch_size,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
+                max_classifications_per_image=max_classifications_per_image,
             )
         else:
             raise ValueError(f"Unknown run mode: `{run_mode}`")
@@ -1545,6 +1561,7 @@ class SpeciesNet:
         detections_dict: Optional[dict] = None,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        max_classifications_per_image: Optional[int] = None,
     ) -> Optional[dict]:
         instances_dict = prepare_instances_dict(
             instances_dict,
@@ -1562,4 +1579,5 @@ class SpeciesNet:
             detections_dict=detections_dict,
             progress_bars=progress_bars,
             predictions_json=predictions_json,
+            max_classifications_per_image=max_classifications_per_image,
         )
