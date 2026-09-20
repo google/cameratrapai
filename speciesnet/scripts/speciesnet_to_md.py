@@ -334,7 +334,8 @@ def generate_md_results_from_predictions_json(
     if len(all_unknown_detections) > 0:
 
         max_detection_category_id = max(
-            [int(x) for x in detection_category_id_to_name.keys()]
+            (int(category_id) for category_id in detection_category_id_to_name),
+            default=0,
         )
         unknown_category_id = str(max_detection_category_id + 1)
         detection_category_id_to_name[unknown_category_id] = "unknown"
