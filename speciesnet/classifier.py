@@ -309,11 +309,23 @@ class SpeciesNetClassifier:
 
         batch_arr = np.stack(batch_arr, axis=0, dtype=np.float32)
 
-        # On MPS devices, make sure all MPS operations happen serially.  This
-        # lock is a no-op on non-MPS devices.
-        with mps_inference_lock(self.device):
-            batch_tensor = torch.from_numpy(batch_arr).to(self.device)
-            logits = self.model(batch_tensor).cpu()
+        # Process crops in chunks of at most `max_crop_batch_size` so that a batch of
+        # images with many bounding boxes does not cause excessive memory allocation
+        # (especially on MPS unified memory) or hold the MPS lock for too long.
+        max_crop_batch_size = 8
+        logits_list = []
+        for idx in range(0, len(batch_arr), max_crop_batch_size):
+            chunk_arr = batch_arr[idx : idx + max_crop_batch_size]
+            # On MPS devices, make sure all MPS operations happen serially.  This
+            # lock is a no-op on non-MPS devices.
+            with mps_inference_lock(self.device):
+                chunk_tensor = torch.from_numpy(chunk_arr).to(self.device)
+                logits_list.append(self.model(chunk_tensor).cpu())
+                del chunk_tensor
+        if self.device == "mps":
+            with mps_inference_lock(self.device):
+                torch.mps.empty_cache()
+        logits = torch.cat(logits_list, dim=0)
         scores = torch.softmax(logits, dim=-1)
         scores, indices = torch.topk(scores, k=5, dim=-1)
 
