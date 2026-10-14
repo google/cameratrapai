@@ -181,7 +181,7 @@ Each element always contains a field called "filepath"; the exact content of tho
 
 ### Full ensemble output format
 
-In the full ensemble output, the "classifications" field contains raw classifier output, before geofencing is applied.  So even if you specify a country code, you may see taxa in the "classifications" field that are not found in the country you specified.  The "prediction" field is the result of integrating the classification, detection, and geofencing information; if you specify a country code, the "prediction" field should only contain taxa that are found in the country you specified.
+In the full ensemble output, the "classifications_list" field contains raw classifier output, before geofencing is applied.  So even if you specify a country code, you may see taxa in the "classifications_list" field that are not found in the country you specified.  The "processed_classifications" field is the result of integrating the classification, detection, and geofencing information; if you specify a country code, the "processed_classifications" field should only contain taxa that are found in the country you specified.
 
 ```text
 {
@@ -193,12 +193,15 @@ In the full ensemble output, the "classifications" field contains raw classifier
             "admin1_region": str (optional)  => First-level administrative division (in ISO 3166-2 format) within the country above. If not provided in the request, it can be computed from (latitude, longitude) when those coordinates are specified. Included in the response only for some countries that are used in geofencing (e.g. "USA").
             "latitude": float (optional)  => Latitude where the image was taken, included only if (latitude, longitude) were present in the request.
             "longitude": float (optional)  => Longitude where the image was taken, included only if (latitude, longitude) were present in the request.
-            "classifications": {  => dict (optional)  => Top-5 classifications. Included only if "CLASSIFIER" is not part of the "failures" field.
-                "classes": list[str]  => List of top-5 classes predicted by the classifier, matching the decreasing order of their scores below.
-                "scores": list[float]  => List of scores corresponding to top-5 classes predicted by the classifier, in decreasing order.
-                "target_classes": list[str] (optional)  => List of target classes, only present if target classes are passed as arguments.
-                "target_logits": list[float] (optional)  => Raw confidence scores (logits) of the target classes, only present if target classes are passed as arguments.
-            },
+            "classifications_list": [  => list (optional)  => List of top-5 classifications for each detection crop (or full image if there are no detections). Included only if "CLASSIFIER" is not part of the "failures" field.
+                {
+                    "classes": list[str]  => List of top-5 classes predicted by the classifier, matching the decreasing order of their scores below.
+                    "scores": list[float]  => List of scores corresponding to top-5 classes predicted by the classifier, in decreasing order.
+                    "target_classes": list[str] (optional)  => List of target classes, only present if target classes are passed as arguments.
+                    "target_logits": list[float] (optional)  => Raw confidence scores (logits) of the target classes, only present if target classes are passed as arguments.
+                },
+                ...  => One classification entry per detection (or one entry for the full image if there are no detections).
+            ],
             "detections": [  => list (optional)  => List of detections with confidence scores > 0.01, in decreasing order of their scores. Included only if "DETECTOR" is not part of the "failures" field.
                 {
                     "category": str  => Detection class "1" (= animal), "2" (= human) or "3" (= vehicle) from MegaDetector's raw output.
@@ -208,9 +211,15 @@ In the full ensemble output, the "classifications" field contains raw classifier
                 },
                 ...  => A prediction can contain zero or multiple detections.
             ],
-            "prediction": str (optional)  => Final prediction of the SpeciesNet ensemble. Included only if "CLASSIFIER" and "DETECTOR" are not part of the "failures" field.
-            "prediction_score": float (optional)  => Final prediction score of the SpeciesNet ensemble. Included only if the "prediction" field above is included.
-            "prediction_source": str (optional)  => Internal component that produced the final prediction. Used to collect information about which parts of the SpeciesNet ensemble fired. Included only if the "prediction" field above is included.
+            "processed_classifications": [  => list (optional)  => List of final predictions of the SpeciesNet ensemble, in decreasing order of their scores. Included only if "CLASSIFIER" and "DETECTOR" are not part of the "failures" field.
+                {
+                    "prediction": str  => Final prediction of the SpeciesNet ensemble for the current bounding box (or full image).
+                    "prediction_score": float  => Final prediction score of the SpeciesNet ensemble.
+                    "prediction_source": str  => Internal component that produced the final prediction. Used to collect information about which parts of the SpeciesNet ensemble fired.
+                    "bbox": list[float] | None  => Bounding box coordinates, in (xmin, ymin, width, height) format, associated with this prediction, or null if no detections were present.
+                },
+                ...  => One processed classification per detection (or one entry with bbox: null if there are no detections).
+            ],
             "model_version": str  => A string representing the version of the model that produced the current prediction.
         },
         ...  => A response will contain one prediction for each instance in the request.
