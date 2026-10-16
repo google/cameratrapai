@@ -10,7 +10,7 @@ An ensemble of AI models for classifying wildlife in camera trap images.
   - [Setting up your Python environment](#setting-up-your-python-environment)
   - [Installing the SpeciesNet Python package](#installing-the-speciesnet-python-package)
   - [Running SpeciesNet](#running-speciesnet-1)
-  - [Running SpeciesNet on multiple detections per image (or on videos)](#running-speciesnet-on-multiple-detections-per-image-or-on-videos)
+  - [Running SpeciesNet on videos](#running-speciesnet-on-videos)
   - [Using GPUs](#using-gpus)
 - [Downloading SpeciesNet model weights directly](#downloading-speciesnet-model-weights-directly)
 - [Contacting us](#contacting-us)
@@ -90,9 +90,7 @@ If your images are from the USA, you can also specify a state name using the two
 
 `--admin1_region CA`
 
-### Running SpeciesNet on multiple detections per image (or on videos)
-
-The `run_model` script described above uses [MegaDetector](https://github.com/agentmorris/MegaDetector) to find animals, humans, and vehicles in each image, then runs the SpeciesNet classifier on every detection with a confidence above a threshold (default 0.1), so each detection gets its own classification.
+### Running SpeciesNet on videos
 
 If you want to run SpeciesNet on videos, or if you want to use other MegaDetector versions, you can also use [run_md_and_speciesnet](https://megadetector.readthedocs.io/en/latest/detection.html#run_md_and_speciesnet---CLI-interface), from the [MegaDetector Python package](https://megadetector.readthedocs.io/).  This looks like the following:
 
@@ -109,10 +107,6 @@ python -m megadetector.detection.run_md_and_speciesnet "c:\your\image\folder" "c
 ```
 
 Output from this script will be in the [MegaDetector output format](https://lila.science/megadetector-output-format).  This format is supported by other tools for reviewing camera trap images, like [Timelapse](https://timelapse.ucalgary.ca/).
-
-This script also supports video (`run_model` supports only still images).
-
-We know it's a little confusing that there are two separate scripts right now; we will merge them soon.
 
 ### Using GPUs
 
