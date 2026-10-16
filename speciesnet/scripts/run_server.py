@@ -126,7 +126,7 @@ class SpeciesNetLitAPI(ls.LitAPI):
             for field in self.extra_fields:
                 if field in instance:
                     new_predictions[instance["filepath"]][field] = instance[field]
-        return {"predictions": list(new_predictions.values())}
+        return {**predictions_dict, "predictions": list(new_predictions.values())}
 
     def predict(self, instances_dict, context):
         del context  # Unused.

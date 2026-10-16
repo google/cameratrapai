@@ -22,7 +22,7 @@ import pytest
 from speciesnet.constants import Classification
 from speciesnet.ensemble import SpeciesNetEnsemble
 from speciesnet.taxonomy_utils import get_ancestor_at_level
-from speciesnet.utils import load_rgb_image
+from speciesnet.utils import whole_image_detection
 
 # fmt: off
 # pylint: disable=line-too-long
@@ -147,16 +147,22 @@ class TestEnsemble:
     def mock_ensemble2(self, monkeypatch, ensemble) -> SpeciesNetEnsemble:
 
         def prediction_combiner_mock(
-            classifications_list: list[dict], *args, **kwargs
+            classifications_list: list[dict],
+            detections: list[dict],
+            *args,
+            **kwargs,
         ) -> list[dict]:
             del args  # Unused.
             del kwargs  # Unused.
+            assert len(classifications_list) == len(detections)
+            # Report the detection each classification was paired with as the source.
             return [
                 {
-                    "prediction": classifications_list[0]["classes"][0],
-                    "prediction_score": classifications_list[0]["scores"][0],
-                    "prediction_source": "mock",
+                    "class": classifications["classes"][0],
+                    "score": classifications["scores"][0],
+                    "source": "mock:" + det["label"] + ":" + str(det["conf"]),
                 }
+                for classifications, det in zip(classifications_list, detections)
             ]
 
         monkeypatch.setattr(
@@ -168,12 +174,27 @@ class TestEnsemble:
 
     def test_combine(self, mock_ensemble2) -> None:
 
-        blank_img = load_rgb_image("test_data/blank.jpg")
-        blank2_img = load_rgb_image("test_data/blank2.jpg")
-        blank3_img = load_rgb_image("test_data/blank3.jpg")
-        assert blank_img and blank2_img and blank3_img
-
         expected_model_version = mock_ensemble2.model_info.version
+
+        human_det = {
+            "category": "2",
+            "label": "human",
+            "conf": 0.7,
+            "bbox": [0.1, 0.2, 0.3, 0.4],
+        }
+        animal_det = {
+            "category": "1",
+            "label": "animal",
+            "conf": 0.5,
+            "bbox": [0.0, 0.1, 0.2, 0.3],
+        }
+        low_conf_det = {
+            "category": "1",
+            "label": "animal",
+            "conf": 0.05,
+            "bbox": [0.5, 0.5, 0.1, 0.1],
+        }
+        whole_image_det = whole_image_detection()
 
         filepaths = [
             "a.jpg",
@@ -182,6 +203,7 @@ class TestEnsemble:
             "d.jpg",
             "e.jpg",
             "f.jpg",
+            "g.jpg",
         ]
         classifier_results = {
             "b.jpg": {
@@ -190,37 +212,52 @@ class TestEnsemble:
             },
             "c.jpg": {
                 "filepath": "c.jpg",
-                "classifications_list": [
+                "detections": [
                     {
-                        "classes": ["X", "Y", "Z"],
-                        "scores": [0.5, 0.3, 0.2],
+                        **animal_det,
+                        "raw_classifications": {
+                            "classes": ["X", "Y", "Z"],
+                            "scores": [0.5, 0.3, 0.2],
+                        },
                     }
                 ],
             },
             "d.jpg": {
                 "filepath": "d.jpg",
-                "classifications_list": [
+                "detections": [
                     {
-                        "classes": ["R", "S", "T"],
-                        "scores": [0.7, 0.2, 0.1],
+                        **human_det,
+                        "raw_classifications": {
+                            "classes": ["R", "S", "T"],
+                            "scores": [0.7, 0.2, 0.1],
+                        },
                     }
                 ],
             },
             "e.jpg": {
                 "filepath": "e.jpg",
-                "classifications_list": [
+                "detections": [
                     {
-                        "classes": ["K", "L", "M"],
-                        "scores": [0.9, 0.1, 0.0],
-                    }
+                        **human_det,
+                        "raw_classifications": {
+                            "classes": ["K", "L", "M"],
+                            "scores": [0.9, 0.1, 0.0],
+                            "target_classes": ["T1"],
+                            "target_logits": [1.5],
+                        },
+                    },
+                    low_conf_det,
                 ],
             },
-            "f.jpg": {
-                "filepath": "f.jpg",
-                "classifications_list": [
+            "g.jpg": {
+                "filepath": "g.jpg",
+                "detections": [
                     {
-                        "classes": ["K", "L", "M"],
-                        "scores": [0.9, 0.1, 0.0],
+                        **whole_image_det,
+                        "raw_classifications": {
+                            "classes": ["W", "V", "U"],
+                            "scores": [0.6, 0.3, 0.1],
+                        },
                     }
                 ],
             },
@@ -232,40 +269,23 @@ class TestEnsemble:
             },
             "b.jpg": {
                 "filepath": "b.jpg",
-                "detections": [
-                    {
-                        "category": "1",
-                        "label": "animal",
-                        "conf": 0.5,
-                        "bbox": [0.0, 0.1, 0.2, 0.3],
-                    }
-                ],
+                "detections": [animal_det],
             },
             "d.jpg": {
                 "filepath": "d.jpg",
-                "detections": [
-                    {
-                        "category": "2",
-                        "label": "human",
-                        "conf": 0.7,
-                        "bbox": [0.1, 0.2, 0.3, 0.4],
-                    }
-                ],
+                "detections": [human_det],
             },
             "e.jpg": {
                 "filepath": "e.jpg",
-                "detections": [
-                    {
-                        "category": "2",
-                        "label": "human",
-                        "conf": 0.7,
-                        "bbox": [0.1, 0.2, 0.3, 0.4],
-                    }
-                ],
+                "detections": [human_det, low_conf_det],
             },
             "f.jpg": {
                 "filepath": "f.jpg",
                 "detections": [],
+            },
+            "g.jpg": {
+                "filepath": "g.jpg",
+                "detections": [human_det, animal_det],
             },
         }
         geolocation_results = {
@@ -284,24 +304,14 @@ class TestEnsemble:
             "f.jpg": {
                 "country": "COUNTRY_F",
             },
+            "g.jpg": {
+                "country": "COUNTRY_G",
+            },
         }
         partial_predictions = {
             "f.jpg": {
                 "filepath": "f.jpg",
-                "classifications_list": [
-                    {
-                        "classes": ["XYZ"],
-                        "scores": [0.8],
-                    }
-                ],
                 "detections": [],
-                "processed_classifications": [
-                    {
-                        "prediction": "XYZ",
-                        "prediction_score": 0.4,
-                        "prediction_source": "partial",
-                    }
-                ],
                 "model_version": expected_model_version,
             },
         }
@@ -323,50 +333,30 @@ class TestEnsemble:
                 "filepath": "b.jpg",
                 "failures": ["CLASSIFIER"],
                 "country": "COUNTRY_B",
-                "detections": [
-                    {
-                        "category": "1",
-                        "label": "animal",
-                        "conf": 0.5,
-                        "bbox": [0.0, 0.1, 0.2, 0.3],
-                    }
-                ],
+                "detections": [animal_det],
                 "model_version": expected_model_version,
             },
             {
                 "filepath": "c.jpg",
                 "failures": ["DETECTOR"],
                 "country": "COUNTRY_C",
-                "classifications_list": [
-                    {
-                        "classes": ["X", "Y", "Z"],
-                        "scores": [0.5, 0.3, 0.2],
-                    }
-                ],
                 "model_version": expected_model_version,
             },
             {
                 "filepath": "d.jpg",
                 "failures": ["GEOLOCATION"],
-                "classifications_list": [
-                    {
-                        "classes": ["R", "S", "T"],
-                        "scores": [0.7, 0.2, 0.1],
-                    }
-                ],
                 "detections": [
                     {
-                        "category": "2",
-                        "label": "human",
-                        "conf": 0.7,
-                        "bbox": [0.1, 0.2, 0.3, 0.4],
-                    }
-                ],
-                "processed_classifications": [
-                    {
-                        "prediction": "R",
-                        "prediction_score": 0.7,
-                        "prediction_source": "mock",
+                        **human_det,
+                        "raw_classifications": {
+                            "classes": ["R", "S"],
+                            "scores": [0.7, 0.2],
+                        },
+                        "processed_classification": {
+                            "class": "R",
+                            "score": 0.7,
+                            "source": "mock:human:0.7",
+                        },
                     }
                 ],
                 "model_version": expected_model_version,
@@ -374,94 +364,148 @@ class TestEnsemble:
             {
                 "filepath": "e.jpg",
                 "country": "COUNTRY_E",
-                "classifications_list": [
-                    {
-                        "classes": ["K", "L", "M"],
-                        "scores": [0.9, 0.1, 0.0],
-                    }
-                ],
                 "detections": [
                     {
-                        "category": "2",
-                        "label": "human",
-                        "conf": 0.7,
-                        "bbox": [0.1, 0.2, 0.3, 0.4],
-                    }
-                ],
-                "processed_classifications": [
-                    {
-                        "prediction": "K",
-                        "prediction_score": 0.9,
-                        "prediction_source": "mock",
-                    }
+                        **human_det,
+                        "raw_classifications": {
+                            "classes": ["K", "L"],
+                            "scores": [0.9, 0.1],
+                            "target_classes": ["T1"],
+                            "target_logits": [1.5],
+                        },
+                        "processed_classification": {
+                            "class": "K",
+                            "score": 0.9,
+                            "source": "mock:human:0.7",
+                        },
+                    },
+                    low_conf_det,
                 ],
                 "model_version": expected_model_version,
             },
             {
                 "filepath": "f.jpg",
-                "classifications_list": [
-                    {
-                        "classes": ["XYZ"],
-                        "scores": [0.8],
-                    }
-                ],
                 "detections": [],
-                "processed_classifications": [
+                "model_version": expected_model_version,
+            },
+            {
+                "filepath": "g.jpg",
+                "country": "COUNTRY_G",
+                "detections": [
                     {
-                        "prediction": "XYZ",
-                        "prediction_score": 0.4,
-                        "prediction_source": "partial",
-                    }
+                        **whole_image_det,
+                        "raw_classifications": {
+                            "classes": ["W", "V"],
+                            "scores": [0.6, 0.3],
+                        },
+                        # Ensembled with the top detection from the detector.
+                        "processed_classification": {
+                            "class": "W",
+                            "score": 0.6,
+                            "source": "mock:human:0.7",
+                        },
+                    },
+                    human_det,
+                    animal_det,
                 ],
                 "model_version": expected_model_version,
             },
         ]
 
-    def test_multi_combine(self, mock_ensemble2) -> None:
-        classifications_list = [
-            {
-                "classes": ["R", "S", "T"],
-                "scores": [0.7, 0.2, 0.1],
+    def test_combine_max_classifications_per_detection(self, mock_ensemble2) -> None:
+        classifier_results = {
+            "a.jpg": {
+                "filepath": "a.jpg",
+                "detections": [
+                    {
+                        "category": "1",
+                        "label": "animal",
+                        "conf": 0.9,
+                        "bbox": [0.1, 0.2, 0.3, 0.4],
+                        "raw_classifications": {
+                            "classes": ["A", "B", "C"],
+                            "scores": [0.6, 0.3, 0.1],
+                        },
+                    }
+                ],
             }
-        ]
-        detections = [
-            {
-                "category": "2",
-                "label": "human",
-                "conf": 0.7,
-                "bbox": [0.1, 0.2, 0.3, 0.4],
+        }
+        detector_results = {
+            "a.jpg": {
+                "filepath": "a.jpg",
+                "detections": [
+                    {
+                        "category": "1",
+                        "label": "animal",
+                        "conf": 0.9,
+                        "bbox": [0.1, 0.2, 0.3, 0.4],
+                    }
+                ],
             }
-        ]
+        }
+        geolocation_results = {"a.jpg": {"country": "USA"}}
 
-        result = mock_ensemble2.combine(
-            filepaths=["d.jpg"],
-            classifier_results={
-                "d.jpg": {"classifications_list": classifications_list}
-            },
-            detector_results={"d.jpg": {"detections": detections}},
-            geolocation_results={"d.jpg": {"country": "COUNTRY_D"}},
-        )[0]["processed_classifications"]
+        for max_classifications, expected_classes in [
+            (1, ["A"]),
+            (2, ["A", "B"]),
+            (None, ["A", "B", "C"]),
+        ]:
+            result = mock_ensemble2.combine(
+                filepaths=["a.jpg"],
+                classifier_results=classifier_results,
+                detector_results=detector_results,
+                geolocation_results=geolocation_results,
+                max_classifications_per_detection=max_classifications,
+            )[0]
+            raw = result["detections"][0]["raw_classifications"]
+            assert raw["classes"] == expected_classes
+            assert len(raw["scores"]) == len(expected_classes)
 
-        assert len(result) == 1
-        assert result[0]["prediction"] == "R"
-        assert result[0]["prediction_score"] == 0.7
-        assert result[0]["prediction_source"] == "mock"
+        # Inputs must not be modified.
+        assert classifier_results["a.jpg"]["detections"][0]["raw_classifications"][
+            "classes"
+        ] == ["A", "B", "C"]
 
-    def test_multi_combine_multiple_crops(self, ensemble) -> None:
-        """Test ensembling multiple classifications and detections using real
-        combiner.
-        """
+    def test_combine_mismatched_detections(self, mock_ensemble2) -> None:
+        classifier_results = {
+            "a.jpg": {
+                "filepath": "a.jpg",
+                "detections": [
+                    {
+                        "category": "1",
+                        "label": "animal",
+                        "conf": 0.9,
+                        "bbox": [0.1, 0.2, 0.3, 0.4],
+                        "raw_classifications": {"classes": ["A"], "scores": [0.6]},
+                    }
+                ],
+            }
+        }
+        detector_results = {
+            "a.jpg": {
+                "filepath": "a.jpg",
+                "detections": [
+                    {
+                        "category": "1",
+                        "label": "animal",
+                        "conf": 0.9,
+                        "bbox": [0.5, 0.6, 0.1, 0.1],
+                    }
+                ],
+            }
+        }
+        with pytest.raises(ValueError):
+            mock_ensemble2.combine(
+                filepaths=["a.jpg"],
+                classifier_results=classifier_results,
+                detector_results=detector_results,
+                geolocation_results={"a.jpg": {"country": "USA"}},
+            )
+
+    def test_combine_multiple_crops(self, ensemble) -> None:
+        """Test ensembling multiple classified detections using the real combiner."""
+
         filepath = "test_data/human_and_dog.jpg"
-        classifications_list = [
-            {
-                "classes": [HUMAN, Classification.BLANK],
-                "scores": [0.99, 0.01],
-            },
-            {
-                "classes": [DOMESTIC_DOG, Classification.BLANK],
-                "scores": [0.95, 0.05],
-            },
-        ]
         detections = [
             {
                 "category": "2",
@@ -475,23 +519,69 @@ class TestEnsemble:
                 "conf": 0.90,
                 "bbox": [0.5229, 0.5646, 0.1307, 0.0965],
             },
+            {
+                "category": "1",
+                "label": "animal",
+                "conf": 0.12,
+                "bbox": [0.1, 0.1, 0.05, 0.05],
+            },
+            {
+                "category": "1",
+                "label": "animal",
+                "conf": 0.02,
+                "bbox": [0.2, 0.2, 0.05, 0.05],
+            },
         ]
+        raw_classifications = [
+            {
+                "classes": [HUMAN, Classification.BLANK, DOMESTIC_DOG],
+                "scores": [0.99, 0.005, 0.005],
+            },
+            {
+                "classes": [DOMESTIC_DOG, Classification.BLANK, HUMAN],
+                "scores": [0.95, 0.04, 0.01],
+            },
+            {
+                "classes": [Classification.BLANK, DOMESTIC_DOG, HUMAN],
+                "scores": [0.999, 0.0005, 0.0005],
+            },
+        ]
+        classified_detections = [
+            {**det, "raw_classifications": raw}
+            for det, raw in zip(detections, raw_classifications)
+        ] + detections[len(raw_classifications) :]
+
         res = ensemble.combine(
             filepaths=[filepath],
             classifier_results={
-                filepath: {"classifications_list": classifications_list}
+                filepath: {"filepath": filepath, "detections": classified_detections}
             },
             detector_results={
                 filepath: {"filepath": filepath, "detections": detections}
             },
             geolocation_results={filepath: {"country": "USA"}},
         )[0]
-        preds = res["processed_classifications"]
-        assert len(preds) == 2
-        assert preds[0]["prediction"] == DOMESTIC_DOG
-        assert preds[0]["prediction_source"] == "classifier"
-        assert preds[1]["prediction"] == HUMAN
-        assert preds[1]["prediction_source"] == "detector"
+        output_detections = res["detections"]
+
+        # Detections keep their original order, each with its own classifications,
+        # even though the blank detection gets the highest processed score.
+        assert [det["bbox"] for det in output_detections] == [
+            det["bbox"] for det in detections
+        ]
+        processed = [det.get("processed_classification") for det in output_detections]
+        assert processed[0]["class"] == HUMAN
+        assert processed[0]["source"] == "detector"
+        assert processed[1]["class"] == DOMESTIC_DOG
+        assert processed[1]["source"] == "classifier"
+        assert processed[2]["class"] == Classification.BLANK
+        assert processed[3] is None
+        assert "raw_classifications" not in output_detections[3]
+
+        # Raw classifications are limited to the default top-2 classes.
+        assert output_detections[0]["raw_classifications"]["classes"] == [
+            HUMAN,
+            Classification.BLANK,
+        ]
 
     def test_complete_taxonomy(self, ensemble) -> None:
 

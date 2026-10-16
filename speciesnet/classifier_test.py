@@ -99,23 +99,24 @@ class TestClassifier:
         img_green_w480_h480,  # output
     ) -> None:
 
-        assert classifier.preprocess(None) == []
+        assert classifier.preprocess(None) is None
 
         if classifier.model_info.type_ == "always_crop":
 
-            preprocessed = classifier.preprocess(
+            # Without bounding boxes there is nothing to crop.
+            assert not classifier.preprocess(
                 img_red_green_blue_w100_h150_h700_h150,
                 resize=False,
-            )[0]
-            assert preprocessed
-            assert preprocessed.orig_width == 100
-            assert preprocessed.orig_height == 1000
-            assert preprocessed.arr.shape == (1000, 100, 3)
-            assert_array_equal(preprocessed.arr, img_red_green_blue_w100_h150_h700_h150)
+            )
+            assert not classifier.preprocess(
+                img_red_green_blue_w100_h150_h700_h150,
+                bboxes=[],
+                resize=False,
+            )
 
             preprocessed = classifier.preprocess(
                 img_red_green_blue_w100_h150_h700_h150,
-                bboxes=[],
+                bboxes=[BBox(0.0, 0.0, 1.0, 1.0)],
                 resize=False,
             )[0]
             assert preprocessed
@@ -180,11 +181,17 @@ class TestClassifier:
 
         elif classifier.model_info.type_ == "full_image":
 
-            preprocessed = classifier.preprocess(
+            # Bounding boxes are ignored, and a single crop is produced.
+            preprocessed_list = classifier.preprocess(
                 img_red_green_blue_w100_h150_h700_h150,
-                bboxes=[BBox(10 / 100, 150 / 1000, 40 / 100, 100 / 1000)],
+                bboxes=[
+                    BBox(10 / 100, 150 / 1000, 40 / 100, 100 / 1000),
+                    BBox(0 / 100, 150 / 1000, 100 / 100, 700 / 1000),
+                ],
                 resize=False,
-            )[0]
+            )
+            assert len(preprocessed_list) == 1
+            preprocessed = preprocessed_list[0]
             assert preprocessed
             assert preprocessed.orig_width == 100
             assert preprocessed.orig_height == 1000
@@ -232,9 +239,14 @@ class TestClassifier:
     def test_predict(self, classifier, img_green_w480_h480) -> None:
 
         filepath = "missing.jpg"
-        prediction = classifier.predict(filepath, [])
+        prediction = classifier.predict(filepath, None)
         assert prediction["filepath"] == filepath
         assert "failures" in prediction
+
+        # No crops means nothing to classify, which is not a failure.
+        filepath = "no_crops.jpg"
+        prediction = classifier.predict(filepath, [])
+        assert prediction == {"filepath": filepath, "classifications_list": []}
 
         filepath = "green.png"
         prediction = classifier.predict(
@@ -256,18 +268,31 @@ class TestClassifier:
         ]
         prediction = classifier.predict(filepath, crops)
         assert len(prediction["classifications_list"]) == 2
+        for classifications in prediction["classifications_list"]:
+            assert len(classifications["classes"]) == 5
+            assert len(classifications["scores"]) == 5
+
+        # Test the number of reported classes.
+        prediction = classifier.predict(filepath, crops, num_classes=2)
+        for classifications in prediction["classifications_list"]:
+            assert len(classifications["classes"]) == 2
+            assert len(classifications["scores"]) == 2
+        prediction = classifier.predict(filepath, crops[:1], num_classes=None)
+        assert len(prediction["classifications_list"][0]["classes"]) == len(
+            classifier.labels
+        )
 
     @pytest.fixture(
         # Expected classifications.
         params=[
             (
                 "test_data/blank.jpg",
-                [],
+                [BBox(0.0, 0.0, 1.0, 1.0)],
                 BLANK,
             ),
             (
                 "test_data/blank2.jpg",
-                [],
+                [BBox(0.0, 0.0, 1.0, 1.0)],
                 BLANK,
             ),
             (
@@ -423,7 +448,7 @@ class TestClassifier:
             ),
             ("test_data/domestic_dog.jpg", [BBox(0.2377, 0.08398, 0.5161, 0.6497)]),
             ("test_data/human.jpg", [BBox(0.7115, 0.4976, 0.0664, 0.2424)]),
-            ("test_data/blank.jpg", []),
+            ("test_data/blank.jpg", [BBox(0.0, 0.0, 1.0, 1.0)]),
         ]
 
         # Preprocess all images

@@ -16,7 +16,11 @@
 
 __all__ = [
     "Classification",
+    "DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION",
+    "DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION",
     "Detection",
+    "FORMAT_VERSION",
+    "NUM_CLASSIFICATIONS_FOR_ENSEMBLE",
     "mps_inference_lock",
 ]
 
@@ -24,6 +28,21 @@ import contextlib
 import enum
 import threading
 from typing import Iterator, Optional
+
+# Version of the output format written by SpeciesNet, reported in the "info" section of
+# output files.
+FORMAT_VERSION = "20261015"
+
+# Detections with a confidence score at or above this threshold are run through the
+# classifier (unless the maximum number of classifications per image is reached).
+DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION = 0.1
+
+# Number of top classes to report in the raw classifications of each detection.
+DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION = 2
+
+# Number of top classes the ensemble uses to compute processed classifications,
+# independently of how many classes are reported in the output.
+NUM_CLASSIFICATIONS_FOR_ENSEMBLE = 5
 
 
 class Classification(str, enum.Enum):
@@ -44,6 +63,7 @@ class Classification(str, enum.Enum):
 class Detection(str, enum.Enum):
     """Enum of all possible detection values."""
 
+    WHOLE_IMAGE = "whole_image_classification"
     ANIMAL = "animal"
     HUMAN = "human"
     VEHICLE = "vehicle"
@@ -54,14 +74,17 @@ class Detection(str, enum.Enum):
 
         Args:
             category: Numeric category from the detector, provided as a string (e.g.
-            "1", "2", "3").
+            "0", "1", "2", "3"). Category "0" never comes from the detector itself; it
+            represents the single whole-image pseudo-detection used by whole-image
+            classifiers.
 
         Returns:
             Enum detection value corresponding to the given numeric category. If
-            category is not one of "1", "2" or "3", returns `None`.
+            category is not one of "0", "1", "2" or "3", returns `None`.
         """
 
         category_to_label = {
+            "0": Detection.WHOLE_IMAGE,
             "1": Detection.ANIMAL,
             "2": Detection.HUMAN,
             "3": Detection.VEHICLE,

@@ -155,6 +155,7 @@ def combine_predictions_for_single_item(  # pylint: disable=too-many-positional-
     roll_up_fn,
 ):
     """Test helper transforming single-item permutations into the list format."""
+    assert len(detections) == 1
     results = combine_predictions(
         classifications_list=[classifications],
         detections=detections,
@@ -166,11 +167,12 @@ def combine_predictions_for_single_item(  # pylint: disable=too-many-positional-
         geofence_fn=geofence_fn,
         roll_up_fn=roll_up_fn,
     )
+    assert len(results) == 1
     # The tests expect a flat tuple of (label, score, source) to be asserted
     return (
-        results[0]["prediction"],
-        results[0]["prediction_score"],
-        results[0]["prediction_source"],
+        results[0]["class"],
+        results[0]["score"],
+        results[0]["source"],
     )
 
 
@@ -432,38 +434,27 @@ class TestPredictionEnsembleCombiner:
             roll_up_fn=mock_roll_up_fn_return_none,
         )
 
-        assert len(results) == 3
+        assert results == [
+            # HUMAN detection.
+            {"class": Classification.HUMAN, "score": 0.95, "source": "detector"},
+            # LION classification (gets geofenced).
+            {"class": "geofenced_label", "score": 0.9, "source": "geofence_source"},
+            # VEHICLE detection.
+            {"class": Classification.VEHICLE, "score": 0.85, "source": "detector"},
+        ]
 
-        # First is HUMAN
-        assert results[0]["prediction"] == Classification.HUMAN
-        assert results[0]["prediction_score"] == 0.95
-        assert results[0]["prediction_source"] == "detector"
-        assert results[0]["bbox"] == [0.1, 0.1, 0.2, 0.2]
-
-        # Second is LION (gets geofenced)
-        assert results[1]["prediction"] == "geofenced_label"
-        assert results[1]["prediction_score"] == 0.9
-        assert results[1]["prediction_source"] == "geofence_source"
-        assert results[1]["bbox"] == [0.5, 0.5, 0.6, 0.6]
-
-        # Third is VEHICLE
-        assert results[2]["prediction"] == Classification.VEHICLE
-        assert results[2]["prediction_score"] == 0.85
-        assert results[2]["prediction_source"] == "detector"
-        assert results[2]["bbox"] == [0.8, 0.8, 0.9, 0.9]
-
-    def test_combine_predictions_max_classifications(
+    def test_combine_predictions_preserves_input_order(
         self, taxonomy_map, geofence_map
     ) -> None:
+        # The second item gets a higher score than the first one, but results must
+        # still match the order of the inputs.
         classifications_list = [
-            {"classes": [HUMAN], "scores": [0.7]},
-            {"classes": [LION], "scores": [0.9]},
-            {"classes": [VEHICLE], "scores": [0.8]},
+            {"classes": [HUMAN], "scores": [0.6]},
+            {"classes": [BLANK], "scores": [0.995]},
         ]
         detections = [
-            {"label": Detection.HUMAN, "conf": 0.95, "bbox": [0.1, 0.1, 0.2, 0.2]},
-            {"label": Detection.ANIMAL, "conf": 0.9, "bbox": [0.5, 0.5, 0.6, 0.6]},
-            {"label": Detection.VEHICLE, "conf": 0.85, "bbox": [0.8, 0.8, 0.9, 0.9]},
+            {"label": Detection.HUMAN, "conf": 0.75, "bbox": [0.1, 0.1, 0.2, 0.2]},
+            {"label": Detection.ANIMAL, "conf": 0.05, "bbox": [0.5, 0.5, 0.1, 0.1]},
         ]
 
         results = combine_predictions(
@@ -476,18 +467,16 @@ class TestPredictionEnsembleCombiner:
             enable_geofence=True,
             geofence_fn=mock_geofence_fn,
             roll_up_fn=mock_roll_up_fn_return_none,
-            max_classifications=2,
         )
 
-        assert len(results) == 2
-        assert results[0]["prediction"] == Classification.HUMAN
-        assert results[1]["prediction"] == "geofenced_label"
+        assert results == [
+            {"class": Classification.HUMAN, "score": 0.75, "source": "detector"},
+            {"class": Classification.BLANK, "score": 0.995, "source": "classifier"},
+        ]
 
-    def test_combine_predictions_empty_detections(
-        self, taxonomy_map, geofence_map
-    ) -> None:
+    def test_combine_predictions_empty_inputs(self, taxonomy_map, geofence_map) -> None:
         results = combine_predictions(
-            classifications_list=[{"classes": [BLANK], "scores": [0.995]}],
+            classifications_list=[],
             detections=[],
             country=None,
             admin1_region=None,
@@ -498,9 +487,7 @@ class TestPredictionEnsembleCombiner:
             roll_up_fn=mock_roll_up_fn_return_none,
         )
 
-        assert len(results) == 1
-        assert results[0]["prediction"] == Classification.BLANK
-        assert results[0]["bbox"] is None
+        assert not results
 
     def test_combine_predictions_mismatched_classification_count(
         self, taxonomy_map, geofence_map
@@ -509,20 +496,15 @@ class TestPredictionEnsembleCombiner:
             {"label": Detection.HUMAN, "conf": 0.95, "bbox": [0.1, 0.1, 0.2, 0.2]},
             {"label": Detection.ANIMAL, "conf": 0.6, "bbox": [0.5, 0.5, 0.6, 0.6]},
         ]
-        results = combine_predictions(
-            classifications_list=[{"classes": [HUMAN], "scores": [0.7]}],
-            detections=detections,
-            country=None,
-            admin1_region=None,
-            taxonomy_map=taxonomy_map,
-            geofence_map=geofence_map,
-            enable_geofence=True,
-            geofence_fn=mock_geofence_fn,
-            roll_up_fn=mock_roll_up_fn_return_none,
-        )
-
-        assert len(results) == 2
-        assert results[0]["prediction"] == Classification.HUMAN
-        assert results[1]["prediction"] == Classification.ANIMAL
-        assert results[1]["prediction_source"] == "detector"
-        assert results[1]["bbox"] == [0.5, 0.5, 0.6, 0.6]
+        with pytest.raises(ValueError):
+            combine_predictions(
+                classifications_list=[{"classes": [HUMAN], "scores": [0.7]}],
+                detections=detections,
+                country=None,
+                admin1_region=None,
+                taxonomy_map=taxonomy_map,
+                geofence_map=geofence_map,
+                enable_geofence=True,
+                geofence_fn=mock_geofence_fn,
+                roll_up_fn=mock_roll_up_fn_return_none,
+            )

@@ -36,23 +36,22 @@ def combine_predictions(
     enable_geofence: bool,
     geofence_fn: Callable,
     roll_up_fn: Callable,
-    max_classifications: Optional[int] = None,
 ) -> list[dict]:
-    """Ensembles classifications and detections from multiple bounding boxes.
+    """Ensembles each classification with its corresponding detection.
 
-    This operation leverages multiple heuristics to make the most of the classifier and
-    the detector predictions through a complex set of decisions. It introduces various
-    thresholds to identify humans, vehicles, blanks, animals at species level, animals
-    at higher taxonomy levels and even unknowns.
+    This operation leverages heuristics to make the most of the classifier and
+    the detector predictions.
+
+    Each element of `classifications_list` is ensembled with the element of
+    `detections` at the same position, independently of all other elements.
 
     Args:
         classifications_list:
-            List of dicts containing classification results for each bounding box.
+            List of dicts containing classification results, one per detection.
             "classes" and "scores" are expected to be provided among the dict keys.
         detections:
-            List of detection results, sorted in decreasing order of their confidence
-            score. Each detection is expected to be a dict providing "label" and "conf"
-            among its keys.
+            List of detection results, one per classification. Each detection is
+            expected to be a dict providing "label" and "conf" among its keys.
         country:
             Country (in ISO 3166-1 alpha-3 format) associated with predictions.
             Optional.
@@ -69,37 +68,33 @@ def combine_predictions(
             Callable to geofence animal classifications.
         roll_up_fn:
             Callable to roll up labels to the first matching level.
-        max_classifications:
-            Maximum number of predictions to return per image. Defaults to returning
-            all processed predictions.
 
     Returns:
-        A list of dicts describing the ensemble results.
+        A list of dicts describing the ensemble results, one per classification and in
+        the same order. Each dict includes "class", "score" and "source" keys.
+
+    Raises:
+        ValueError:
+            If `classifications_list` and `detections` have different lengths.
     """
-    effective_detections = (
-        detections
-        if detections
-        else [{"label": Detection.ANIMAL, "conf": 0.0, "bbox": None}]
-    )
+    if len(classifications_list) != len(detections):
+        raise ValueError(
+            f"Expected one detection per classification, got "
+            f"{len(classifications_list)} classifications and "
+            f"{len(detections)} detections."
+        )
+
     results = []
 
-    for i, det in enumerate(effective_detections):
+    for classifications, det in zip(classifications_list, detections):
         det_class = det["label"]
         det_score = det["conf"]
         prediction = None
         score = 0.0
         source = ""
 
-        if i < len(classifications_list) and classifications_list[i]:
-            classifications = classifications_list[i]
-            top_classification_class = classifications.get(
-                "classes", [Classification.UNKNOWN]
-            )[0]
-            top_classification_score = classifications.get("scores", [0.0])[0]
-        else:
-            classifications = {"classes": [Classification.UNKNOWN], "scores": [0.0]}
-            top_classification_class = Classification.UNKNOWN
-            top_classification_score = 0.0
+        top_classification_class = classifications["classes"][0]
+        top_classification_score = classifications["scores"][0]
 
         if det_class == Detection.HUMAN:
             # Threshold #1a: high-confidence HUMAN detections.
@@ -241,23 +236,14 @@ def combine_predictions(
 
         results.append(
             {
-                "prediction": (
+                "class": (
                     prediction.value
                     if isinstance(prediction, Classification)
                     else prediction
                 ),
-                "prediction_score": score,
-                "prediction_source": source,
-                "bbox": det.get("bbox") if "bbox" in det else None,
+                "score": score,
+                "source": source,
             }
         )
 
-    results.sort(
-        key=lambda x: (
-            x["prediction_score"] if x["prediction_score"] is not None else 0.0
-        ),
-        reverse=True,
-    )
-    if max_classifications is not None and max_classifications > 0:
-        return results[:max_classifications]
     return results

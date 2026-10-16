@@ -26,15 +26,13 @@ An ensemble of AI models for classifying wildlife in camera trap images.
 
 Effective wildlife monitoring relies heavily on motion-triggered wildlife cameras, or “camera traps”, which generate vast quantities of image data. Manual processing of these images is a significant bottleneck. AI can accelerate that processing, helping conservation practitioners spend more time on conservation, and less time reviewing images.
 
-This repository hosts code for running an ensemble of two AI models: (1) an object detector that finds objects of interest in wildlife camera images, and (2) an image classifier that classifies those objects to the species level. This ensemble is used for species recognition in the [Wildlife Insights](https://www.wildlifeinsights.org/) platform.
+This repository hosts code for running a cascade of two AI models: (1) an object detector that finds objects of interest in wildlife camera images, and (2) an image classifier that classifies those objects to the species level. This approach is used for species recognition in the [Wildlife Insights](https://www.wildlifeinsights.org/) platform.
 
 The object detector used in this ensemble is [MegaDetector](https://github.com/agentmorris/MegaDetector), which finds animals, humans, and vehicles in camera trap images, but does not classify animals to species level.
 
 The species classifier ([SpeciesNet](https://www.kaggle.com/models/google/speciesnet)) was trained at Google using a large dataset of camera trap images and an [EfficientNet V2 M](https://arxiv.org/abs/2104.00298) architecture. It is designed to classify images into one of more than 2000 labels, covering diverse animal species, higher-level taxa (like "mammalia" or "felidae"), and non-animal classes ("blank", "vehicle"). SpeciesNet has been trained on a geographically diverse dataset of over 65M images, including curated images from the Wildlife Insights user community, as well as images from publicly-available repositories.
 
-The SpeciesNet ensemble combines these two models using a set of heuristics and, optionally, geographic information to assign each image to a single category.  See the "[ensemble decision-making](#ensemble-decision-making)" section for more information about how the ensemble combines information for each image to make a single prediction.
-
-The full details of the models and the ensemble process are discussed in this research paper:
+The full details of the species classifier are discussed in this paper:
 
 Gadot T, Istrate Ș, Kim H, Morris D, Beery S, Birch T, Ahumada J. [To crop or not to crop: Comparing whole-image and cropped classification on a large dataset of camera trap images](https://doi.org/10.1049/cvi2.12318). IET Computer Vision. 2024 Dec;18(8):1193-208.
 
@@ -94,9 +92,9 @@ If your images are from the USA, you can also specify a state name using the two
 
 ### Running SpeciesNet on multiple detections per image (or on videos)
 
-The `run_model` script described above uses [MegaDetector](https://github.com/agentmorris/MegaDetector) to find animals in each image, then runs the SpeciesNet classifier on <i>just the highest-confidence detection in each image</i>.  The goal of this script is to propose the single species that is most likely to be present in each image, and in most cases, processing every object detected in the image through the classifier would be slower, without changing the proposed species.
+The `run_model` script described above uses [MegaDetector](https://github.com/agentmorris/MegaDetector) to find animals, humans, and vehicles in each image, then runs the SpeciesNet classifier on every detection with a confidence above a threshold (default 0.1), so each detection gets its own classification.
 
-This is a problem, however, when you frequently have multi-species images, or images with both humans and domestic animals.  If this is a concern for your scenario, instead of using `run_model`, we recommend using [run_md_and_speciesnet](https://megadetector.readthedocs.io/en/latest/detection.html#run_md_and_speciesnet---CLI-interface), from the [MegaDetector Python package](https://megadetector.readthedocs.io/).  This looks like the following:
+If you want to run SpeciesNet on videos, or if you want to use other MegaDetector versions, you can also use [run_md_and_speciesnet](https://megadetector.readthedocs.io/en/latest/detection.html#run_md_and_speciesnet---CLI-interface), from the [MegaDetector Python package](https://megadetector.readthedocs.io/).  This looks like the following:
 
 ```bash
 pip install megadetector
@@ -175,16 +173,21 @@ If you use this model, please cite:
 
 ## Output format from run_model
 
-`run_model.py` produces output in .json format, containing an array called "predictions", with one element per image.  We provide a script to convert this format to the format used by [MegaDetector](https://github.com/agentmorris/MegaDetector), which can be imported into [Timelapse](https://timelapse.ucalgary.ca/), see [speciesnet_to_md.py](speciesnet/scripts/speciesnet_to_md.py).
+`run_model.py` produces output in .json format, containing an "info" section and an array called "predictions", with one element per image.  We provide a script to convert this format to the format used by [MegaDetector](https://github.com/agentmorris/MegaDetector), which can be imported into [Timelapse](https://timelapse.ucalgary.ca/), see [speciesnet_to_md.py](speciesnet/scripts/speciesnet_to_md.py).
 
-Each element always contains a field called "filepath"; the exact content of those elements will vary depending on which elements of the ensemble you ran.  If you didn't go out of your way to do something unusual, you ran the entire ensemble (i.e., both the detector and the classifier), so the "full ensemble" output format applies.  Output formats for other scenarios are described in the [advanced topics documentation](advanced_topics.md).
 
-### Full ensemble output format
 
-In the full ensemble output, the "classifications_list" field contains raw classifier output, before geofencing is applied.  So even if you specify a country code, you may see taxa in the "classifications_list" field that are not found in the country you specified.  The "processed_classifications" field is the result of integrating the classification, detection, and geofencing information; if you specify a country code, the "processed_classifications" field should only contain taxa that are found in the country you specified.
+Each element in the "predictions" array contains the results for one image. Each element contains a list of detections, sorted in descending order of confidence.  Every detection with a confidence of at least `--detection_threshold_for_classification` (default 0.1) is classified, up to a maximum of `--max_classifications_per_image` detections per image (default: no maximum); when that maximum applies, the highest-confidence detections are the ones that get classified.  Detections below the threshold (or beyond the maximum) are still included in the output, just without classification fields.  If an image has no detections at or above the threshold, none of its detections are classified.
+
+Each classified detection has a "raw_classifications" field and a "processed_classification" field.  The "raw_classifications" field contains the top k classes from the classifier, where k is controlled by `--max_classifications_per_detection` (default 2), before geofencing and taxonomic rollup are applied.  So even if you specify a country code, you may see taxa in the "raw_classifications" field that are not found in the country you specified.  The "processed_classification" field contains the single class that results from applying geofencing and taxonomic rollup (see [ensemble decision-making](#ensemble-decision-making)), along with some heuristics about the detection category and confidence. If you specify a country code, the "processed_classification" field should only contain taxa that are found in the country you specified.
+
+When running the whole-image classifier, the first element in each image's "detections" list is a single detection with category "0" ("whole_image_classification"), with a confidence of 1.0 and a bounding box covering the whole image.  This is the only detection that gets classified; it is followed by the (unclassified) detections from MegaDetector.  The highest-confidence MegaDetector detection is still used in the heuristics that determine the the processed classification for the whole image.
 
 ```text
 {
+    "info": {
+        "format_version": str  => File format version, as a string of the form "20261015".
+    },
     "predictions": [
         {
             "filepath": str  => Image filepath.
@@ -193,32 +196,25 @@ In the full ensemble output, the "classifications_list" field contains raw class
             "admin1_region": str (optional)  => First-level administrative division (in ISO 3166-2 format) within the country above. If not provided in the request, it can be computed from (latitude, longitude) when those coordinates are specified. Included in the response only for some countries that are used in geofencing (e.g. "USA").
             "latitude": float (optional)  => Latitude where the image was taken, included only if (latitude, longitude) were present in the request.
             "longitude": float (optional)  => Longitude where the image was taken, included only if (latitude, longitude) were present in the request.
-            "classifications_list": [  => list (optional)  => List of top-5 classifications for each detection crop (or full image if there are no detections). Included only if "CLASSIFIER" is not part of the "failures" field.
+            "detections": [  => list (optional)  => List of detections with confidence scores > 0.01, in decreasing order of their confidence scores (regardless of category).
                 {
-                    "classes": list[str]  => List of top-5 classes predicted by the classifier, matching the decreasing order of their scores below.
-                    "scores": list[float]  => List of scores corresponding to top-5 classes predicted by the classifier, in decreasing order.
-                    "target_classes": list[str] (optional)  => List of target classes, only present if target classes are passed as arguments.
-                    "target_logits": list[float] (optional)  => Raw confidence scores (logits) of the target classes, only present if target classes are passed as arguments.
-                },
-                ...  => One classification entry per detection (or one entry for the full image if there are no detections).
-            ],
-            "detections": [  => list (optional)  => List of detections with confidence scores > 0.01, in decreasing order of their scores. Included only if "DETECTOR" is not part of the "failures" field.
-                {
-                    "category": str  => Detection class "1" (= animal), "2" (= human) or "3" (= vehicle) from MegaDetector's raw output.
-                    "label": str  => Detection class "animal", "human" or "vehicle", matching the "category" field above. Added for readability purposes.
-                    "conf": float  => Confidence score of the current detection.
+                    "category": str  => Detection class "0" (whole_image_classification), "1" (animal), "2" (human) or "3" (vehicle). Category "0" is used only by the whole-image classifier (see above); the other categories come from MegaDetector's raw output.
+                    "label": str  => Detection class "whole_image_classification", "animal", "human" or "vehicle", matching the "category" field above. Redundant with "category"; added for readability.
+                    "conf": float  => Confidence score of the current detection (always 1.0 for category "0").
                     "bbox": list[float]  => Bounding box coordinates, in (xmin, ymin, width, height) format, of the current detection. Coordinates are normalized to the [0.0, 1.0] range, relative to the image dimensions.
+                    "raw_classifications": {  => dict (optional)  => Raw classifier output for the current detection. Included only for classified detections (see above), and only if "CLASSIFIER" is not part of the "failures" field.
+                        "classes": list[str]  => List of top-k classes predicted by the classifier, matching the decreasing order of their scores below.
+                        "scores": list[float]  => List of scores corresponding to the top-k classes predicted by the classifier, in decreasing order.
+                        "target_classes": list[str] (optional)  => List of target classes, only present if target classes are passed as arguments.
+                        "target_logits": list[float] (optional)  => Raw confidence scores (logits) of the target classes, only present if target classes are passed as arguments.
+                    },
+                    "processed_classification": {  => dict (optional)  => Final classification of the SpeciesNet ensemble for the current detection.
+                        "class": str  => Final class predicted by the SpeciesNet ensemble for the current detection.
+                        "score": float  => Score of the final class.
+                        "source": str  => Internal component that produced the final class.
+                    }
                 },
                 ...  => A prediction can contain zero or multiple detections.
-            ],
-            "processed_classifications": [  => list (optional)  => List of final predictions of the SpeciesNet ensemble, in decreasing order of their scores. Included only if "CLASSIFIER" and "DETECTOR" are not part of the "failures" field.
-                {
-                    "prediction": str  => Final prediction of the SpeciesNet ensemble for the current bounding box (or full image).
-                    "prediction_score": float  => Final prediction score of the SpeciesNet ensemble.
-                    "prediction_source": str  => Internal component that produced the final prediction. Used to collect information about which parts of the SpeciesNet ensemble fired.
-                    "bbox": list[float] | None  => Bounding box coordinates, in (xmin, ymin, width, height) format, associated with this prediction, or null if no detections were present.
-                },
-                ...  => One processed classification per detection (or one entry with bbox: null if there are no detections).
             ],
             "model_version": str  => A string representing the version of the model that produced the current prediction.
         },
@@ -226,6 +222,15 @@ In the full ensemble output, the "classifications_list" field contains raw class
     ]
 }
 ```
+
+### Output from individual components
+
+When you run only some of the components of the ensemble, the output file uses the format described above, but some fields are left out:
+
+- Detector-only output (`--detector_only`) contains only the "filepath", "failures", and "detections" fields for each image, and the detections have no "raw_classifications" or "processed_classification" fields.
+- Classifier-only output (`--classifier_only`) contains only the "filepath", "failures", and "detections" fields for each image, and classified detections have a "raw_classifications" field, but no "processed_classification" field.  When running the crop classifier (v4.0.3a), the detections are copied from the file passed via `--detections_json`.  When running the whole-image classifier (v4.0.3b), the only detection is the whole-image pseudo-detection (category "0"), since the detector was not run.  So that the ensemble step can be run later, the "raw_classifications" field in classifier-only output contains at least the top 5 classes, even if `--max_classifications_per_detection` is smaller than 5.
+- Ensemble-only output (`--ensemble_only`) is identical to the output you would get from running the full ensemble.
+
 
 ## Visualizing SpeciesNet output
 
@@ -279,7 +284,7 @@ Both of these modules can also be called from Python code instead of from the co
 
 ## Ensemble decision-making
 
-As discussed above, `run_model` uses multiple steps to predict a single category for each image, combining the strengths of the detector and the classifier.  The ensembling strategy (i.e., the strategy used to combine the information from the detector and classifier) was primarily optimized for minimizing the human effort required to review collections of images.
+As discussed above, `run_model` uses multiple steps to predict a single category for each classified detection, combining the strengths of the detector and the classifier.
 
 The guiding principles of the ensembling strategy are:
 
@@ -289,34 +294,35 @@ The guiding principles of the ensembling strategy are:
 
 Here is a breakdown of the steps:
 
-1. **Input processing:** Raw images are preprocessed and passed to both the object detector (MegaDetector) and the image classifier. The type of preprocessing will depend on the selected model. For "always crop" models, images are first processed by the object detector and then cropped based on the detection bounding box before being fed to the classifier. For "full image" models, images are preprocessed independently for both models.
+1. **Input processing:** Raw images are preprocessed and passed to both the object detector (MegaDetector) and the image classifier. The type of preprocessing will depend on the selected model. For "always crop" models, images are first processed by the object detector, and then each detection that will be classified is cropped from the image and fed to the classifier. For "full image" models, images are preprocessed independently for both models, and the highest-confidence detection is used in the steps below.
 
 2. **Object detection:** The detector identifies potential objects (animals, humans, or vehicles) in the image, providing their bounding box coordinates and confidence scores.
 
 3. **Species classification:** The species classifier analyzes the (potentially cropped) image to identify the most likely species present. It provides a list of top-5 species classifications, each with a confidence score. The species classifier is a fully supervised model that classifies images into a fixed set of animal species, higher taxa, and non-animal labels.
 
-4. **Detection-based human/vehicle decisions:** If the detector is highly confident about the presence of a human or vehicle, that label will be returned as the final prediction regardless of what the classifier predicts. If the detection is less confident and the classifier also returns human or vehicle as a top-5 prediction, with a reasonable score, that top prediction will be returned. This step prevents high-confidence detector predictions from being overridden by lower-confidence classifier predictions.
+4. **Detection-based human/vehicle decisions:** If the detector is highly confident that the detection is a human or vehicle, that label will be returned as the final prediction regardless of what the classifier predicts. If the detection is less confident and the classifier also returns human or vehicle as a top-5 prediction, with a reasonable score, that top prediction will be returned. This step prevents high-confidence detector predictions from being overridden by lower-confidence classifier predictions.
 
-5. **Blank decisions:** If the classifier predicts "blank" with a high confidence score, and the detector has very low confidence about the presence of an animal (or is absent), that "blank" label is returned as a final prediction. Similarly, if a classification is "blank" with extra-high confidence (above 0.99), that label is returned as a final prediction regardless of the detector's output. This enables the model to filter out images with high confidence in being blank.
+5. **Blank decisions:** If the classifier predicts "blank" with a high confidence score, and the detector has very low confidence that the detection is an animal (or, for the whole-image classifier, there are no detections), that "blank" label is returned as a final prediction. Similarly, if a classification is "blank" with extra-high confidence (above 0.99), that label is returned as a final prediction regardless of the detector's output. This enables the model to filter out images with high confidence in being blank.
 
 6. **Geofencing:** If the most likely species is an animal and a location (country and optional admin1 region) is provided for the image, a geofencing rule is applied. If that species is explicitly disallowed for that region based on the available geofencing rules, the prediction will be rolled up (as explained below) to a higher taxa level on that allow list.
 
 7. **Label rollup:** If all of the previous steps do not yield a final prediction, a "rollup" is applied when there is a good classification score for an animal. "Rollup" is the process of propagating the classification predictions to the first matching ancestor in the taxonomy, provided there is a good score at that level. This means the model may assign classifications at the genus, family, order, class, or kingdom level, if those scores are higher than the score at the species level. This is a common strategy to handle long-tail distributions, common in wildlife datasets.
 
-8. **Detection-based animal decisions:**  If the detector has a reasonable confidence `animal` prediction, `animal` will be returned along with the detector confidence.
+8. **Detection-based animal decisions:**  If the detector has a reasonable confidence that the detection is an `animal`, `animal` will be returned along with the detector confidence.
 
 9. **Unknown:** If no other rule applies, the `unknown` class is returned as the final prediction, to avoid making low-confidence predictions.
 
-10. **Prediction source:** At each step of the prediction workflow, a `prediction_source` is stored. This will be included in the final results to help diagnose which parts of the overall SpeciesNet ensemble were actually used.
+10. **Prediction source:** At each step of the prediction workflow, a prediction source is stored. This will be included in the "source" field of each detection's "processed_classification" to help diagnose which parts of the overall SpeciesNet ensemble were actually used.
 
-The "geofencing" and "label rollup" steps are also used when running `run_md_and_speciesnet`; the other steps don't apply in this scenario, since the goal of `run_md_and_speciesnet` is to classify each detection, rather than to classify the whole image.
+The "geofencing" and "label rollup" steps are also used when running `run_md_and_speciesnet`; the other steps don't apply in this scenario.
 
 ## Fine-tuning SpeciesNet
 
 In some cases it may be helpful to fine-tune SpeciesNet on your own data, e.g. to create a complementary classifier for species-specific sex/age classification, or to adapt to local species that SpeciesNet doesn't handle well.  We don't have an "official" path to fine-tuning SpeciesNet, but we wrote a [tutorial](https://agentmorris.github.io/speciesnet-fine-tuning/) for DIY fine-tuning that may be helpful.
 
-Also, a shout out to the fine-tuned SpeciesNets we're aware of as of June 2026, let us know if we're missing any!
+Also, a shout out to the fine-tuned SpeciesNets we're aware of as of October 2026, let us know if we're missing any!
 
+* [Addax Data Science Canadian Subarctic](https://huggingface.co/Addax-Data-Science/ARC-ADS-v1) (fine-tuned SpeciesNet for 39 categories from Northern Manitoba)
 * [Addax Data Science Central Indian Wildlife](https://huggingface.co/Addax-Data-Science/IND-ADS-v1) (fine-tuned SpeciesNet for 40 categories from Central India)
 * [Addax Data Science Northern Territory Vertebrates](https://huggingface.co/Addax-Data-Science/ANT-ADS-v1) (fine-tuned SpeciesNet for 140 categories from NT, Australia)
 * [Addax Data Science Hawaii](https://huggingface.co/Addax-Data-Science/HWI-ADS-v1) (fine-tuned SpeciesNet for 13 taxa in Hawaii)
