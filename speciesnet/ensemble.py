@@ -304,7 +304,7 @@ class SpeciesNetEnsemble:
                     output_detections = [dict(det) for det in detections]
 
             # Ensemble each classified detection.
-            if pairs:
+            if pairs and output_detections is not None:
                 processed_classifications = self.prediction_combiner(
                     classifications_list=[
                         _top_classes(

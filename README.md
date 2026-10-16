@@ -175,8 +175,6 @@ If you use this model, please cite:
 
 `run_model.py` produces output in .json format, containing an "info" section and an array called "predictions", with one element per image.  We provide a script to convert this format to the format used by [MegaDetector](https://github.com/agentmorris/MegaDetector), which can be imported into [Timelapse](https://timelapse.ucalgary.ca/), see [speciesnet_to_md.py](speciesnet/scripts/speciesnet_to_md.py).
 
-
-
 Each element in the "predictions" array contains the results for one image. Each element contains a list of detections, sorted in descending order of confidence.  Every detection with a confidence of at least `--detection_threshold_for_classification` (default 0.1) is classified, up to a maximum of `--max_classifications_per_image` detections per image (default: no maximum); when that maximum applies, the highest-confidence detections are the ones that get classified.  Detections below the threshold (or beyond the maximum) are still included in the output, just without classification fields.  If an image has no detections at or above the threshold, none of its detections are classified.
 
 Each classified detection has a "raw_classifications" field and a "processed_classification" field.  The "raw_classifications" field contains the top k classes from the classifier, where k is controlled by `--max_classifications_per_detection` (default 2), before geofencing and taxonomic rollup are applied.  So even if you specify a country code, you may see taxa in the "raw_classifications" field that are not found in the country you specified.  The "processed_classification" field contains the single class that results from applying geofencing and taxonomic rollup (see [ensemble decision-making](#ensemble-decision-making)), along with some heuristics about the detection category and confidence. If you specify a country code, the "processed_classification" field should only contain taxa that are found in the country you specified.
@@ -231,7 +229,6 @@ When you run only some of the components of the ensemble, the output file uses t
 - Classifier-only output (`--classifier_only`) contains only the "filepath", "failures", and "detections" fields for each image, and classified detections have a "raw_classifications" field, but no "processed_classification" field.  When running the crop classifier (v4.0.3a), the detections are copied from the file passed via `--detections_json`.  When running the whole-image classifier (v4.0.3b), the only detection is the whole-image pseudo-detection (category "0"), since the detector was not run.  So that the ensemble step can be run later, the "raw_classifications" field in classifier-only output contains at least the top 5 classes, even if `--max_classifications_per_detection` is smaller than 5.
 - Ensemble-only output (`--ensemble_only`) is identical to the output you would get from running the full ensemble.
 
-
 ## Visualizing SpeciesNet output
 
 As per above, many users will work with SpeciesNet results in open-source tools like [Timelapse](https://timelapse.ucalgary.ca/), which support the file format used by [MegaDetector](https://github.com/agentmorris/MegaDetector) (the format is described [here](https://lila.science/megadetector-output-format)).  If you used `run_md_and_speciesnet` to run SpeciesNet, you already have output in this format.  If you used `run_model`, we provide a [speciesnet_to_md](speciesnet/scripts/speciesnet_to_md.py) script to convert to this format.  Tools like Timelapse are a good way to visualize and interact with your SpeciesNet results.
@@ -280,7 +277,6 @@ python -m megadetector.postprocessing.postprocess_batch_results --help
 ```
 
 Both of these modules can also be called from Python code instead of from the command line.
-
 
 ## Ensemble decision-making
 
@@ -350,4 +346,3 @@ It would be unfortunate if this whole README about camera trap images didn't sho
 ![giant armadillo](https://github.com/google/cameratrapai/raw/main/images/sample_image_oct.jpg)
 
 Image credit University of Minnesota, from the [Orinoquía Camera Traps](https://lila.science/datasets/orinoquia-camera-traps/) dataset.
-

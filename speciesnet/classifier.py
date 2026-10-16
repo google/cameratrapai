@@ -152,7 +152,8 @@ class SpeciesNetClassifier:
 
         Returns:
             A list of preprocessed images (one element per bounding box in `always_crop`
-            mode, a single element in `full_image` mode), or `None` if no image was provided.
+            mode, a single element in `full_image` mode), or `None` if no image was
+            provided.
         """
         if img is None:
             return None
