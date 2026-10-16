@@ -173,9 +173,9 @@ If you use this model, please cite:
 
 ## Output format from run_model
 
-`run_model.py` produces output in .json format, containing an "info" section and an array called "predictions", with one element per image.  We provide a script to convert this format to the format used by [MegaDetector](https://github.com/agentmorris/MegaDetector), which can be imported into [Timelapse](https://timelapse.ucalgary.ca/), see [speciesnet_to_md.py](speciesnet/scripts/speciesnet_to_md.py).
+`run_model.py` produces output in .json format, containing an "info" section and an array called "predictions", with one element per image.  We provide a script to convert this format to the [MegaDetector output format](https://lila.science/megadetector-output-format), which can be imported into image review tools like [Timelapse](https://timelapse.ucalgary.ca/); see the "[converting output to MegaDetector format](#converting-output-to-megadetector-format)" section below.
 
-Each element in the "predictions" array contains the results for one image. Each element contains a list of detections, sorted in descending order of confidence.  Every detection with a confidence of at least `--detection_threshold_for_classification` (default 0.1) is classified, up to a maximum of `--max_classifications_per_image` detections per image (default: no maximum); when that maximum applies, the highest-confidence detections are the ones that get classified.  Detections below the threshold (or beyond the maximum) are still included in the output, just without classification fields.  If an image has no detections at or above the threshold, none of its detections are classified.
+In the `run_model` output format, each element in the "predictions" array contains the results for one image. Each element contains a list of detections, sorted in descending order of confidence.  Every detection with a confidence of at least `--detection_threshold_for_classification` (default 0.1) is classified, up to a maximum of `--max_classifications_per_image` detections per image (default: no maximum); when that maximum applies, the highest-confidence detections are the ones that get classified.  Detections below the threshold (or beyond the maximum) are still included in the output, just without classification fields.  If an image has no detections at or above the threshold, none of its detections are classified.
 
 Each classified detection has a "raw_classifications" field and a "processed_classification" field.  The "raw_classifications" field contains the top k classes from the classifier, where k is controlled by `--max_classifications_per_detection` (default 2), before geofencing and taxonomic rollup are applied.  So even if you specify a country code, you may see taxa in the "raw_classifications" field that are not found in the country you specified.  The "processed_classification" field contains the single class that results from applying geofencing and taxonomic rollup (see [ensemble decision-making](#ensemble-decision-making)), along with some heuristics about the detection category and confidence. If you specify a country code, the "processed_classification" field should only contain taxa that are found in the country you specified.
 
@@ -229,11 +229,20 @@ When you run only some of the components of the ensemble, the output file uses t
 - Classifier-only output (`--classifier_only`) contains only the "filepath", "failures", and "detections" fields for each image, and classified detections have a "raw_classifications" field, but no "processed_classification" field.  When running the crop classifier (v4.0.3a), the detections are copied from the file passed via `--detections_json`.  When running the whole-image classifier (v4.0.3b), the only detection is the whole-image pseudo-detection (category "0"), since the detector was not run.  So that the ensemble step can be run later, the "raw_classifications" field in classifier-only output contains at least the top 5 classes, even if `--max_classifications_per_detection` is smaller than 5.
 - Ensemble-only output (`--ensemble_only`) is identical to the output you would get from running the full ensemble.
 
+## Converting output to MegaDetector format
+
+As per above, many users will work with SpeciesNet results in open-source tools like [Timelapse](https://timelapse.ucalgary.ca/) that support the file format used by [MegaDetector](https://github.com/agentmorris/MegaDetector) (the format is described [here](https://lila.science/megadetector-output-format)).  If you used `run_md_and_speciesnet` to run SpeciesNet, you already have output in this format.  If you used `run_model`, you can convert the `run_model` .json format to the MegaDetector format like this:
+
+```bash
+pip install megadetector-utils
+python -m megadetector.detection.run_md_and_speciesnet "c:\your\speciesnet\output\file.json" "c:\path\where\you\want\the\converted\file.json" --base_folder "c:\your\image\folder"
+```
+
+Replace the filenames with real filenames, specifically (1) the path to the .json file you created with `run_model`, (2) the path where you want the converted .json file, and (3) the folder where your images live.
+
 ## Visualizing SpeciesNet output
 
-As per above, many users will work with SpeciesNet results in open-source tools like [Timelapse](https://timelapse.ucalgary.ca/), which support the file format used by [MegaDetector](https://github.com/agentmorris/MegaDetector) (the format is described [here](https://lila.science/megadetector-output-format)).  If you used `run_md_and_speciesnet` to run SpeciesNet, you already have output in this format.  If you used `run_model`, we provide a [speciesnet_to_md](speciesnet/scripts/speciesnet_to_md.py) script to convert to this format.  Tools like Timelapse are a good way to visualize and interact with your SpeciesNet results.
-
-If you want to use the command line or Python code to visualize SpeciesNet results, we recommend using the visualization tools provided in the [megadetector-utils Python package](https://pypi.org/project/megadetector-utils/).  For example, if you just ran either of these commands:
+As per above, tools like [Timelapse](https://timelapse.ucalgary.ca/) that load AI results are a good way to visualize and manipulate SpeciesNet results.  However, if you want to use the command line or Python code to visualize SpeciesNet results, we recommend using the visualization tools provided in the [megadetector-utils Python package](https://pypi.org/project/megadetector-utils/).  For example, if you just ran either of these commands:
 
 `python -m speciesnet.scripts.run_model --folders "c:\your\image\folder" --predictions_json "c:\your\output\file.json"`
 
@@ -246,7 +255,7 @@ pip install megadetector-utils
 python -m megadetector.visualization.visualize_detector_output "c:\your\output\file.json" "c:\folder\where\you\want\visualized\output"
 ```
 
-That will produce a folder of images with SpeciesNet results visualized on each image.  A typical use of this script would also use the --sample argument (to render a random subset of images, if what you want is to quickly grok how SpeciesNet did on a large dataset), and often the --html_output_file argument, to wrap the results in an HTML page that makes it quick to scroll through them.  Putting those together will give you pages like these:
+That will produce a folder of images with SpeciesNet results visualized on each image.  A typical use of this script would also use the `--sample` argument (to render a random subset of images, if what you want is to quickly grok how SpeciesNet did on a large dataset), and often the `--html_output_file` argument, to wrap the results in an HTML page that makes it quick to scroll through them.  Putting those together will give you pages like these:
 
 * [Fun preview page for Caltech Camera Traps](https://lila.science/public/speciesnet-previews/speciesnet-visualization-examples/caltech-camera-traps/)
 * [Fun preview page for Idaho Camera Traps](https://lila.science/public/speciesnet-previews/speciesnet-visualization-examples/idaho-camera-traps/)
