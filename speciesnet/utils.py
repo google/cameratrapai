@@ -41,7 +41,19 @@ import PIL.ImageFile
 import PIL.ImageOps
 import requests
 
+from speciesnet.constants import Detection
+from speciesnet.constants import Failure
+from speciesnet.constants import FORMAT_VERSION
+
 StrPath = Union[str, Path]
+
+# Per-image fields that only appear in output formats older than FORMAT_VERSION.
+_LEGACY_PREDICTION_FIELDS = (
+    "classifications",
+    "classifications_list",
+    "prediction",
+    "processed_classifications",
+)
 
 PIL.ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -456,7 +468,8 @@ def load_partial_predictions(
         RuntimeError:
             If the partial predictions contain a filepath not found in the list of
             instances to check. To fix this, make sure that the partial predictions
-            originated from the same list of instances to process.
+            originated from the same list of instances to process. Also raised if the
+            partial predictions use an output format that is no longer supported.
     """
 
     if not predictions_json:
@@ -477,6 +490,15 @@ def load_partial_predictions(
                 f"Filepath from loaded predictions is missing from the set of "
                 f"instances to process: `{filepath}`. Make sure you're resuming "
                 f"the work using the same set of instances."
+            )
+
+        legacy_fields = [f for f in _LEGACY_PREDICTION_FIELDS if f in prediction]
+        if legacy_fields:
+            raise RuntimeError(
+                f"Predictions from `{predictions_json}` use an older output format "
+                f"(found field `{legacy_fields[0]}` for `{filepath}`), and can't be "
+                f"reused. Regenerate them with the current version of SpeciesNet, or "
+                f"use a different output location."
             )
 
         if "failures" in prediction:
@@ -511,3 +533,139 @@ def save_predictions(predictions_dict: dict, output_json: StrPath) -> None:
     write_json(predictions_dict, output_json_tmp, num_decimals=4)
     logging.info("Moving `%s` to `%s`.", output_json_tmp, output_json)
     output_json_tmp.replace(output_json)  # Atomic operation.
+
+
+def make_predictions_dict(predictions: list[dict]) -> dict:
+    """Wraps a list of per-image predictions into a predictions dict.
+
+    Args:
+        predictions:
+            List of per-image predictions.
+
+    Returns:
+        A predictions dict, with an "info" section describing the output format and a
+        "predictions" section with the given predictions.
+    """
+
+    return {
+        "info": {"format_version": FORMAT_VERSION},
+        "predictions": predictions,
+    }
+
+
+def whole_image_detection() -> dict:
+    """Returns the pseudo-detection used by whole-image classifiers.
+
+    Whole-image classifiers classify the entire image rather than individual crops, so
+    their classifications are attached to a single pseudo-detection that covers the
+    whole image.
+
+    Returns:
+        A detection dict for category "0", with a confidence of 1.0 and a bounding box
+        covering the whole image.
+    """
+
+    return {
+        "category": "0",
+        "label": Detection.WHOLE_IMAGE.value,
+        "conf": 1.0,
+        "bbox": [0.0, 0.0, 1.0, 1.0],
+    }
+
+
+def select_detections_for_classification(
+    detections: list[dict],
+    detection_threshold: float,
+    max_classifications: Optional[int] = None,
+) -> list[int]:
+    """Selects which detections of an image should be run through the classifier.
+
+    Args:
+        detections:
+            List of detections for an image. Each detection is expected to be a dict
+            providing "conf" among its keys.
+        detection_threshold:
+            Minimum confidence score for a detection to be classified.
+        max_classifications:
+            Maximum number of detections to classify. If more detections are above the
+            threshold, the ones with the highest confidence scores are selected. If
+            `None` or negative, all detections above the threshold are selected.
+
+    Returns:
+        Indices (into `detections`) of the detections to classify, in increasing order.
+    """
+
+    indices = [
+        idx for idx, det in enumerate(detections) if det["conf"] >= detection_threshold
+    ]
+    if max_classifications is not None and max_classifications >= 0:
+        indices = sorted(indices, key=lambda idx: detections[idx]["conf"], reverse=True)
+        indices = sorted(indices[:max_classifications])
+    return indices
+
+
+def build_classifier_result(
+    prediction: dict,
+    detections: Optional[list[dict]],
+    classified_indices: list[int],
+    whole_image: bool,
+) -> dict:
+    """Attaches raw classifier output to the detections it belongs to.
+
+    Args:
+        prediction:
+            Raw classifier prediction for an image, providing either "failures" or a
+            "classifications_list" with one classification per classified crop.
+        detections:
+            Detections for the image, or `None` if no detections are available. Ignored
+            for whole-image classifiers.
+        classified_indices:
+            Indices (into `detections`) of the detections that were cropped and
+            classified, matching the order of "classifications_list". Ignored for
+            whole-image classifiers.
+        whole_image:
+            Whether the classifier is a whole-image classifier, in which case the single
+            classification is attached to a whole-image pseudo-detection.
+
+    Returns:
+        A classifier result dict for the image, providing either "failures" or
+        "detections", where classified detections have a "raw_classifications" field.
+
+    Raises:
+        ValueError:
+            If the number of classifications doesn't match the number of classified
+            detections.
+    """
+
+    filepath = prediction["filepath"]
+    if "failures" in prediction:
+        return prediction
+    classifications_list = prediction["classifications_list"]
+
+    if whole_image:
+        if len(classifications_list) != 1:
+            raise ValueError(
+                f"Expected a single whole-image classification for `{filepath}`, got "
+                f"{len(classifications_list)}."
+            )
+        return {
+            "filepath": filepath,
+            "detections": [
+                {
+                    **whole_image_detection(),
+                    "raw_classifications": classifications_list[0],
+                }
+            ],
+        }
+
+    if detections is None:
+        return {"filepath": filepath, "failures": [Failure.CLASSIFIER.name]}
+    if len(classifications_list) != len(classified_indices):
+        raise ValueError(
+            f"Expected {len(classified_indices)} classifications for `{filepath}` (one "
+            f"per classified detection), got {len(classifications_list)}."
+        )
+    result_detections = [dict(det) for det in detections]
+    for idx, classifications in zip(classified_indices, classifications_list):
+        result_detections[idx]["raw_classifications"] = classifications
+    return {"filepath": filepath, "detections": result_detections}

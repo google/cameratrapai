@@ -30,7 +30,8 @@ from absl import flags
 from speciesnet import DEFAULT_MODEL
 from speciesnet import only_one_true
 from speciesnet import SpeciesNet
-from speciesnet.ensemble_prediction_combiner import PredictionType
+from speciesnet.constants import DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+from speciesnet.constants import DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION
 from speciesnet.utils import load_partial_predictions
 from speciesnet.utils import prepare_instances_dict
 
@@ -156,22 +157,50 @@ _FORCE_MODEL_DOWNLOAD = flags.DEFINE_bool(
     "--noforce_model_download (default) does not. Has no effect when --model refers "
     "to a local folder.",
 )
+_DETECTION_THRESHOLD_FOR_CLASSIFICATION = flags.DEFINE_float(
+    "detection_threshold_for_classification",
+    DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION,
+    "Minimum detection confidence for a detection to be run through the classifier. "
+    "Detections below this threshold are still included in the output, without "
+    "classifications. Has no effect for whole-image classifiers.",
+)
+_MAX_CLASSIFICATIONS_PER_IMAGE = flags.DEFINE_integer(
+    "max_classifications_per_image",
+    None,
+    "Maximum number of detections to classify per image (the highest-confidence "
+    "detections above --detection_threshold_for_classification are classified). "
+    "If not specified (or < 0), all detections above the threshold are classified. Has "
+    "no effect for whole-image classifiers.",
+)
+_MAX_CLASSIFICATIONS_PER_DETECTION = flags.DEFINE_integer(
+    "max_classifications_per_detection",
+    DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
+    "Number of top classes to report in the raw classifications of each classified "
+    "detection. If < 0, all classes are reported. Processed classifications are always "
+    "computed from the top 5 classes, regardless of this value. In classifier-only "
+    "mode, at least the top 5 classes are reported, so that the ensemble can be run "
+    "later.",
+)
 
 
 def guess_predictions_source(
     predictions: dict[str, dict],
-) -> Literal["classifier", "detector", "ensemble", "unknown", "invalid"]:
+) -> Literal["classifier", "detector", "ensemble", "unknown"]:
     """Guesses which model component generated given predictions.
+
+    Ensemble results are recognized by their model version (which only the ensemble
+    reports) or by processed classifications, classifier results by raw
+    classifications, and detector results by detections without any classifications.
+    Classifier results in which no detection was classified are indistinguishable from
+    detector results.
 
     Args:
         predictions: Dict of predictions, keyed by filepaths.
 
     Returns:
         Returns "classifier", "detector" or "ensemble" when the corresponding component
-        was identified as the source of predictions. Returns "invalid" when predictions
-        contain both classifications and detections, but couldn't identify results from
-        the ensemble. Returns "unknown" when no prediction is recognizable (e.g. when
-        there are only failures).
+        was identified as the source of predictions. Returns "unknown" when no
+        prediction is recognizable (e.g. when there are only failures).
     """
 
     found_classifications = False
@@ -179,14 +208,15 @@ def guess_predictions_source(
     found_ensemble_results = False
 
     for prediction in predictions.values():
-        if "classifications" in prediction:
+        detections = prediction.get("detections") or []
+        if "model_version" in prediction or any(
+            "processed_classification" in det for det in detections
+        ):
+            found_ensemble_results = True
+        if any("raw_classifications" in det for det in detections):
             found_classifications = True
         if "detections" in prediction:
             found_detections = True
-        if "prediction" in prediction:
-            found_ensemble_results = True
-        if found_classifications and found_detections and not found_ensemble_results:
-            return "invalid"
 
     if found_ensemble_results:
         return "ensemble"
@@ -199,7 +229,7 @@ def guess_predictions_source(
 
 def custom_combine_predictions_fn(
     *,
-    classifications: dict[str, list],
+    classifications_list: list[dict],
     detections: list[dict],
     country: Optional[str],
     admin1_region: Optional[str],
@@ -208,17 +238,16 @@ def custom_combine_predictions_fn(
     enable_geofence: bool,
     geofence_fn: Callable,
     roll_up_fn: Callable,
-) -> PredictionType:
+) -> list[dict]:
     """Ensembles classifications and detections in a custom way.
 
     Args:
-        classifications:
-            Dict of classification results. "classes" and "scores" are expected to be
-            provided among the dict keys.
+        classifications_list:
+            List of classification results, one per detection. "classes" and "scores"
+            are expected to be provided among the dict keys.
         detections:
-            List of detection results, sorted in decreasing order of their confidence
-            score. Each detection is expected to be a dict providing "label" and "conf"
-            among its keys.
+            List of detection results, one per classification. Each detection is
+            expected to be a dict providing "label" and "conf" among its keys.
         country:
             Country (in ISO 3166-1 alpha-3 format) associated with predictions.
             Optional.
@@ -237,7 +266,8 @@ def custom_combine_predictions_fn(
             Callable to roll up labels to the first matching level.
 
     Returns:
-        A tuple of <label, score, prediction_source> describing the ensemble result.
+        A list of dicts describing the ensemble results, one per classification and in
+        the same order, each providing "class", "score" and "source" keys.
     """
 
     del detections  # Unused.
@@ -250,11 +280,14 @@ def custom_combine_predictions_fn(
     del roll_up_fn  # Unused.
 
     # Always return the second classifier prediction.
-    return (
-        classifications["classes"][1],
-        classifications["scores"][1],
-        "custom_ensemble",
-    )
+    return [
+        {
+            "class": classifications["classes"][1],
+            "score": classifications["scores"][1],
+            "source": "custom_ensemble",
+        }
+        for classifications in classifications_list
+    ]
 
 
 def say_yes_to_continue(question: str, stop_message: str) -> bool:
@@ -393,6 +426,17 @@ def main(argv: list[str]) -> None:
         ):
             return
 
+    # Allow conversion of -1 to None for int-valued inputs
+    max_classifications_per_image = _MAX_CLASSIFICATIONS_PER_IMAGE.value
+    if max_classifications_per_image is not None and max_classifications_per_image < 0:
+        max_classifications_per_image = None
+    max_classifications_per_detection = _MAX_CLASSIFICATIONS_PER_DETECTION.value
+    if (
+        max_classifications_per_detection is not None
+        and max_classifications_per_detection < 0
+    ):
+        max_classifications_per_detection = None
+
     # If a list of target species is given, check that it exists
     if _TARGET_SPECIES_TXT.value is not None and not local_file_exists(
         _TARGET_SPECIES_TXT.value
@@ -426,24 +470,15 @@ def main(argv: list[str]) -> None:
         force_model_download=_FORCE_MODEL_DOWNLOAD.value,
     )
     if hasattr(model, "classifier") and not hasattr(model, "detector"):
-        if (
-            model.classifier.model_info.type_ == "always_crop"
-            and not local_file_exists(_DETECTIONS_JSON.value)
+        if not model.whole_image_classifier and not local_file_exists(
+            _DETECTIONS_JSON.value
         ):
-            if not say_yes_to_continue(
-                question=(
-                    "Classifier expects detections JSON. Continue without providing "
-                    "this file and run classifier on full images instead of crops?"
-                ),
-                stop_message=(
-                    f"Please provide detections via --{_DETECTIONS_JSON.name} and make "
-                    "sure that file exists."
-                ),
-            ):
-                return
-        elif (
-            model.classifier.model_info.type_ == "full_image" and _DETECTIONS_JSON.value
-        ):
+            raise RuntimeError(
+                "This classifier classifies detection crops, so it needs detections. "
+                f"Please provide detections via --{_DETECTIONS_JSON.name} and make "
+                "sure that file exists."
+            )
+        if model.whole_image_classifier and _DETECTIONS_JSON.value:
             if not say_yes_to_continue(
                 question=(
                     "Classifier doesn't expect detections JSON, yet such file was "
@@ -461,6 +496,11 @@ def main(argv: list[str]) -> None:
             batch_size=_BATCH_SIZE.value,
             progress_bars=_PROGRESS_BARS.value,
             predictions_json=_PREDICTIONS_JSON.value,
+            detection_threshold_for_classification=(
+                _DETECTION_THRESHOLD_FOR_CLASSIFICATION.value
+            ),
+            max_classifications_per_image=max_classifications_per_image,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
     elif _DETECTOR_ONLY.value:
         predictions_dict = model.detect(
@@ -476,6 +516,7 @@ def main(argv: list[str]) -> None:
             detections_dict=detections_dict,
             progress_bars=_PROGRESS_BARS.value,
             predictions_json=_PREDICTIONS_JSON.value,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
     else:
         predictions_dict = model.predict(
@@ -484,6 +525,11 @@ def main(argv: list[str]) -> None:
             batch_size=_BATCH_SIZE.value,
             progress_bars=_PROGRESS_BARS.value,
             predictions_json=_PREDICTIONS_JSON.value,
+            detection_threshold_for_classification=(
+                _DETECTION_THRESHOLD_FOR_CLASSIFICATION.value
+            ),
+            max_classifications_per_image=max_classifications_per_image,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
     if predictions_dict is not None:
         print(

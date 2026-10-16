@@ -52,7 +52,15 @@
             "longitude": -73.84
         },
         {
+            "filepath": "test_data/gazelles_and_zebra.jpg",
+            "country": "TZA"
+        },
+        {
             "filepath": "test_data/human.jpg",
+            "country": "USA"
+        },
+        {
+            "filepath": "test_data/human_and_dog.jpg",
             "country": "USA"
         },
         {

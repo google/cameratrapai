@@ -34,7 +34,13 @@
             "filepath": "test_data/domestic_dog.jpg"
         },
         {
+            "filepath": "test_data/gazelles_and_zebra.jpg"
+        },
+        {
             "filepath": "test_data/human.jpg"
+        },
+        {
+            "filepath": "test_data/human_and_dog.jpg"
         },
         {
             "filepath": "test_data/ocelot.jpg"

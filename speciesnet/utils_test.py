@@ -72,7 +72,9 @@ class TestPrepareInstancesDict:
             "test_data/blank3.jpg",
             "test_data/domestic_cattle.jpg",
             "test_data/domestic_dog.jpg",
+            "test_data/gazelles_and_zebra.jpg",
             "test_data/human.jpg",
+            "test_data/human_and_dog.jpg",
             "test_data/ocelot.jpg",
             "test_data/vehicle.jpg",
         ]
@@ -324,6 +326,7 @@ class TestLoadPartialPredictions:
     @pytest.fixture
     def valid_predictions_json(self, tmp_path) -> Generator[Path, None, None]:
         json_content = {
+            "info": {"format_version": "20261015"},
             "predictions": [
                 {
                     "filepath": "a.jpg",
@@ -349,65 +352,58 @@ class TestLoadPartialPredictions:
                     "filepath": "c.jpg",
                     "failures": ["DETECTOR"],
                     "country": "COUNTRY_C",
-                    "classifications": {
-                        "classes": ["X", "Y", "Z"],
-                        "scores": [0.5, 0.3, 0.2],
-                    },
                     "model_version": "0.0.0",
                 },
                 {
                     "filepath": "d.jpg",
                     "failures": ["GEOLOCATION"],
-                    "classifications": {
-                        "classes": ["R", "S", "T"],
-                        "scores": [0.7, 0.2, 0.1],
-                    },
                     "detections": [
                         {
                             "category": "2",
                             "label": "human",
                             "conf": 0.7,
                             "bbox": [0.1, 0.2, 0.3, 0.4],
+                            "raw_classifications": {
+                                "classes": ["R", "S"],
+                                "scores": [0.7, 0.2],
+                            },
+                            "processed_classification": {
+                                "class": "R",
+                                "score": 0.7,
+                                "source": "test",
+                            },
                         }
                     ],
-                    "prediction": "R",
-                    "prediction_score": 0.7,
-                    "prediction_source": "test",
                     "model_version": "0.0.0",
                 },
                 {
                     "filepath": "e.jpg",
                     "country": "COUNTRY_E",
-                    "classifications": {
-                        "classes": ["K", "L", "M"],
-                        "scores": [0.9, 0.1, 0.0],
-                    },
                     "detections": [
                         {
                             "category": "2",
                             "label": "human",
                             "conf": 0.7,
                             "bbox": [0.1, 0.2, 0.3, 0.4],
+                            "raw_classifications": {
+                                "classes": ["K", "L"],
+                                "scores": [0.9, 0.1],
+                            },
+                            "processed_classification": {
+                                "class": "K",
+                                "score": 0.9,
+                                "source": "test",
+                            },
                         }
                     ],
-                    "prediction": "K",
-                    "prediction_score": 0.9,
-                    "prediction_source": "test",
                     "model_version": "0.0.0",
                 },
                 {
                     "filepath": "f.jpg",
-                    "classifications": {
-                        "classes": ["XYZ"],
-                        "scores": [0.8],
-                    },
                     "detections": [],
-                    "prediction": "XYZ",
-                    "prediction_score": 0.4,
-                    "prediction_source": "test",
                     "model_version": "0.0.0",
                 },
-            ]
+            ],
         }
 
         filepath = tmp_path / "valid_predictions.json"
@@ -433,33 +429,28 @@ class TestLoadPartialPredictions:
             "e.jpg": {
                 "filepath": "e.jpg",
                 "country": "COUNTRY_E",
-                "classifications": {
-                    "classes": ["K", "L", "M"],
-                    "scores": [0.9, 0.1, 0.0],
-                },
                 "detections": [
                     {
                         "category": "2",
                         "label": "human",
                         "conf": 0.7,
                         "bbox": [0.1, 0.2, 0.3, 0.4],
+                        "raw_classifications": {
+                            "classes": ["K", "L"],
+                            "scores": [0.9, 0.1],
+                        },
+                        "processed_classification": {
+                            "class": "K",
+                            "score": 0.9,
+                            "source": "test",
+                        },
                     }
                 ],
-                "prediction": "K",
-                "prediction_score": 0.9,
-                "prediction_source": "test",
                 "model_version": "0.0.0",
             },
             "f.jpg": {
                 "filepath": "f.jpg",
-                "classifications": {
-                    "classes": ["XYZ"],
-                    "scores": [0.8],
-                },
                 "detections": [],
-                "prediction": "XYZ",
-                "prediction_score": 0.4,
-                "prediction_source": "test",
                 "model_version": "0.0.0",
             },
         }
@@ -476,6 +467,35 @@ class TestLoadPartialPredictions:
                 valid_predictions_json,
                 [{"filepath": "a.jpg"}],
             )
+
+    @pytest.fixture
+    def legacy_predictions_json(self, tmp_path) -> Generator[Path, None, None]:
+        json_content = {
+            "predictions": [
+                {
+                    "filepath": "a.jpg",
+                    "classifications": {
+                        "classes": ["K", "L", "M"],
+                        "scores": [0.9, 0.1, 0.0],
+                    },
+                    "detections": [],
+                    "prediction": "K",
+                    "prediction_score": 0.9,
+                    "prediction_source": "test",
+                    "model_version": "0.0.0",
+                },
+            ]
+        }
+
+        filepath = tmp_path / "legacy_predictions.json"
+        with open(filepath, mode="w", encoding="utf-8") as fp:
+            json.dump(json_content, fp)
+        yield filepath
+        filepath.unlink()
+
+    def test_legacy_format_loading(self, legacy_predictions_json) -> None:
+        with pytest.raises(RuntimeError, match="older output format"):
+            load_partial_predictions(legacy_predictions_json, [{"filepath": "a.jpg"}])
 
     @pytest.fixture
     def invalid_predictions_json(self, tmp_path) -> Generator[Path, None, None]:

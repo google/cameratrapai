@@ -13,6 +13,8 @@
 | [american_black_bear.jpg](american_black_bear.jpg) | Original | [North American Camera Trap Images](https://lila.science/datasets/nacti) | [CDLA-Permissive-1.0](https://cdla.dev/permissive-1-0/) |
 | [domestic_cattle.jpg](domestic_cattle.jpg) | Original | [North American Camera Trap Images](https://lila.science/datasets/nacti) | [CDLA-Permissive-1.0](https://cdla.dev/permissive-1-0/) |
 | [domestic_dog.jpg](domestic_dog.jpg) | Original | [North American Camera Trap Images](https://lila.science/datasets/nacti) | [CDLA-Permissive-1.0](https://cdla.dev/permissive-1-0/) |
+| [gazelles_and_zebra.jpg](gazelles_and_zebra.jpg) | Original | [Snapshot Serengeti](https://lila.science/datasets/snapshot-serengeti) | [CDLA-Permissive-1.0](https://cdla.dev/permissive-1-0/) |
 | [human.jpg](human.jpg) | Original | [Dan Morris](http://dmorris.net/) | [CDLA-Permissive-1.0](https://cdla.dev/permissive-1-0/) |
+| [human_and_dog.jpg](human_and_dog.jpg) | Modified | [Seattle(ish) Camera Traps](https://lila.science/datasets/seattleish-camera-traps) | [CDLA-Permissive-1.0](https://cdla.dev/permissive-1-0/) |
 | [ocelot.jpg](ocelot.jpg) | Original | [WCS Camera Traps](https://lila.science/datasets/wcscameratraps) | [CDLA-Permissive-1.0](https://cdla.dev/permissive-1-0/) |
 | [vehicle.jpg](vehicle.jpg) | Original | [North American Camera Trap Images](https://lila.science/datasets/nacti) | [CDLA-Permissive-1.0](https://cdla.dev/permissive-1-0/) |

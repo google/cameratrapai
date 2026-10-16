@@ -37,24 +37,54 @@ from absl import logging
 from tqdm import tqdm
 
 from speciesnet.classifier import SpeciesNetClassifier
+from speciesnet.constants import DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+from speciesnet.constants import DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION
 from speciesnet.constants import Failure
+from speciesnet.constants import NUM_CLASSIFICATIONS_FOR_ENSEMBLE
 from speciesnet.detector import SpeciesNetDetector
 from speciesnet.ensemble import SpeciesNetEnsemble
-from speciesnet.ensemble_prediction_combiner import combine_predictions_for_single_item
+from speciesnet.ensemble_prediction_combiner import combine_predictions
 from speciesnet.geolocation import find_admin1_region
 from speciesnet.utils import BBox
+from speciesnet.utils import build_classifier_result
 from speciesnet.utils import load_partial_predictions
 from speciesnet.utils import load_rgb_image
+from speciesnet.utils import make_predictions_dict
 from speciesnet.utils import ModelInfo
 from speciesnet.utils import prepare_instances_dict
 from speciesnet.utils import PreprocessedImage
 from speciesnet.utils import save_predictions
+from speciesnet.utils import select_detections_for_classification
 
 # Handy type aliases.
 StrPath = Union[str, Path]
 DetectorInput = tuple[str, Optional[PreprocessedImage]]
-BBoxOutput = tuple[str, list[BBox]]
-ClassifierInput = tuple[str, Optional[PreprocessedImage]]
+DetectionsOutput = tuple[str, Optional[list[dict]]]
+ClassifierInput = tuple[
+    str, Optional[list[PreprocessedImage]], Optional[list[dict]], list[int]
+]
+
+
+def _num_classes_to_compute(
+    max_classifications_per_detection: Optional[int],
+) -> Optional[int]:
+    """Returns how many top classes the classifier should report for each crop.
+
+    The ensemble always needs the top `NUM_CLASSIFICATIONS_FOR_ENSEMBLE` classes, even
+    if fewer classes are reported in the output.
+
+    Args:
+        max_classifications_per_detection:
+            Number of top classes to report for each detection, or `None` for all.
+
+    Returns:
+        Number of top classes to report, or `None` for all.
+    """
+
+    if max_classifications_per_detection is None:
+        return None
+    return max(max_classifications_per_detection, NUM_CLASSIFICATIONS_FOR_ENSEMBLE)
+
 
 # Register SpeciesNet model components with the SyncManager to be able to safely share
 # them between processes.
@@ -231,13 +261,14 @@ def _run_detector(
     detector: SpeciesNetDetector,
     input_queue: queue.Queue[DetectorInput],  # input
     results_dict: dict,  # output
-    bboxes_queue: Optional[queue.Queue[BBoxOutput]] = None,  # output
+    detections_queue: Optional[queue.Queue[DetectionsOutput]] = None,  # output
 ) -> None:
     """Runs detector inference.
 
     Takes a preprocessed image from the input queue and runs the detector model on it.
-    The raw output of the detector is stored in `results_dict` and the list of bounding
-    boxes is additionally stored in `bboxes_queue`.
+    The raw output of the detector is stored in `results_dict`, and the list of
+    detections (or `None` if the detector failed) is stored in
+    `detections_queue`.
 
     Args:
         detector:
@@ -246,59 +277,85 @@ def _run_detector(
             Input queue of preprocessed images.
         results_dict:
             Output dict for inference results.
-        bboxes_queue:
-            Output queue for bounding boxes identified during inference. Optional.
+        detections_queue:
+            Output queue for detections identified during inference. Optional.
     """
 
     filepath, img = input_queue.get()
     prediction = detector.predict(filepath, img)
     results_dict[filepath] = prediction
-    if bboxes_queue:
-        detections = prediction.get("detections", [])
-        bboxes_queue.put((filepath, [BBox(*det["bbox"]) for det in detections]))
+    if detections_queue:
+        detections_queue.put((filepath, prediction.get("detections")))
 
 
-def _prepare_classifier_input(
+def _prepare_classifier_input(  # pylint: disable=too-many-positional-arguments
     classifier: SpeciesNetClassifier,
-    bboxes_queue: queue.Queue[BBoxOutput],  # input
+    detections_queue: queue.Queue[DetectionsOutput],  # input
     classifier_queue: queue.Queue[ClassifierInput],  # output
+    whole_image: bool,
+    detection_threshold_for_classification: float,
+    max_classifications_per_image: Optional[int],
 ) -> None:
     """Prepares the input for classifier inference.
 
-    Takes bounding box information from `bboxes_queue` and uses it to load and
-    preprocess the image for classifier inference. It first loads the image,
-    preprocesses it by potentially cropping based on bboxes and finally outputs the
-    image into `classifier_queue` to be used by the classifier model.
+    Takes detections from `detections_queue`, selects which ones to classify, and uses
+    them to load and preprocess the image for classifier inference. It first loads the
+    image, preprocesses it by cropping the selected detections (or by preparing the
+    whole image for whole-image classifiers) and finally outputs the crops, along with
+    the detections and the indices of the selected detections, into `classifier_queue`
+    to be used by the classifier model.
 
     Args:
         classifier:
             SpeciesNetClassifier to use.
-        bboxes_queue:
-            Input queue of bounding boxes from detector inference.
+        detections_queue:
+            Input queue of detections from detector inference.
         classifier_queue:
             Output queue for preprocessed images for classifier inference.
+        whole_image:
+            Whether the classifier is a whole-image classifier.
+        detection_threshold_for_classification:
+            Minimum confidence score for a detection to be classified.
+        max_classifications_per_image:
+            Maximum number of detections to classify per image, or `None` for no limit.
     """
 
-    filepath, bboxes = bboxes_queue.get()
-    img = load_rgb_image(filepath)
+    filepath, detections = detections_queue.get()
+    if whole_image:
+        indices = []
+    else:
+        indices = select_detections_for_classification(
+            detections or [],
+            detection_threshold_for_classification,
+            max_classifications_per_image,
+        )
+        if not indices:
+            # Nothing to classify, so there's no need to load the image.
+            classifier_queue.put((filepath, [], detections, indices))
+            return
     try:
-        img = classifier.preprocess(img, bboxes=bboxes)
-        classifier_queue.put((filepath, img))
+        img = load_rgb_image(filepath)
+        bboxes = [BBox(*detections[idx]["bbox"]) for idx in indices]  # type: ignore
+        imgs = classifier.preprocess(img, bboxes=bboxes)
+        classifier_queue.put((filepath, imgs, detections, indices))
     except:
-        classifier_queue.put((filepath, None))
+        classifier_queue.put((filepath, None, detections, indices))
         raise
 
 
-def _run_classifier(
+def _run_classifier(  # pylint: disable=too-many-positional-arguments
     classifier: SpeciesNetClassifier,
     input_queue: queue.Queue[ClassifierInput],  # input
     results_dict: dict,  # output
     batch_size: int,
+    whole_image: bool,
+    num_classes: Optional[int],
 ) -> None:
     """Runs classifier inference.
 
     Takes a batch of preprocessed images from the input queue and runs the classifier
-    model on it. The output of the classifier is stored in `results_dict`.
+    model on it. The output of the classifier is attached to the corresponding
+    detections and stored in `results_dict`.
 
     Args:
         classifier:
@@ -309,15 +366,22 @@ def _run_classifier(
             Output dict for inference results.
         batch_size:
             Batch size for inference.
-
+        whole_image:
+            Whether the classifier is a whole-image classifier.
+        num_classes:
+            Number of top classes to report for each crop, or `None` for all.
     """
 
     input_tuples = [input_queue.get() for _ in range(batch_size)]
     filepaths = [t[0] for t in input_tuples]
     imgs = [t[1] for t in input_tuples]
-    predictions = classifier.batch_predict(filepaths, imgs)
-    for filepath, prediction in zip(filepaths, predictions):
-        results_dict[filepath] = prediction
+    predictions = classifier.batch_predict(filepaths, imgs, num_classes=num_classes)
+    for (filepath, _, detections, indices), prediction in zip(
+        input_tuples, predictions
+    ):
+        results_dict[filepath] = build_classifier_result(
+            prediction, detections, indices, whole_image
+        )
 
 
 def _find_admin1_region(  # pylint: disable=too-many-positional-arguments
@@ -367,6 +431,9 @@ def _combine_results(  # pylint: disable=too-many-positional-arguments
     partial_predictions: dict[str, dict],
     predictions_json: Optional[StrPath] = None,
     save_lock: Optional[threading.Lock] = None,
+    max_classifications_per_detection: Optional[
+        int
+    ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
 ) -> Optional[dict]:
     """Combines inference results from multiple jobs that ran independently.
 
@@ -399,6 +466,9 @@ def _combine_results(  # pylint: disable=too-many-positional-arguments
             Threading lock used to avoid race conditions when saving predictions to a
             file. Only needed when `predictions_json` is not `None`, otherwise it is
             ignored.
+        max_classifications_per_detection:
+            Number of top classes to report in the raw classifications of each
+            detection, or `None` for all.
 
     Returns:
         The predictions dict of ensembled inference results if `predictions_json` is set
@@ -411,8 +481,9 @@ def _combine_results(  # pylint: disable=too-many-positional-arguments
         detector_results=detector_results,
         geolocation_results=geolocation_results,
         partial_predictions=partial_predictions,
+        max_classifications_per_detection=max_classifications_per_detection,
     )
-    predictions_dict = {"predictions": ensemble_results}
+    predictions_dict = make_predictions_dict(ensemble_results)
     if predictions_json:
         if save_lock:
             with save_lock:
@@ -473,7 +544,7 @@ def _merge_results(  # pylint: disable=too-many-positional-arguments
                 }
             )
 
-    predictions_dict = {"predictions": results}
+    predictions_dict = make_predictions_dict(results)
     if predictions_json:
         if save_lock:
             with save_lock:
@@ -562,7 +633,7 @@ class SpeciesNet:
         components: Literal["all", "classifier", "detector", "ensemble"] = "all",
         geofence: bool = True,
         target_species_txt: Optional[str] = None,
-        combine_predictions_fn: Callable = combine_predictions_for_single_item,
+        combine_predictions_fn: Callable = combine_predictions,
         multiprocessing: bool = False,
         force_model_download: bool = False,
     ) -> None:
@@ -599,6 +670,9 @@ class SpeciesNet:
         if force_model_download:
             logging.info("Forcing a download of model %s.", model_name)
             _ = ModelInfo(model_name, force_model_download=True)
+
+        # Whether the classifier classifies whole images rather than detection crops.
+        self.whole_image_classifier = ModelInfo(model_name).type_ == "full_image"
 
         if multiprocessing:
             self.manager = SyncManager()
@@ -638,11 +712,18 @@ class SpeciesNet:
             if hasattr(self.manager, "shutdown"):
                 self.manager.shutdown()
 
-    def _predict_using_single_thread(
+    def _predict_using_single_thread(  # pylint: disable=too-many-positional-arguments
         self,
         instances_dict: dict,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        detection_threshold_for_classification: float = (
+            DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+        ),
+        max_classifications_per_image: Optional[int] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         """Runs prediction using a single thread, processing each image one by one.
 
@@ -657,6 +738,14 @@ class SpeciesNet:
                 Whether to show progress bars.
             predictions_json:
                 Path where to save the JSON output.
+            detection_threshold_for_classification:
+                Minimum confidence score for a detection to be classified.
+            max_classifications_per_image:
+                Maximum number of detections to classify per image, or `None` for no
+                limit.
+            max_classifications_per_detection:
+                Number of top classes to report for each classified detection, or `None`
+                for all.
 
         Returns:
              The predictions dict of ensembled inference results if `predictions_json`
@@ -687,6 +776,7 @@ class SpeciesNet:
                 geolocation_results=geolocation_results,
                 partial_predictions=partial_predictions,
                 predictions_json=predictions_json,
+                max_classifications_per_detection=max_classifications_per_detection,
             )
         else:
             periodic_saver = None
@@ -708,6 +798,7 @@ class SpeciesNet:
             total=num_instances_to_process,
             rlock=threading.RLock(),
         )
+        num_classes = _num_classes_to_compute(max_classifications_per_detection)
 
         # Process instances one by one.
         for instance in instances_to_process:
@@ -728,18 +819,28 @@ class SpeciesNet:
             detector_results[filepath] = self.detector.predict(filepath, detector_input)
             progress.update("detector_predict")
 
-            # Preprocess image for classifier.
+            # Preprocess image for classifier, cropping the selected detections.
             detections = detector_results[filepath].get("detections", None)
-            if detections:
-                bboxes = [BBox(*det["bbox"]) for det in detections]
+            if self.whole_image_classifier:
+                indices = []
             else:
-                bboxes = []
+                indices = select_detections_for_classification(
+                    detections or [],
+                    detection_threshold_for_classification,
+                    max_classifications_per_image,
+                )
+            bboxes = [BBox(*detections[idx]["bbox"]) for idx in indices]  # type: ignore
             classifier_input = self.classifier.preprocess(img, bboxes=bboxes)
             progress.update("classifier_preprocess")
 
             # Run classifier.
-            classifier_results[filepath] = self.classifier.predict(
-                filepath, classifier_input
+            classifier_results[filepath] = build_classifier_result(
+                self.classifier.predict(
+                    filepath, classifier_input, num_classes=num_classes
+                ),
+                detections,
+                indices,
+                self.whole_image_classifier,
             )
             progress.update("classifier_predict")
 
@@ -772,6 +873,7 @@ class SpeciesNet:
             partial_predictions=partial_predictions,
             predictions_json=predictions_json,
             save_lock=save_lock,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
 
     def _predict_using_worker_pools(  # pylint: disable=too-many-positional-arguments
@@ -785,6 +887,13 @@ class SpeciesNet:
         new_dict_fn: Optional[Callable] = None,
         new_queue_fn: Optional[Callable] = None,
         new_rlock_fn: Optional[Callable] = None,
+        detection_threshold_for_classification: float = (
+            DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+        ),
+        max_classifications_per_image: Optional[int] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         """Runs prediction using worker pools (multi-threading or multiprocessing).
 
@@ -810,6 +919,14 @@ class SpeciesNet:
                 Callable that returns a queue.
              new_rlock_fn:
                 Callable that returns a thread/process lock.
+            detection_threshold_for_classification:
+                Minimum confidence score for a detection to be classified.
+            max_classifications_per_image:
+                Maximum number of detections to classify per image, or `None` for no
+                limit.
+            max_classifications_per_detection:
+                Number of top classes to report for each classified detection, or `None`
+                for all.
 
         Returns:
             The predictions dict of ensembled inference results if `predictions_json`
@@ -853,6 +970,7 @@ class SpeciesNet:
                 geolocation_results=geolocation_results,
                 partial_predictions=partial_predictions,
                 predictions_json=predictions_json,
+                max_classifications_per_detection=max_classifications_per_detection,
             )
         else:
             periodic_saver = None
@@ -887,7 +1005,9 @@ class SpeciesNet:
         detector_queue = new_queue_fn(
             max(2 * batch_size, 64)
         )  # Limited number of images to store in memory.
-        bboxes_queue = new_queue_fn()  # Unlimited number of bboxes to store in memory.
+        detections_queue = (
+            new_queue_fn()
+        )  # Unlimited number of detections to store in memory.
         classifier_queue = new_queue_fn(
             max(2 * batch_size, 64)
         )  # Limited number of images to store in memory.
@@ -906,7 +1026,14 @@ class SpeciesNet:
             # Preprocess image for classifier.
             common_pool.apply_async(
                 _prepare_classifier_input,
-                args=(self.classifier, bboxes_queue, classifier_queue),
+                args=(
+                    self.classifier,
+                    detections_queue,
+                    classifier_queue,
+                    self.whole_image_classifier,
+                    detection_threshold_for_classification,
+                    max_classifications_per_image,
+                ),
                 callback=lambda _: progress.update("classifier_preprocess"),
                 error_callback=_error_callback,
             )
@@ -930,12 +1057,18 @@ class SpeciesNet:
         for _ in range(num_instances_to_process):
             detector_pool.apply_async(
                 _run_detector,
-                args=(self.detector, detector_queue, detector_results, bboxes_queue),
+                args=(
+                    self.detector,
+                    detector_queue,
+                    detector_results,
+                    detections_queue,
+                ),
                 callback=lambda _: progress.update("detector_predict"),
                 error_callback=_error_callback,
             )
 
         # Run classifier inference asynchronously.
+        num_classes = _num_classes_to_compute(max_classifications_per_detection)
         for batch_idx in range(num_batches):
             classifier_pool.apply_async(
                 _run_classifier,
@@ -944,6 +1077,8 @@ class SpeciesNet:
                     classifier_queue,
                     classifier_results,
                     (batch_size if batch_idx < num_batches - 1 else last_batch_size),
+                    self.whole_image_classifier,
+                    num_classes,
                 ),
                 callback=lambda _: progress.update("classifier_predict"),
                 error_callback=_error_callback,
@@ -974,14 +1109,22 @@ class SpeciesNet:
             partial_predictions=partial_predictions,
             predictions_json=predictions_json,
             save_lock=save_lock,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
 
-    def _predict_using_thread_pools(
+    def _predict_using_thread_pools(  # pylint: disable=too-many-positional-arguments
         self,
         instances_dict: dict,
         batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        detection_threshold_for_classification: float = (
+            DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+        ),
+        max_classifications_per_image: Optional[int] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         return self._predict_using_worker_pools(
             instances_dict,
@@ -993,14 +1136,26 @@ class SpeciesNet:
             new_dict_fn=dict,
             new_queue_fn=queue.Queue,
             new_rlock_fn=threading.RLock,
+            detection_threshold_for_classification=(
+                detection_threshold_for_classification
+            ),
+            max_classifications_per_image=max_classifications_per_image,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
 
-    def _predict_using_process_pools(
+    def _predict_using_process_pools(  # pylint: disable=too-many-positional-arguments
         self,
         instances_dict: dict,
         batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        detection_threshold_for_classification: float = (
+            DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+        ),
+        max_classifications_per_image: Optional[int] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         assert self.manager is not None
         return self._predict_using_worker_pools(
@@ -1013,6 +1168,11 @@ class SpeciesNet:
             new_dict_fn=self.manager.dict,
             new_queue_fn=self.manager.Queue,
             new_rlock_fn=self.manager.RLock,
+            detection_threshold_for_classification=(
+                detection_threshold_for_classification
+            ),
+            max_classifications_per_image=max_classifications_per_image,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
 
     def _classify_using_worker_pools(  # pylint: disable=too-many-positional-arguments
@@ -1026,6 +1186,13 @@ class SpeciesNet:
         new_dict_fn: Optional[Callable] = None,
         new_queue_fn: Optional[Callable] = None,
         new_rlock_fn: Optional[Callable] = None,
+        detection_threshold_for_classification: float = (
+            DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+        ),
+        max_classifications_per_image: Optional[int] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         assert new_pool_fn is not None
         assert new_dict_fn is not None
@@ -1082,7 +1249,9 @@ class SpeciesNet:
         classifier_pool = new_pool_fn(
             1
         )  # One single worker to run classifier inference.
-        bboxes_queue = new_queue_fn()  # Unlimited number of bboxes to store in memory.
+        detections_queue = (
+            new_queue_fn()
+        )  # Unlimited number of detections to store in memory.
         classifier_queue = new_queue_fn(
             max(2 * batch_size, 64)
         )  # Limited number of images to store in memory.
@@ -1090,16 +1259,26 @@ class SpeciesNet:
         # Preprocess images for classifier.
         for instance in instances_to_process:
             filepath = instance["filepath"]
-            detections = detections_dict.get(filepath, {}).get("detections", [])
-            bboxes_queue.put((filepath, [BBox(*det["bbox"]) for det in detections]))
+            detections = detections_dict.get(filepath, {}).get("detections")
+            detections_queue.put((filepath, detections))
             common_pool.apply_async(
                 _prepare_classifier_input,
-                args=(self.classifier, bboxes_queue, classifier_queue),
+                args=(
+                    self.classifier,
+                    detections_queue,
+                    classifier_queue,
+                    self.whole_image_classifier,
+                    detection_threshold_for_classification,
+                    max_classifications_per_image,
+                ),
                 callback=lambda _: progress.update("classifier_preprocess"),
                 error_callback=_error_callback,
             )
 
-        # Run classifier.
+        # Run classifier. Classifier-only output keeps at least the top classes needed
+        # by the ensemble, so that ensembling it later gives the same results as a full
+        # run.
+        num_classes = _num_classes_to_compute(max_classifications_per_detection)
         for batch_idx in range(num_batches):
             classifier_pool.apply_async(
                 _run_classifier,
@@ -1108,6 +1287,8 @@ class SpeciesNet:
                     classifier_queue,
                     classifier_results,
                     (batch_size if batch_idx < num_batches - 1 else last_batch_size),
+                    self.whole_image_classifier,
+                    num_classes,
                 ),
                 callback=lambda _: progress.update("classifier_predict"),
                 error_callback=_error_callback,
@@ -1143,6 +1324,13 @@ class SpeciesNet:
         batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        detection_threshold_for_classification: float = (
+            DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+        ),
+        max_classifications_per_image: Optional[int] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         return self._classify_using_worker_pools(
             instances_dict,
@@ -1154,6 +1342,11 @@ class SpeciesNet:
             new_dict_fn=dict,
             new_queue_fn=queue.Queue,
             new_rlock_fn=threading.RLock,
+            detection_threshold_for_classification=(
+                detection_threshold_for_classification
+            ),
+            max_classifications_per_image=max_classifications_per_image,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
 
     def _classify_using_process_pools(  # pylint: disable=too-many-positional-arguments
@@ -1163,6 +1356,13 @@ class SpeciesNet:
         batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        detection_threshold_for_classification: float = (
+            DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+        ),
+        max_classifications_per_image: Optional[int] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         assert self.manager is not None
         return self._classify_using_worker_pools(
@@ -1175,6 +1375,11 @@ class SpeciesNet:
             new_dict_fn=self.manager.dict,
             new_queue_fn=self.manager.Queue,
             new_rlock_fn=self.manager.RLock,
+            detection_threshold_for_classification=(
+                detection_threshold_for_classification
+            ),
+            max_classifications_per_image=max_classifications_per_image,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
 
     def _detect_using_worker_pools(  # pylint: disable=too-many-positional-arguments
@@ -1317,6 +1522,9 @@ class SpeciesNet:
         detections_dict: Optional[dict] = None,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         instances = instances_dict["instances"]
         filepaths = [instance["filepath"] for instance in instances]
@@ -1342,6 +1550,7 @@ class SpeciesNet:
                 geolocation_results=geolocation_results,
                 partial_predictions=partial_predictions,
                 predictions_json=predictions_json,
+                max_classifications_per_detection=max_classifications_per_detection,
             )
         else:
             periodic_saver = None
@@ -1391,6 +1600,7 @@ class SpeciesNet:
             partial_predictions=partial_predictions,
             predictions_json=predictions_json,
             save_lock=save_lock,
+            max_classifications_per_detection=max_classifications_per_detection,
         )
 
     def predict(
@@ -1410,6 +1620,13 @@ class SpeciesNet:
         batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        detection_threshold_for_classification: float = (
+            DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+        ),
+        max_classifications_per_image: Optional[int] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         instances_dict = prepare_instances_dict(
             instances_dict,
@@ -1421,11 +1638,19 @@ class SpeciesNet:
             country,
             admin1_region,
         )
+        classification_kwargs = {
+            "detection_threshold_for_classification": (
+                detection_threshold_for_classification
+            ),
+            "max_classifications_per_image": max_classifications_per_image,
+            "max_classifications_per_detection": max_classifications_per_detection,
+        }
         if run_mode == "single_thread":
             return self._predict_using_single_thread(
                 instances_dict,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
+                **classification_kwargs,
             )
         elif run_mode == "multi_thread":
             return self._predict_using_thread_pools(
@@ -1433,6 +1658,7 @@ class SpeciesNet:
                 batch_size=batch_size,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
+                **classification_kwargs,
             )
         elif run_mode == "multi_process":
             return self._predict_using_process_pools(
@@ -1440,6 +1666,7 @@ class SpeciesNet:
                 batch_size=batch_size,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
+                **classification_kwargs,
             )
         else:
             raise ValueError(f"Unknown run mode: `{run_mode}`")
@@ -1460,6 +1687,13 @@ class SpeciesNet:
         batch_size: int = 8,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        detection_threshold_for_classification: float = (
+            DEFAULT_DETECTION_THRESHOLD_FOR_CLASSIFICATION
+        ),
+        max_classifications_per_image: Optional[int] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         instances_dict = prepare_instances_dict(
             instances_dict,
@@ -1471,6 +1705,13 @@ class SpeciesNet:
             country,
             admin1_region,
         )
+        classification_kwargs = {
+            "detection_threshold_for_classification": (
+                detection_threshold_for_classification
+            ),
+            "max_classifications_per_image": max_classifications_per_image,
+            "max_classifications_per_detection": max_classifications_per_detection,
+        }
         if run_mode == "multi_thread":
             return self._classify_using_thread_pools(
                 instances_dict,
@@ -1478,6 +1719,7 @@ class SpeciesNet:
                 batch_size=batch_size,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
+                **classification_kwargs,
             )
         elif run_mode == "multi_process":
             return self._classify_using_process_pools(
@@ -1486,6 +1728,7 @@ class SpeciesNet:
                 batch_size=batch_size,
                 progress_bars=progress_bars,
                 predictions_json=predictions_json,
+                **classification_kwargs,
             )
         else:
             raise ValueError(f"Unknown run mode: `{run_mode}`")
@@ -1545,6 +1788,9 @@ class SpeciesNet:
         detections_dict: Optional[dict] = None,
         progress_bars: bool = False,
         predictions_json: Optional[StrPath] = None,
+        max_classifications_per_detection: Optional[
+            int
+        ] = DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION,
     ) -> Optional[dict]:
         instances_dict = prepare_instances_dict(
             instances_dict,
@@ -1562,4 +1808,5 @@ class SpeciesNet:
             detections_dict=detections_dict,
             progress_bars=progress_bars,
             predictions_json=predictions_json,
+            max_classifications_per_detection=max_classifications_per_detection,
         )

@@ -7,7 +7,6 @@
 - [Alternative installation variants of the SpeciesNet Python package](#alternative-installation-variants)
 - [SpeciesNet model variants](#speciesnet-model-variants)
 - [Alternative input formats for run_model](#alternative-input-formats-for-run_model)
-- [Alternative output formats for run_model](#alternative-output-formats-for-run_model)
 - [Contributing code](#contributing-code)
 - [Build status](#build-status)
 
@@ -61,7 +60,7 @@ Depending on how you plan to run SpeciesNet, you may want to install additional 
 
 There are two variants of the SpeciesNet classifier, which lend themselves to different ensemble strategies:
 
-- [v4.0.3a](model_cards/v4.0.1a.md) (default): Always-crop model, i.e. we run the detector first and crop the image to the top detection bounding box before feeding it to the species classifier.
+- [v4.0.3a](model_cards/v4.0.1a.md) (default): Always-crop model, i.e. we run the detector first, then run the classifier on the pixels within each detection above a confidence threshold.
 - [v4.0.3b](model_cards/v4.0.1b.md): Full-image model, i.e. we run both the detector and the species classifier on the full image, independently.
 
 Both links point to the model cards for the 4.0.1 models; model cards were not updated for the 4.0.3 release, which only included changes to geofencing rules and minor taxonomy updates.
@@ -102,53 +101,6 @@ When you call the model, you can either prepare your requests to match this form
 admin1_region is currently only supported in the US, where valid values for admin1_region are two-letter state codes.
 
 Latitude and longitude are only used to determine admin1_region, so if you are specifying a state code, you don't need to specify latitude and longitude.
-
-## Alternative output formats for run_model
-
-The main README describes the typical output format for run_model, when you are running the full ensemble (detector and classifier).  This section describes the output format when you are running only the classifier or detector.
-
-### Classifier-only inference
-
-```text
-{
-    "predictions": [
-        {
-            "filepath": str  => Image filepath.
-            "failures": list[str] (optional)  => List of internal components that failed during prediction (in this case, only "CLASSIFIER" can be in that list). If absent, the prediction was successful.
-            "classifications": {  => dict (optional)  => Top-5 classifications. Included only if "CLASSIFIER" if not part of the "failures" field.
-                "classes": list[str]  => List of top-5 classes predicted by the classifier, matching the decreasing order of their scores below.
-                "scores": list[float]  => List of scores corresponding to top-5 classes predicted by the classifier, in decreasing order.
-                "target_classes": list[str] (optional)  => List of target classes, only present if target classes are passed as arguments.
-                "target_logits": list[float] (optional)  => Raw confidence scores (logits) of the target classes, only present if target classes are passed as arguments.
-            }
-        },
-        ...  => A response will contain one prediction for each instance in the request.
-    ]
-}
-```
-
-### Detector-only inference
-
-```text
-{
-    "predictions": [
-        {
-            "filepath": str  => Image filepath.
-            "failures": list[str] (optional)  => List of internal components that failed during prediction (in this case, only "DETECTOR" can be in that list). If absent, the prediction was successful.
-            "detections": [  => list (optional)  => List of detections with confidence scores > 0.01, in decreasing order of their scores. Included only if "DETECTOR" if not part of the "failures" field.
-                {
-                    "category": str  => Detection class "1" (= animal), "2" (= human) or "3" (= vehicle) from MegaDetector's raw output.
-                    "label": str  => Detection class "animal", "human" or "vehicle", matching the "category" field above. Added for readability purposes.
-                    "conf": float  => Confidence score of the current detection.
-                    "bbox": list[float]  => Bounding box coordinates, in (xmin, ymin, width, height) format, of the current detection. Coordinates are normalized to the [0.0, 1.0] range, relative to the image dimensions.
-                },
-                ...  => A prediction can contain zero or multiple detections.
-            ]
-        },
-        ...  => A response will contain one prediction for each instance in the request.
-    ]
-}
-```
 
 ## Contributing code
 

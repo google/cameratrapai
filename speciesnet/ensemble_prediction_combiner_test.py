@@ -20,7 +20,7 @@ import pytest
 
 from speciesnet.constants import Classification
 from speciesnet.constants import Detection
-from speciesnet.ensemble_prediction_combiner import combine_predictions_for_single_item
+from speciesnet.ensemble_prediction_combiner import combine_predictions
 
 # fmt: off
 # pylint: disable=line-too-long
@@ -141,6 +141,39 @@ def mock_roll_up_fn(*args, **kwargs):
 def mock_roll_up_fn_return_none(*args, **kwargs):
     del args
     del kwargs
+
+
+def combine_predictions_for_single_item(  # pylint: disable=too-many-positional-arguments
+    classifications,
+    detections,
+    country,
+    admin1_region,
+    taxonomy_map,
+    geofence_map,
+    enable_geofence,
+    geofence_fn,
+    roll_up_fn,
+):
+    """Test helper transforming single-item permutations into the list format."""
+    assert len(detections) == 1
+    results = combine_predictions(
+        classifications_list=[classifications],
+        detections=detections,
+        country=country,
+        admin1_region=admin1_region,
+        taxonomy_map=taxonomy_map,
+        geofence_map=geofence_map,
+        enable_geofence=enable_geofence,
+        geofence_fn=geofence_fn,
+        roll_up_fn=roll_up_fn,
+    )
+    assert len(results) == 1
+    # The tests expect a flat tuple of (label, score, source) to be asserted
+    return (
+        results[0]["class"],
+        results[0]["score"],
+        results[0]["source"],
+    )
 
 
 class TestPredictionEnsembleCombiner:
@@ -374,3 +407,104 @@ class TestPredictionEnsembleCombiner:
             roll_up_fn=mock_roll_up_fn_return_none,
         )
         assert result == (Classification.UNKNOWN, 0.1, "classifier")
+
+    def test_combine_predictions_for_all_items(
+        self, taxonomy_map, geofence_map
+    ) -> None:
+        classifications_list = [
+            {"classes": [HUMAN], "scores": [0.7]},
+            {"classes": [LION], "scores": [0.9]},
+            {"classes": [VEHICLE], "scores": [0.8]},
+        ]
+        detections = [
+            {"label": Detection.HUMAN, "conf": 0.95, "bbox": [0.1, 0.1, 0.2, 0.2]},
+            {"label": Detection.ANIMAL, "conf": 0.9, "bbox": [0.5, 0.5, 0.6, 0.6]},
+            {"label": Detection.VEHICLE, "conf": 0.85, "bbox": [0.8, 0.8, 0.9, 0.9]},
+        ]
+
+        results = combine_predictions(
+            classifications_list=classifications_list,
+            detections=detections,
+            country=None,
+            admin1_region=None,
+            taxonomy_map=taxonomy_map,
+            geofence_map=geofence_map,
+            enable_geofence=True,
+            geofence_fn=mock_geofence_fn,
+            roll_up_fn=mock_roll_up_fn_return_none,
+        )
+
+        assert results == [
+            # HUMAN detection.
+            {"class": Classification.HUMAN, "score": 0.95, "source": "detector"},
+            # LION classification (gets geofenced).
+            {"class": "geofenced_label", "score": 0.9, "source": "geofence_source"},
+            # VEHICLE detection.
+            {"class": Classification.VEHICLE, "score": 0.85, "source": "detector"},
+        ]
+
+    def test_combine_predictions_preserves_input_order(
+        self, taxonomy_map, geofence_map
+    ) -> None:
+        # The second item gets a higher score than the first one, but results must
+        # still match the order of the inputs.
+        classifications_list = [
+            {"classes": [HUMAN], "scores": [0.6]},
+            {"classes": [BLANK], "scores": [0.995]},
+        ]
+        detections = [
+            {"label": Detection.HUMAN, "conf": 0.75, "bbox": [0.1, 0.1, 0.2, 0.2]},
+            {"label": Detection.ANIMAL, "conf": 0.05, "bbox": [0.5, 0.5, 0.1, 0.1]},
+        ]
+
+        results = combine_predictions(
+            classifications_list=classifications_list,
+            detections=detections,
+            country=None,
+            admin1_region=None,
+            taxonomy_map=taxonomy_map,
+            geofence_map=geofence_map,
+            enable_geofence=True,
+            geofence_fn=mock_geofence_fn,
+            roll_up_fn=mock_roll_up_fn_return_none,
+        )
+
+        assert results == [
+            {"class": Classification.HUMAN, "score": 0.75, "source": "detector"},
+            {"class": Classification.BLANK, "score": 0.995, "source": "classifier"},
+        ]
+
+    def test_combine_predictions_empty_inputs(self, taxonomy_map, geofence_map) -> None:
+        results = combine_predictions(
+            classifications_list=[],
+            detections=[],
+            country=None,
+            admin1_region=None,
+            taxonomy_map=taxonomy_map,
+            geofence_map=geofence_map,
+            enable_geofence=True,
+            geofence_fn=mock_geofence_fn,
+            roll_up_fn=mock_roll_up_fn_return_none,
+        )
+
+        assert not results
+
+    def test_combine_predictions_mismatched_classification_count(
+        self, taxonomy_map, geofence_map
+    ) -> None:
+        detections = [
+            {"label": Detection.HUMAN, "conf": 0.95, "bbox": [0.1, 0.1, 0.2, 0.2]},
+            {"label": Detection.ANIMAL, "conf": 0.6, "bbox": [0.5, 0.5, 0.6, 0.6]},
+        ]
+        with pytest.raises(ValueError):
+            combine_predictions(
+                classifications_list=[{"classes": [HUMAN], "scores": [0.7]}],
+                detections=detections,
+                country=None,
+                admin1_region=None,
+                taxonomy_map=taxonomy_map,
+                geofence_map=geofence_map,
+                enable_geofence=True,
+                geofence_fn=mock_geofence_fn,
+                roll_up_fn=mock_roll_up_fn_return_none,
+            )
