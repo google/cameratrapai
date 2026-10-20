@@ -413,7 +413,7 @@ b5732c16-d8f8-46b8-ad40-ac80425ebe46;aves;cuculiformes;cuculidae;coua;;coua spec
 7417f7d1-6016-4f1e-b577-693a6a913d33;mammalia;primates;cercopithecidae;semnopithecus;entellus;northern plains gray langur
 09c06793-4426-49a9-bcf6-a2fff0e1ab61;mammalia;chiroptera;rhinolophidae;rhinolophus;;rhinolophus species
 d0642934-f9d4-4f5d-a3b7-67fb0a55c751;aves;passeriformes;furnariidae;pseudocolaptes;boissonneauii;streaked tuftedcheek
-c150a21e-952d-4665-8a62-a319841c5a56;mammalia;artiodactyla;suidae;sus;scrofa scrofa;domestic pig
+c150a21e-952d-4665-8a62-a319841c5a56;mammalia;artiodactyla;suidae;sus;domesticus;domestic pig
 664ebf70-0a05-4a65-ac9f-1b8b1bea7d01;mammalia;rodentia;echimyidae;mesomys;;mesomys species
 bdd7a334-6fb4-417f-b660-3777c1c74df6;aves;anseriformes;anatidae;cygnus;olor;mute swan
 0758e1d1-dbaa-485e-955b-022ac139b7bd;aves;passeriformes;ptiliogonatidae;phainopepla;;phainopepla species

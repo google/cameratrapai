@@ -2231,7 +2231,7 @@ a0c46acc-fd6a-45b2-9f11-b701129b2633;mammalia;artiodactyla;suidae;sus;;sus speci
 79a2731c-a658-4d9f-a7ce-2a82a6615081;mammalia;artiodactyla;suidae;sus;ahoenobarbus;palawan bearded pig
 0f70fcca-5658-4f60-b0e4-48db3120cebc;mammalia;artiodactyla;suidae;sus;barbatus;bearded pig
 d372cda5-a8ca-4b7b-97ed-4e4fab9c9b4b;mammalia;artiodactyla;suidae;sus;scrofa;wild boar
-c150a21e-952d-4665-8a62-a319841c5a56;mammalia;artiodactyla;suidae;sus;scrofa scrofa;domestic pig
+c150a21e-952d-4665-8a62-a319841c5a56;mammalia;artiodactyla;suidae;sus;domesticus;domestic pig
 988b8b2d-6d3b-4c5f-899c-c76b6108b90b;mammalia;artiodactyla;tayassuidae;;;peccary family
 394f30d9-dbb3-400f-88bd-551078fbf44d;mammalia;artiodactyla;tayassuidae;pecari;;pecari species
 5acf63fb-339d-42b1-af7e-95f6151ae5fb;mammalia;artiodactyla;tayassuidae;pecari;tajacu;collared peccary
