@@ -91,31 +91,46 @@ from tqdm import tqdm
 
 from speciesnet.geofence_utils import should_geofence_animal_classification
 
-_BASE = flags.DEFINE_string(
+_BASE_GEOFENCE_FILE = flags.DEFINE_string(
     "base",
     "data/geofence_base.json",
-    "Path to the geofence base (JSON). Used as a starting point for constructing the "
-    "geofence release.",
+    "Path to the geofence base (.json), used as a starting point for constructing the "
+    "geofence release",
 )
-_FIXES = flags.DEFINE_string(
+_FIXES_FILE = flags.DEFINE_string(
     "fixes",
     "data/geofence_fixes.csv",
-    "Path to the geofence fixes (CSV). Used to correct mistakes in the geofence base.",
+    "Path to the geofence fixes (.csv), used to correct mistakes in the geofence base",
 )
-_TRIM = flags.DEFINE_string(
+_TRIM_LABEL_LIST = flags.DEFINE_string(
     "trim",
     "data/model_package/always_crop_99710272_22x8_v12_epoch_00148.labels.txt",
-    "Path to the labels supported by the model (TXT).",
+    "Path to the labels supported by the model (.txt)",
 )
-_TAXONOMY = flags.DEFINE_string(
-    "taxonomy",
+_LABELS_FILE = flags.DEFINE_string(
+    "labels_file",
+    "data/model_package/always_crop_99710272_22x8_v12_epoch_00148.labels.txt",
+    "Path to the list of labels produced by the classifier (.txt)",
+)
+_TAXONOMY_FILE = flags.DEFINE_string(
+    "taxonomy_file",
     "data/model_package/taxonomy_release.txt",
-    "Path to the full taxonomy file (model categories and parents) (TXT).",
+    "Path to the full taxonomy file (model categories and parents) (.txt)",
 )
-_OUTPUT = flags.DEFINE_string(
+_OUTPUT_GEOFENCE_FILE = flags.DEFINE_string(
     "output",
     "data/model_package/geofence_release.json",
-    "Output path for writing the geofence release (JSON).",
+    "Output path for writing the geofence release (.json)",
+)
+_REBUILD_TAXONOMY_LIST = flags.DEFINE_bool(
+    "rebuild_taxonomy_list",
+    False,
+    "Whether to rebuild 'taxonomy_release.txt' before updating the geofence",
+)
+_UPDATE_GEOFENCE = flags.DEFINE_bool(
+    "update_geofence",
+    True,
+    "Whether to update the geofence",
 )
 
 # Handy type alias.
@@ -136,6 +151,7 @@ wildlife_insights_taxonomy_url = (
 vehicle_string = "e2895ed5-780b-48f6-8a11-9e27cb594511;;;;;;vehicle"
 blank_string = "f1856211-cfb7-4a5b-9158-c0f72fd09ee6;;;;;;blank"
 animal_string = "1f689929-883d-4dae-958c-3d57ab5b6c16;;;;;;animal"
+no_cv_result_string = "f2efdae9-efb8-48fb-8a91-eccf79ab4ffb;no cv result;no cv result;no cv result;no cv result;no cv result;no cv result"
 
 # It's not ideal to hard-code these here, but because we have this check in place now, this
 # list is not expected to grow.  Also see:
@@ -1050,9 +1066,16 @@ def validate_release_taxonomy(
     lines = [s.strip() for s in lines]
 
     known_non_taxonomic_strings = set()
+
+    # These non-taxonomic strings have empty values
+    # for everything except "common name"
     known_non_taxonomic_strings.add(blank_string)
     known_non_taxonomic_strings.add(vehicle_string)
     known_non_taxonomic_strings.add(animal_string)
+
+    # The "no cv result" string is structured differently;
+    # every token is "no cv result"
+    known_non_taxonomic_strings.add(no_cv_result_string)
 
     five_token_taxa = set()
     for line in lines:
@@ -1062,12 +1085,16 @@ def validate_release_taxonomy(
         assert len(tokens) == 7
         five_token_taxon_string = ";".join(tokens[1:-1])
         # If this is a non-taxonomic string, make sure it's expected
-        if len(five_token_taxon_string.replace(";", "")) == 0:
+        if (len(five_token_taxon_string.replace(";", "")) == 0) or (
+            line == no_cv_result_string
+        ):
             assert line in known_non_taxonomic_strings
             continue
         # If this is a duplicate, make sure it's expected
         if five_token_taxon_string in five_token_taxa:
-            assert five_token_taxon_string in known_duplicate_five_token_strings
+            assert (
+                five_token_taxon_string in known_duplicate_five_token_strings
+            ), f"Unexpected duplicate taxon string: {five_token_taxon_string}"
         five_token_taxa.add(five_token_taxon_string)
 
     # If a label list is provided, make sure that every label is also in the
@@ -1330,6 +1357,10 @@ def generate_release_taxonomy_from_label_list(
         non_taxonomic_strings_in_output_taxonomy
     )
 
+    # The only non-taxonomic string we want to add that *isn't* in SpeciesNet's
+    # output is "no cv result"
+    output_taxa.append(no_cv_result_string)
+
     ## Write taxonomy file
 
     # Sort taxa by name, rather than by GUID.
@@ -1369,32 +1400,45 @@ def save_geofence(geofence: dict[str, dict], output_path: StrPath) -> None:
 
 
 def main(argv: list[str]) -> None:
-    del argv  # Unused.
+    del argv
 
-    # Validate the taxonomy file
-    validate_release_taxonomy(_TAXONOMY.value, _TRIM.value)
+    if _REBUILD_TAXONOMY_LIST.value:
+        print("Re-building taxonomy file")
+        generate_release_taxonomy_from_label_list(
+            labels_path=_LABELS_FILE.value, output_path=_TAXONOMY_FILE.value
+        )
+
+    print("Validating taxonomy file")
+    validate_release_taxonomy(_TAXONOMY_FILE.value, _TRIM_LABEL_LIST.value)
 
     # Validate the base geofence
-    geofence_base = load_geofence_base(_BASE.value)
+    print("Validating base geofence")
+    geofence_base = load_geofence_base(_BASE_GEOFENCE_FILE.value)
     validate_geofence(geofence_base, None)
 
-    geofence_release = fix_geofence_base(
-        geofence_base=geofence_base,
-        fixes_path=_FIXES.value,
-        taxonomy_path=_TAXONOMY.value,
-    )
-    geofence_release = propagate_rules(
-        geofence=geofence_release, labels_path=_TRIM.value
-    )
-    geofence_release = trim_to_supported_labels(
-        geofence=geofence_release, labels_path=_TRIM.value
-    )
+    if not _UPDATE_GEOFENCE.value:
 
-    assert validate_geofence(
-        geofence_release, _TAXONOMY.value
-    ), "Release geofence validation failed"
+        print("Skipping geofence update")
 
-    save_geofence(geofence_release, _OUTPUT.value)
+    else:
+
+        geofence_release = fix_geofence_base(
+            geofence_base=geofence_base,
+            fixes_path=_FIXES_FILE.value,
+            taxonomy_path=_TAXONOMY_FILE.value,
+        )
+        geofence_release = propagate_rules(
+            geofence=geofence_release, labels_path=_TRIM_LABEL_LIST.value
+        )
+        geofence_release = trim_to_supported_labels(
+            geofence=geofence_release, labels_path=_TRIM_LABEL_LIST.value
+        )
+
+        assert validate_geofence(
+            geofence_release, _TAXONOMY_FILE.value
+        ), "Release geofence validation failed"
+
+        save_geofence(geofence_release, _OUTPUT_GEOFENCE_FILE.value)
 
 
 if __name__ == "__main__":

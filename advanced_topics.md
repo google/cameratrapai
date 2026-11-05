@@ -102,6 +102,14 @@ admin1_region is currently only supported in the US, where valid values for admi
 
 Latitude and longitude are only used to determine admin1_region, so if you are specifying a state code, you don't need to specify latitude and longitude.
 
+## Updating the geofence
+
+To update `geofence_release.json` and `taxonomy_release.txt`:
+
+```bash
+python -m speciesnet.scripts.build_geofence_release --rebuild_taxonomy_list
+```
+
 ## Contributing code
 
 If you're interested in contributing to our repo, rather than installing via pip, we recommend cloning the repo, creating a Python virtual environment for development, and installing the package locally using the following command:
