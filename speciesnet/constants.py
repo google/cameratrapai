@@ -21,6 +21,7 @@ __all__ = [
     "Detection",
     "FORMAT_VERSION",
     "NUM_CLASSIFICATIONS_FOR_ENSEMBLE",
+    "OUTPUT_NUM_DECIMALS",
     "mps_inference_lock",
 ]
 
@@ -43,6 +44,13 @@ DEFAULT_MAX_CLASSIFICATIONS_PER_DETECTION = 2
 # Number of top classes the ensemble uses to compute processed classifications,
 # independently of how many classes are reported in the output.
 NUM_CLASSIFICATIONS_FOR_ENSEMBLE = 5
+
+# Number of decimal places to which floating-point values (e.g. scores and bounding
+# box coordinates) are rounded when predictions are written to file. Bounding box
+# coordinates are also rounded to this precision before cropping, so that classifying
+# detections read back from a predictions file produces the same crops as classifying
+# detections directly from the detector.
+OUTPUT_NUM_DECIMALS = 5
 
 
 class Classification(str, enum.Enum):

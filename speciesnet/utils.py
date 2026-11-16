@@ -44,6 +44,7 @@ import requests
 from speciesnet.constants import Detection
 from speciesnet.constants import Failure
 from speciesnet.constants import FORMAT_VERSION
+from speciesnet.constants import OUTPUT_NUM_DECIMALS
 
 StrPath = Union[str, Path]
 
@@ -530,7 +531,7 @@ def save_predictions(predictions_dict: dict, output_json: StrPath) -> None:
     suffix = output_json.suffix
     output_json_tmp = output_json.parent / f"{stem}.tmp.{uuid.uuid4()}{suffix}"
     logging.info("Saving predictions to `%s`.", output_json_tmp)
-    write_json(predictions_dict, output_json_tmp, num_decimals=4)
+    write_json(predictions_dict, output_json_tmp, num_decimals=OUTPUT_NUM_DECIMALS)
     logging.info("Moving `%s` to `%s`.", output_json_tmp, output_json)
     output_json_tmp.replace(output_json)  # Atomic operation.
 
