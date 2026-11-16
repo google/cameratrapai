@@ -35,6 +35,7 @@ import torchvision.transforms.functional as F
 
 from speciesnet.constants import Failure
 from speciesnet.constants import mps_inference_lock
+from speciesnet.constants import OUTPUT_NUM_DECIMALS
 from speciesnet.utils import BBox
 from speciesnet.utils import ModelInfo
 from speciesnet.utils import PreprocessedImage
@@ -164,6 +165,15 @@ class SpeciesNetClassifier:
         results = []
         if self.model_info.type_ == "always_crop":
             for bbox in bboxes or []:
+                # Round box coordinates to the precision used when writing predictions
+                # to file, so that crops are identical whether boxes come directly from
+                # the detector or are read back from a predictions file.
+                bbox = BBox(
+                    *(
+                        round(float(v), OUTPUT_NUM_DECIMALS)
+                        for v in (bbox.xmin, bbox.ymin, bbox.width, bbox.height)
+                    )
+                )
                 crop = F.crop(
                     img_tensor,
                     int(bbox.ymin * img.height),
