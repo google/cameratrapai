@@ -163,6 +163,8 @@ known_duplicate_five_token_strings.add(
 )
 known_duplicate_five_token_strings.add("mammalia;artiodactyla;;;")
 known_duplicate_five_token_strings.add("aves;pelecaniformes;ardeidae;ardea;alba")
+known_duplicate_five_token_strings.add("mammalia;carnivora;mustelidae;;")
+known_duplicate_five_token_strings.add("mammalia;rodentia;cricetidae;;")
 
 # We read parent taxa of the SpeciesNet categories from the Wildlife Insights taxonomy.
 # This is a live taxonomy, so we allow a few hard-coded replacements to help match

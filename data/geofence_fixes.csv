@@ -18972,3 +18972,7 @@ mammalia;diprotodontia;;;,block,YEM,
 mammalia;diprotodontia;;;,block,ZAF,
 mammalia;diprotodontia;;;,block,ZMB,
 mammalia;diprotodontia;;;,block,ZWE,
+
+#  Allow wolverines in ID and MT
+mammalia;carnivora;mustelidae;gulo;gulo,allow,USA,ID
+mammalia;carnivora;mustelidae;gulo;gulo,allow,USA,MT

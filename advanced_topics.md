@@ -7,6 +7,7 @@
 - [Alternative installation variants of the SpeciesNet Python package](#alternative-installation-variants)
 - [SpeciesNet model variants](#speciesnet-model-variants)
 - [Alternative input formats for run_model](#alternative-input-formats-for-run_model)
+- [Updating the geofence](#updating-the-geofence)
 - [Contributing code](#contributing-code)
 - [Build status](#build-status)
 
@@ -108,6 +109,17 @@ To update `geofence_release.json` and `taxonomy_release.txt`:
 
 ```bash
 python -m speciesnet.scripts.build_geofence_release --rebuild_taxonomy_list
+```
+
+## Converting .keras to .pt
+
+SpeciesNet models are trained in TensorFlow and converted to PyTorch .pt files before release.  Conversion looks like this:
+
+```bash
+mamba create -n speciesnet-convert python=3.12 pip -y && mamba activate speciesnet-convert
+pip install tf2onnx onnx2torch tensorflow tf_keras
+TF_USE_LEGACY_KERAS=1 python -m tf2onnx.convert --keras "model.keras" --output "model.onnx"
+python -c 'from onnx2torch import convert; import torch; model = convert("model.onnx"); torch.save(model, "model.pt")'
 ```
 
 ## Contributing code
